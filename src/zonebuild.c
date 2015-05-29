@@ -99,70 +99,6 @@ release_regexes()
   regfree(&pr_is_ipv4);
 }
 
-int
-main(int argc, char *argv[])
-{
-  int retval;
-
-  if ((retval = setup_sighandlers()))
-    {
-      ERROR("main: could not setup signal handlers [%d]\n", retval);
-      abort();
-    }
-
-  retval = parse_args(argc, argv, gg_f_ref, NULL, 0);
-
-  if (retval == -2 || retval == -1)
-    {
-      return retval;
-    }
-
-  if ( NULL == global_opt.path)
-    {
-      ERROR("main: missing path to data files\n");
-      return 1;
-    }
-  if ( NULL == global_opt.root)
-    {
-      ERROR("main: missing pointer to root zone\n");
-      return 1;
-    }
-
-  mda base =
-    { 0 };
-
-  md_init_le(&base, 65535);
-
-  initialize_regexes();
-
-  _def_ophdr option_header =
-    { 0 };
-
-  retval = 0;
-
-  option_header.base = &base;
-
-  if ( NULL != global_opt.load)
-    {
-      global_opt.load(global_opt.path, &option_header, load_inetnum4_item);
-
-      if ( NULL == option_header.root)
-        {
-          ERROR("main: could not find root: '%s'\n", global_opt.root);
-          retval = 2;
-          goto _exit;
-        }
-    }
-
-  _exit: ;
-
-  release_regexes();
-
-  md_g_free_l(&base);
-
-  return retval;
-}
-
 static int
 commit_inetnum4_item(char *name, __inet_obj object)
 {
@@ -381,6 +317,110 @@ load_inetnum_data(char *path, __def_ophdr option_header, __d_cvp callback)
       FAULT("load_inetnum_data: closedir: %s\n");
       retval = errno;
     }
+
+  return retval;
+}
+
+static void
+check_glob_opts()
+{
+  if ( NULL == global_opt.path)
+    {
+      ERROR("main: missing path to data files\n");
+      exit(1);
+    }
+  if ( NULL == global_opt.root)
+    {
+      ERROR("main: missing pointer to root zone\n");
+      exit(1);
+    }
+}
+
+static int
+link_hierarchy_tree(__inet_obj object)
+{
+  md_init_le(&object->child_objects, 8192);
+  object->child_objects.flags |= F_MDA_REFPTR;
+
+  p_md_obj ptr = object->parent->first;
+
+  while (ptr)
+    {
+      __inet_obj ptr_object = (__inet_obj) ptr->ptr;
+
+      if ( (ptr_object->d_ip_start >= object->d_ip_start) &&
+          (ptr_object->d_ip_end <= object->d_ip_end) )
+        {
+          ptr_object = md_alloc_le(&object->child_objects, 0, 0, ptr_object);
+        }
+
+      ptr = ptr->next;
+    }
+
+  return 0;
+}
+
+int
+main(int argc, char *argv[])
+{
+  int retval;
+
+  if ((retval = setup_sighandlers()))
+    {
+      ERROR("main: could not setup signal handlers [%d]\n", retval);
+      abort();
+    }
+
+  retval = parse_args(argc, argv, gg_f_ref, NULL, 0);
+
+  if (retval == -2 || retval == -1)
+    {
+      return retval;
+    }
+
+  check_glob_opts();
+
+  if ( NULL == global_opt.load)
+    {
+      ERROR("main: NULL global_opt.load\n");
+      return 1;
+    }
+
+  mda base =
+    { 0 };
+
+  md_init_le(&base, 65535);
+
+  initialize_regexes();
+
+  _def_ophdr option_header =
+    { 0 };
+
+  retval = 0;
+
+  option_header.base = &base;
+
+  global_opt.load(global_opt.path, &option_header, load_inetnum4_item);
+
+  if ( NULL == option_header.root)
+    {
+      ERROR("main: could not find root: '%s'\n", global_opt.root);
+      retval = 2;
+      goto _exit;
+    }
+
+  if (link_hierarchy_tree(option_header.root))
+    {
+      ERROR("main: link_hierarchy_tree failed: '%s'\n", global_opt.root);
+      retval = 2;
+      goto _exit;
+    }
+
+  _exit: ;
+
+  release_regexes();
+
+  md_g_free_l(&base);
 
   return retval;
 }
