@@ -96,15 +96,16 @@ DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@ENABLE_MAIN_TRUE@am__EXEEXT_1 = zoneb$(EXEEXT)
+@ENABLE_MAIN_TRUE@am__EXEEXT_1 = buildz$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__objects_1 = signal.$(OBJEXT) l_error.$(OBJEXT) memory.$(OBJEXT) \
 	thread.$(OBJEXT) str.$(OBJEXT) arg_proc.$(OBJEXT) \
-	arg_opts.$(OBJEXT) x_f.$(OBJEXT) zonebuild.$(OBJEXT)
-am_zoneb_OBJECTS = $(am__objects_1)
-zoneb_OBJECTS = $(am_zoneb_OBJECTS)
-zoneb_DEPENDENCIES =
+	arg_opts.$(OBJEXT) x_f.$(OBJEXT) gv_off.$(OBJEXT) \
+	sort.$(OBJEXT) zonebuild.$(OBJEXT)
+am_buildz_OBJECTS = $(am__objects_1)
+buildz_OBJECTS = $(am_buildz_OBJECTS)
+buildz_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -133,8 +134,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(zoneb_SOURCES)
-DIST_SOURCES = $(zoneb_SOURCES)
+SOURCES = $(buildz_SOURCES)
+DIST_SOURCES = $(buildz_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -249,11 +250,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@ENABLE_MAIN_TRUE@MAIN_APP = zoneb
-MAIN_DEFAULTSRC = signal.c l_error.c memory.c thread.c str.c arg_proc.c arg_opts.c x_f.c zonebuild.c
-zoneb_SOURCES = $(MAIN_DEFAULTSRC)
+@ENABLE_MAIN_TRUE@MAIN_APP = buildz
+MAIN_DEFAULTSRC = signal.c l_error.c memory.c thread.c str.c arg_proc.c arg_opts.c x_f.c gv_off.c sort.c zonebuild.c
+buildz_SOURCES = $(MAIN_DEFAULTSRC)
 MAIN_DEFAULTLN = 
-zoneb_LDADD = $(GLUTIL_DEFAULTLN)
+buildz_LDADD = $(GLUTIL_DEFAULTLN)
 all: all-am
 
 .SUFFIXES:
@@ -330,9 +331,9 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-zoneb$(EXEEXT): $(zoneb_OBJECTS) $(zoneb_DEPENDENCIES) $(EXTRA_zoneb_DEPENDENCIES) 
-	@rm -f zoneb$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(zoneb_OBJECTS) $(zoneb_LDADD) $(LIBS)
+buildz$(EXEEXT): $(buildz_OBJECTS) $(buildz_DEPENDENCIES) $(EXTRA_buildz_DEPENDENCIES) 
+	@rm -f buildz$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(buildz_OBJECTS) $(buildz_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -342,9 +343,11 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arg_opts.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arg_proc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gv_off.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/l_error.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memory.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/signal.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/str.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/thread.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/x_f.Po@am__quote@

@@ -369,19 +369,7 @@ get_opr(char *in)
     }
 }
 
-char *
-generate_chars(size_t num, char chr, char*buffer)
-{
-  g_setjmp(0, "generate_chars", NULL, NULL);
-  bzero(buffer, 255);
-  if (num < 1 || num > 254)
-    {
-      return buffer;
-    }
-  memset(buffer, (int) chr, num);
 
-  return buffer;
-}
 
 char *
 replace_char(char w, char r, char *string)
