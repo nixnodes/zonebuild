@@ -675,16 +675,10 @@ link_hierarchy_tree(_def_ophdr option_header, __inet_obj object,
 
       if ( ptr_object == parent )
         {
-          ERROR("link_hierarchy_tree: %s refusing to link %s/%hhu back to parent [%u]\n",
-              b_level, st_b0, ptr_object->pfx_size,
-              option_header.ufield.level);
           goto e_loop;
         }
       if ( ptr_object == object )
         {
-          ERROR("link_hierarchy_tree: %s refusing to link %s/%hhu back to self [%u]\n",
-              b_level,st_b0, ptr_object->pfx_size,
-              option_header.ufield.level);
           goto e_loop;
         }
 
@@ -718,495 +712,479 @@ link_hierarchy_tree(_def_ophdr option_header, __inet_obj object,
   return 0;
 }
 
-typedef int
-(*_chf)(p_md_obj pos, void *data, void *arg);
-
-typedef struct ___ch_funct
-{
-  _chf call;
-  uint32_t flags;
-} _ch_funct, *__ch_funct;
-
-#define CH_PROC_NEXT(pos) { p_md_obj next = pos->next; if (next) { return ((__ch_funct) next->ptr)->call(next, data, arg); }  }
-
-#define CH_PROC_ITEM(object) { \
-  if ( !g_bmatch((void*)object,&global_opt.handle,(object)->parent) ) { \
-              global_opt.handle.g_proc4(&global_opt.handle, object, NULL); } \
-              (object)->flags |= F_INETNUM_MISC_00; \
-}
-
 static int
 ch_zone_nservers_1(p_md_obj pos, void *data, void *arg)
 {
-__inet_obj object = (__inet_obj) data;
-p_md_obj ptr = md_first(&object->nservers);
+  __inet_obj object = (__inet_obj) data;
 
-object->nrecurse_d = 0;
+  p_md_obj ptr = md_first(&object->nservers);
 
-p_md_obj next = pos->next;
+  object->nrecurse_d = 0;
 
-while (ptr)
-{
-  __nserver ns_ptr = (__nserver) ptr->ptr;
-  object->nserver_current = *ns_ptr;
-  if (ns_ptr->flags & F_NS_HAVE_GLUE)
+  p_md_obj next = pos->next;
+
+  while (ptr)
     {
-      object->hasglue = 1;
-    }
-  else
-    {
-      object->hasglue = 0;
+      __nserver ns_ptr = (__nserver) ptr->ptr;
+      object->nserver_current = *ns_ptr;
+      if (ns_ptr->flags & F_NS_HAVE_GLUE)
+        {
+          object->hasglue = 1;
+        }
+      else
+        {
+          object->hasglue = 0;
+        }
+
+      if (next)
+        {
+          ((__ch_funct) next->ptr)->call(next, data, arg);
+        }
+      else
+        {
+          CH_PROC_ITEM(object);
+        }
+
+      object->nrecurse_d++;
+
+      ptr =ptr->next;
     }
 
-  if (next)
-    {
-      ((__ch_funct) next->ptr)->call(next, data, arg);
-    }
-  else
-    {
-      CH_PROC_ITEM(object);
-    }
-
-  object->nrecurse_d++;
-
-  ptr =ptr->next;
-}
-
-return 0;
+  return 0;
 }
 
 static __inet_obj
 find_block_by_address(pmda base, __inet_obj block, __inet_obj parent)
 {
-p_md_obj ptr = md_first(base);
+  p_md_obj ptr = md_first(base);
 
-while (ptr)
-{
-  __inet_obj object = (__inet_obj) ptr->ptr;
-
-  if ( *object->d_ip_start == *block->d_ip_start &&
-      object->pfx_size == block->pfx_size && block != parent)
+  while (ptr)
     {
-      return object;
-    }
+      __inet_obj object = (__inet_obj) ptr->ptr;
 
-  ptr = ptr->next;
-}
-return NULL;
+      if ( *object->d_ip_start == *block->d_ip_start &&
+          object->pfx_size == block->pfx_size && block != parent)
+        {
+          return object;
+        }
+
+      ptr = ptr->next;
+    }
+  return NULL;
 }
 
 static int
 ch_zone4_breakdown_0(p_md_obj pos, void *data, void *arg)
 {
-__inet_obj object = (__inet_obj) data;
+  __inet_obj object = (__inet_obj) data;
 
-if ( 0 == object->nservers.offset )
-{
-  CH_PROC_ITEM(object);
-  return 0;
-}
-
-uint8_t class_size = ((( 32 - object->pfx_size ) / 8) * 8);
-
-_inet_obj dummy = *object;
-dummy.d_ip_start = (uint32_t*)&dummy.ip_start;
-dummy.d_ip_end = (uint32_t*)&dummy.ip_end;
-
-if ( 0 == class_size)
-{
-  class_size = 24;
-}
-else
-{
-  dummy.pfx_size = 32 - class_size;
-}
-
-dummy.flags |= F_INETNUM_FORCE_PROC;
-
-uint32_t inc_f = 0x1;
-
-int i = class_size -1;
-while (i--)
-{
-  inc_f <<= 1;
-  inc_f |= 0x1;
-}
-inc_f++;
-
-p_md_obj next = pos->next;
-
-while ( *dummy.d_ip_start < *dummy.d_ip_end - 1 )
-{
-  __inet_obj block;
-  if ( NULL != (block=find_block_by_address(object->parent, &dummy, object)) )
+  if ( 0 == object->nservers.offset )
     {
-      if ( block->nservers.offset > 0 )
-        {
-          dummy.nservers = block->nservers;
-        }
+      CH_PROC_ITEM(object);
+      return 0;
     }
 
-  if (next)
+  uint8_t class_size = ((( 32 - object->pfx_size ) / 8) * 8);
+
+  _inet_obj dummy = *object;
+  dummy.d_ip_start = (uint32_t*)&dummy.ip_start;
+  dummy.d_ip_end = (uint32_t*)&dummy.ip_end;
+
+  if ( 0 == class_size)
     {
-      ((__ch_funct) next->ptr)->call(next, &dummy, arg);
+      class_size = 24;
     }
   else
     {
-      CH_PROC_ITEM(&dummy);
+      dummy.pfx_size = 32 - class_size;
     }
 
-  *dummy.d_ip_start += inc_f;
+  dummy.flags |= F_INETNUM_FORCE_PROC;
 
-}
+  uint32_t inc_f = 0x1;
 
-return 0;
+  int i = class_size -1;
+  while (i--)
+    {
+      inc_f <<= 1;
+      inc_f |= 0x1;
+    }
+  inc_f++;
+
+  p_md_obj next = pos->next;
+
+  while ( *dummy.d_ip_start < *dummy.d_ip_end - 1 )
+    {
+      __inet_obj block;
+      if ( NULL != (block=find_block_by_address(object->parent, &dummy, object)) )
+        {
+          if ( block->nservers.offset > 0 )
+            {
+              dummy.nservers = block->nservers;
+            }
+        }
+
+      if (next)
+        {
+          ((__ch_funct) next->ptr)->call(next, &dummy, arg);
+        }
+      else
+        {
+          CH_PROC_ITEM(&dummy);
+        }
+
+      *dummy.d_ip_start += inc_f;
+
+    }
+
+  return 0;
 }
 
 static __ch_funct
 register_ch_funct(pmda base, _chf function)
 {
-if ( NULL == function)
-{
-  return NULL;
-}
+  if ( NULL == function)
+    {
+      return NULL;
+    }
 
-__ch_funct ptr = md_alloc_le(base, sizeof(_ch_funct), 0, NULL);
+  __ch_funct ptr = md_alloc_le(base, sizeof(_ch_funct), 0, NULL);
 
-if ( NULL == ptr)
-{
-  ABORT("register_ch_funct: md_alloc_le failed\n");
-}
+  if ( NULL == ptr)
+    {
+      ABORT("register_ch_funct: md_alloc_le failed\n");
+    }
 
-ptr->call = function;
+  ptr->call = function;
 
-return ptr;
+  return ptr;
 }
 
 mda chf_data =
-{0};
+  { 0 };
 
 static int
 walk_test(__inet_obj object, __def_ophdr option_header, void* arg)
 {
 
-object->tree_level = option_header->ufield.level;
-object->ns_level = option_header->ufield.ns_level;
+  object->tree_level = option_header->ufield.level;
+  object->ns_level = option_header->ufield.ns_level;
 
-if (object->flags & F_INETNUM_MISC_00)
-{
-  DEBUG("%s: already processed\n", object->fullpath);
+  if (object->flags & F_INETNUM_MISC_00)
+    {
+      DEBUG("%s: already processed\n", object->fullpath);
+      return 0;
+    }
+
+  if (global_opt.handle.flags & F_GH_PRINT)
+    {
+
+      __ch_funct chf = (__ch_funct ) chf_data.first->ptr;
+
+      chf->call(chf_data.first, object, option_header);
+
+    }
+  else
+    {
+      int b_count = option_header->ufield.level * 4;
+      char *b_level = malloc(b_count + 1);
+
+      memset(b_level, 0x2D, b_count);
+      b_level[b_count] = 0x0;
+
+      printf("|%s: %s\n", b_level, basename(object->fullpath));
+
+      free(b_level);
+    }
+
   return 0;
-}
-
-if (global_opt.handle.flags & F_GH_PRINT)
-{
-
-  __ch_funct chf = (__ch_funct ) chf_data.first->ptr;
-
-  chf->call(chf_data.first, object, option_header);
-
-}
-else
-{
-  int b_count = option_header->ufield.level * 4;
-  char *b_level = malloc(b_count + 1);
-
-  memset(b_level, 0x2D, b_count);
-  b_level[b_count] = 0x0;
-
-  printf("|%s: %s\n", b_level, basename(object->fullpath));
-
-  free(b_level);
-}
-
-return 0;
 }
 
 static int
 walk_zone_tree(__inet_obj object, __def_ophdr option_header, __d_zb_c0 callback,
-uint32_t flags)
+    uint32_t flags)
 {
-int retval = 0;
+  int retval = 0;
 
-option_header->ufield.level++;
+  option_header->ufield.level++;
 
-if (object->nservers.offset > 0)
-{
-  option_header->ufield.ns_level++;
-}
-
-if (callback(object, option_header, NULL))
-{
-  retval = 1;
-  goto finish;
-}
-
-p_md_obj ptr = md_first(&object->child_objects);
-
-while (ptr)
-{
-  if (walk_zone_tree((__inet_obj ) ptr->ptr, option_header, callback,
-          flags))
+  if (object->nservers.offset > 0)
     {
-      retval = 2;
+      option_header->ufield.ns_level++;
+    }
+
+  if (callback(object, option_header, NULL))
+    {
+      retval = 1;
       goto finish;
     }
-  ptr = ptr->next;
-}
 
-finish:;
+  p_md_obj ptr = md_first(&object->child_objects);
 
-option_header->ufield.level--;
+  while (ptr)
+    {
+      if (walk_zone_tree((__inet_obj ) ptr->ptr, option_header, callback,
+          flags))
+        {
+          retval = 2;
+          goto finish;
+        }
+      ptr = ptr->next;
+    }
 
-if (object->nservers.offset > 0)
-{
-  option_header->ufield.ns_level--;
-}
+  finish: ;
 
-return retval;
+  option_header->ufield.level--;
+
+  if (object->nservers.offset > 0)
+    {
+      option_header->ufield.ns_level--;
+    }
+
+  return retval;
 }
 
 static int
 g_h_deepcp_mrr(void *source, void *dest, void *d_ptr)
 {
 
-__g_match src_pmd = (__g_match) source;
-if ( src_pmd->flags & F_GM_IS_MOBJ)
-{
-  pmda t_md = calloc(1, sizeof(mda));
+  __g_match src_pmd = (__g_match) source;
+  if ( src_pmd->flags & F_GM_IS_MOBJ)
+    {
+      pmda t_md = calloc(1, sizeof(mda));
 
-  md_copy(src_pmd->next, t_md, sizeof(_g_match), g_h_deepcp_mrr);
+      md_copy(src_pmd->next, t_md, sizeof(_g_match), g_h_deepcp_mrr);
 
-  __g_match dest_pmd = (__g_match) d_ptr;
+      __g_match dest_pmd = (__g_match) d_ptr;
 
-  dest_pmd->next = t_md;
-}
+      dest_pmd->next = t_md;
+    }
 
-return 0;
+  return 0;
 }
 
 static int
 preproc(void)
 {
-int r;
-_g_handle *hdl = &global_opt.handle;
+  int r;
+  _g_handle *hdl = &global_opt.handle;
 
-dt_set_inetobj(hdl);
+  dt_set_zone(hdl);
 
-hdl->v_b0 = malloc(65535);
-hdl->v_b0_sz = 65535;
+  hdl->v_b0 = malloc(65535);
+  hdl->v_b0_sz = 65535;
 
-if (!(hdl->flags & F_GH_HASMATCHES) && _match_rr.count > 0)
-{
-  if ((r = md_copy(&_match_rr, &hdl->_match_rr, sizeof(_g_match),
-              g_h_deepcp_mrr)))
+  if (!(hdl->flags & F_GH_HASMATCHES) && _match_rr.count > 0)
     {
-      ERROR("load_print_params: %s: md_copy(_match_rr, handle) failed\n",
-          hdl->file);
-      return 2000;
+      if ((r = md_copy(&_match_rr, &hdl->_match_rr, sizeof(_g_match),
+          g_h_deepcp_mrr)))
+        {
+          ERROR("load_print_params: %s: md_copy(_match_rr, handle) failed\n",
+              hdl->file);
+          return 2000;
+        }
+      if (hdl->_match_rr.offset)
+        {
+          DEBUG("load_print_params: %s: commit %llu matches to handle\n",
+              hdl->file, (unsigned long long int ) hdl->_match_rr.offset);
+
+          hdl->flags |= F_GH_HASMATCHES;
+        }
+
     }
-  if (hdl->_match_rr.offset)
+
+  if (g_load_strm(hdl))
     {
-      DEBUG("load_print_params: %s: commit %llu matches to handle\n",
-          hdl->file, (unsigned long long int ) hdl->_match_rr.offset);
-
-      hdl->flags |= F_GH_HASMATCHES;
-    }
-
-}
-
-if (g_load_strm(hdl))
-{
-  return 1;
-}
-
-if (g_load_lom(hdl))
-{
-  return 1;
-}
-
-hdl->ifrh_l1 = g_ipcbm;
-
-if (global_opt.flags & F_STDH_HAVE_PRINT_ANY)
-{
-  hdl->fd_out = fileno(stdout);
-  hdl->g_proc4 = g_omfp_eassemble;
-  hdl->w_d = g_omfp_write;
-  hdl->act_mech = &hdl->print_mech;
-
-  hdl->flags |= F_GH_PRINT;
-
-}
-
-if (global_opt.flags & F_STDH_HAVE_PRINT)
-{
-  if (g_op_load_print_mech(hdl, &hdl->print_mech, global_opt.print_str,
-          hdl->v_b0_sz))
-    {
-      ERROR("main: g_op_load_print_mech (print_mech) failed: '%s'\n",
-          global_opt.root);
       return 1;
     }
-}
 
-return 0;
+  if (g_load_lom(hdl))
+    {
+      return 1;
+    }
+
+  hdl->ifrh_l1 = g_ipcbm;
+
+  if (global_opt.flags & F_STDH_HAVE_PRINT_ANY)
+    {
+      hdl->fd_out = fileno(stdout);
+      hdl->g_proc4 = g_omfp_eassemble;
+      hdl->w_d = g_omfp_write;
+      hdl->act_mech = &hdl->print_mech;
+
+      hdl->flags |= F_GH_PRINT;
+
+    }
+
+  if (global_opt.flags & F_STDH_HAVE_PRINT)
+    {
+      if (g_op_load_print_mech(hdl, &hdl->print_mech, global_opt.print_str,
+          hdl->v_b0_sz))
+        {
+          ERROR("main: g_op_load_print_mech (print_mech) failed: '%s'\n",
+              global_opt.root);
+          return 1;
+        }
+    }
+
+  return 0;
 }
 
 static int
 init(void)
 {
 
-mda base =
-{ 0};
-_def_ophdr option_header =
-{ 0};
+  mda base =
+    { 0 };
+  _def_ophdr option_header =
+    { 0 };
 
-check_glob_opts();
+  check_glob_opts();
 
-md_init_le(&base, 65535);
+  md_init_le(&base, 65535);
 
-option_header.base = &base;
+  option_header.base = &base;
 
-global_opt.load(global_opt.path, &option_header, load_inetnum4_item);
+  global_opt.load(global_opt.path, &option_header, load_inetnum4_item);
 
-int retval = 0;
+  int retval = 0;
 
-if ( NULL == option_header.root)
-{
-  ERROR("main: root zone '%s' not found\n", global_opt.root);
-  retval = 2;
-  goto cleanup;
-}
+  if ( NULL == option_header.root)
+    {
+      ERROR("main: root zone '%s' not found\n", global_opt.root);
+      retval = 2;
+      goto cleanup;
+    }
 
-if (option_header.root->nservers.offset == 0)
-{
-  ERROR("main: root zone '%s' contains no valid 'nserver' records\n",
-      global_opt.root);
-  retval = 2;
-  goto cleanup;
-}
+  if (option_header.root->nservers.offset == 0)
+    {
+      ERROR("main: root zone '%s' contains no valid 'nserver' records\n",
+          global_opt.root);
+      retval = 2;
+      goto cleanup;
+    }
 
-if ( NULL != global_opt.loc_serv_name)
-{
-  option_header.root->servername = global_opt.loc_serv_name;
-}
+  if ( NULL != global_opt.loc_serv_name)
+    {
+      option_header.root->servername = global_opt.loc_serv_name;
+    }
 
-if ( NULL != global_opt.loc_email)
-{
-  option_header.root->email = global_opt.loc_email;
-}
+  if ( NULL != global_opt.loc_email)
+    {
+      option_header.root->email = global_opt.loc_email;
+    }
 
-DEBUG("init: loaded %llu records\n",
-  (unsigned long long int )option_header.base->offset);
+  DEBUG("init: loaded %llu records\n",
+      (unsigned long long int )option_header.base->offset);
 
-size_t offset = (size_t) &((__inet_obj) NULL)->pfx_size;
+  size_t offset = (size_t) &((__inet_obj) NULL)->pfx_size;
 
-if (int_sort(option_header.base, offset, 1, F_SORT_DESC))
-{
-  retval = 1;
-  goto cleanup;
-}
+  if (int_sort(option_header.base, offset, 1, F_SORT_DESC))
+    {
+      retval = 1;
+      goto cleanup;
+    }
 
-if (link_hierarchy_tree(option_header, option_header.root, NULL))
-{
-  ERROR("main: link_hierarchy_tree failed: '%s'\n", global_opt.root);
-  retval = 1;
-  goto cleanup;
-}
+  if (link_hierarchy_tree(option_header, option_header.root, NULL))
+    {
+      ERROR("main: link_hierarchy_tree failed: '%s'\n", global_opt.root);
+      retval = 1;
+      goto cleanup;
+    }
 
-DEBUG("init: inetnum hierarchy tree created\n");
+  DEBUG("init: inetnum hierarchy tree created\n");
 
-if (preproc())
-{
-  ERROR("main: preproc failed: '%s'\n", global_opt.root);
-  retval = 1;
-  goto cleanup;
-}
+  if (preproc())
+    {
+      ERROR("main: preproc failed: '%s'\n", global_opt.root);
+      retval = 1;
+      goto cleanup;
+    }
 
-if ( NULL != global_opt.pre_print_str)
-{
-  if (g_op_load_print_mech(&global_opt.handle,
+  if ( NULL != global_opt.pre_print_str)
+    {
+      if (g_op_load_print_mech(&global_opt.handle,
           &global_opt.handle.pre_print_mech, global_opt.pre_print_str,
           strlen(global_opt.pre_print_str) + 1))
-    {
-      ERROR("main: g_op_load_print_mech (pre_print_mech) failed: '%s'\n",
-          global_opt.root);
-      retval = 1;
-      goto cleanup;
-    }
-  else
-    {
-      pmda p_act_mech = global_opt.handle.act_mech;
-      global_opt.handle.act_mech = &global_opt.handle.pre_print_mech;
-      global_opt.handle.g_proc4(&global_opt.handle, option_header.root,
+        {
+          ERROR("main: g_op_load_print_mech (pre_print_mech) failed: '%s'\n",
+              global_opt.root);
+          retval = 1;
+          goto cleanup;
+        }
+      else
+        {
+          pmda p_act_mech = global_opt.handle.act_mech;
+          global_opt.handle.act_mech = &global_opt.handle.pre_print_mech;
+          global_opt.handle.g_proc4(&global_opt.handle, option_header.root,
           NULL);
-      global_opt.handle.act_mech = p_act_mech;
+          global_opt.handle.act_mech = p_act_mech;
+        }
     }
-}
 
-md_init_le(&chf_data, 16);
+  md_init_le(&chf_data, 16);
 
-register_ch_funct(&chf_data, ch_zone4_breakdown_0);
-register_ch_funct(&chf_data, ch_zone_nservers_1);
+  register_ch_funct(&chf_data, ch_zone4_breakdown_0);
+  register_ch_funct(&chf_data, ch_zone_nservers_1);
 
-walk_zone_tree(option_header.root, &option_header, walk_test, 0);
+  walk_zone_tree(option_header.root, &option_header, walk_test, 0);
 
-if ( NULL != global_opt.post_print_str)
-{
-  if (g_op_load_print_mech(&global_opt.handle,
+  if ( NULL != global_opt.post_print_str)
+    {
+      if (g_op_load_print_mech(&global_opt.handle,
           &global_opt.handle.post_print_mech, global_opt.post_print_str,
           strlen(global_opt.post_print_str) + 1))
-    {
-      ERROR("main: g_op_load_print_mech (post_print_mech) failed: '%s'\n",
-          global_opt.root);
-      retval = 1;
-      goto cleanup;
-    }
-  else
-    {
-      global_opt.handle.act_mech = &global_opt.handle.post_print_mech;
-      global_opt.handle.g_proc4(&global_opt.handle, option_header.root,
+        {
+          ERROR("main: g_op_load_print_mech (post_print_mech) failed: '%s'\n",
+              global_opt.root);
+          retval = 1;
+          goto cleanup;
+        }
+      else
+        {
+          global_opt.handle.act_mech = &global_opt.handle.post_print_mech;
+          global_opt.handle.g_proc4(&global_opt.handle, option_header.root,
           NULL);
+        }
+
     }
 
-}
+  cleanup: ;
 
-cleanup:;
+  md_g_free_l(&base);
 
-md_g_free_l(&base);
-
-return retval;
+  return retval;
 }
 
 int
 main(int argc, char *argv[])
 {
-int retval;
+  int retval;
 
-if ((retval = setup_sighandlers()))
-{
-  ERROR("main: could not setup signal handlers [%d]\n", retval);
-  abort();
-}
+  if ((retval = setup_sighandlers()))
+    {
+      ERROR("main: could not setup signal handlers [%d]\n", retval);
+      abort();
+    }
 
-retval = parse_args(argc, argv, gg_f_ref, NULL, 0);
+  retval = parse_args(argc, argv, gg_f_ref, NULL, 0);
 
-if (retval == -2 || retval == -1)
-{
+  if (retval == -2 || retval == -1)
+    {
+      return retval;
+    }
+
+  if ( NULL == global_opt.load)
+    {
+      ERROR("main: no --build option selected\n");
+      return 1;
+    }
+
+  initialize_regexes();
+
+  retval = init();
+
+  release_regexes();
+
   return retval;
-}
-
-if ( NULL == global_opt.load)
-{
-  ERROR("main: no --build option selected\n");
-  return 1;
-}
-
-initialize_regexes();
-
-retval = init();
-
-release_regexes();
-
-return retval;
 }

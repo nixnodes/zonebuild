@@ -1,0 +1,26 @@
+build_path_check() 
+{
+	! [ -d "${OUT_PATH}" ] && mkdir -p "${OUT_PATH}" 
+	return 0
+}
+
+
+build_path_check
+
+#[1]:config file  [2]:zone name [3]:zone file
+config_update()
+{
+	[ -f "${1}" ] && {
+		cat ${1} | grep -q \"${2}\" && return 1
+	}
+	echo "zone \"${2}\" {
+        type slave;
+        masters {
+                ${MASTERS}
+                };
+        file \"${3}\";
+        };
+	"
+	return 0
+}
+

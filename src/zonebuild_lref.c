@@ -19,7 +19,7 @@
 #include <errno.h>
 
 void
-dt_set_inetobj(__g_handle hdl)
+dt_set_zone(__g_handle hdl)
 {
   hdl->block_sz = INETO_SZ;
   hdl->d_memb = 1;
@@ -30,7 +30,6 @@ dt_set_inetobj(__g_handle hdl)
   hdl->g_proc3_batch = zone_format_block_batch;
   hdl->g_proc3_export = zone_format_block_exp;
   hdl->g_proc4 = g_omfp_norm;
-  //hdl->ipc_key = IPC_KEY_GEN3LOG;
   hdl->jm_offset = (size_t) &((__inet_obj) NULL)->fullpath;
 
 }
@@ -198,9 +197,7 @@ static char *
 dt_rval_zone_nserver(void *arg, char *match, char *output, size_t max_size,
     void *mppd)
 {
-
   snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, ((__inet_obj) arg)->nserver_current.host);
-
   return output;
 }
 

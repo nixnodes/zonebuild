@@ -137,7 +137,6 @@ _d_cvp load_inetnum4_item;
 #define F_STDH_HAVE_PRE_PRINT           ((uint32_t)1 << 2)
 #define F_STDH_HAVE_POST_PRINT          ((uint32_t)1 << 3)
 
-
 #define F_STDH_HAVE_PRINT_ANY           (F_STDH_HAVE_PRINT|F_STDH_HAVE_PRE_PRINT|F_STDH_HAVE_POST_PRINT)
 
 typedef struct ___stdh_gopt
@@ -157,5 +156,22 @@ typedef struct ___stdh_gopt
 } _stdh_go, *__stdh_go;
 
 _stdh_go global_op;
+
+typedef int
+(*_chf)(p_md_obj pos, void *data, void *arg);
+
+typedef struct ___ch_funct
+{
+  _chf call;
+  uint32_t flags;
+} _ch_funct, *__ch_funct;
+
+#define CH_PROC_NEXT(pos) { p_md_obj next = pos->next; if (next) { return ((__ch_funct) next->ptr)->call(next, data, arg); }  }
+
+#define CH_PROC_ITEM(object) { \
+  if ( !g_bmatch((void*)object,&global_opt.handle,(object)->parent) ) { \
+              global_opt.handle.g_proc4(&global_opt.handle, object, NULL); } \
+              (object)->flags |= F_INETNUM_MISC_00; \
+}
 
 #endif

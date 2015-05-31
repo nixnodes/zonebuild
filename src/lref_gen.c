@@ -7,6 +7,7 @@
 
 #include "lref_gen.h"
 
+#include "mc_glob.h"
 #include "m_comp.h"
 #include "lref.h"
 #include "str.h"
@@ -56,14 +57,6 @@ dt_rval_generic_procid(void *arg, char *match, char *output, size_t max_size,
   return output;
 }
 
-char *
-dt_rval_generic_ipc(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
-{
-  snprintf(output, max_size, ((__d_drt_h ) mppd)->direc,
-      ((__d_drt_h ) mppd)->hdl->ipc_key);
-  return output;
-}
 
 char *
 dt_rval_generic_curtime(void *arg, char *match, char *output, size_t max_size,
@@ -210,11 +203,6 @@ ref_to_val_lk_generic(void *arg, char *match, char *output, size_t max_size,
       return as_ref_to_val_lk(match, dt_rval_generic_procid, (__d_drt_h ) mppd,
           "%d");
     }
-  else if (!strncmp(match, "ipc", 3))
-    {
-      return as_ref_to_val_lk(match, dt_rval_generic_ipc, (__d_drt_h ) mppd,
-          "%X");
-    }
   else if (!strncmp(match, "curtime", 7))
     {
       return as_ref_to_val_lk(match, dt_rval_generic_curtime, (__d_drt_h ) mppd,
@@ -264,6 +252,30 @@ ref_to_val_lk_generic(void *arg, char *match, char *output, size_t max_size,
     {
       return ref_to_val_af(arg, match, output, max_size, (__d_drt_h ) mppd);
     }
+  else if (!strncmp(match, _MC_GLOB_U64G, 7))
+      {
+        int idx;
+        DT_GG_GIDX(match)
+        ((__d_drt_h ) mppd)->uc_1 = (uint8_t) idx;
+
+        return as_ref_to_val_lk(match, dt_rval_gg_int, (__d_drt_h ) mppd, "%llu");
+      }
+    else if (!strncmp(match, _MC_GLOB_S64G, 7))
+      {
+        int idx;
+        DT_GG_GIDX(match)
+        ((__d_drt_h ) mppd)->uc_1 = (uint8_t) idx;
+
+        return as_ref_to_val_lk(match, dt_rval_gg_sint, (__d_drt_h ) mppd, "%lld");
+      }
+    else if (!strncmp(match, _MC_GLOB_F32G, 7))
+      {
+        int idx;
+        DT_GG_GIDX(match)
+        ((__d_drt_h ) mppd)->uc_1 = (uint8_t) idx;
+
+        return as_ref_to_val_lk(match, dt_rval_gg_float, (__d_drt_h ) mppd, "%f");
+      }
 
   return NULL;
 }

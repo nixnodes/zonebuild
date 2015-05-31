@@ -23,7 +23,7 @@ __d_ref_to_pval ref_to_val_ptr_zone;
 _d_rtv_lk ref_to_val_lk_zone;
 
 void
-dt_set_inetobj(__g_handle hdl);
+dt_set_zone(__g_handle hdl);
 
 
 #endif /* LREF_GEN3_H_ */

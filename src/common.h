@@ -22,7 +22,6 @@ char debug_mode;
 #define NOTIFY(...) fprintf(stdout, PACKAGE_NAME ": " __VA_ARGS__)
 #define ABORT(...) fprintf(stderr, PACKAGE_NAME ": " __VA_ARGS__); abort()
 
-
 #include <endian.h>
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
@@ -31,13 +30,11 @@ char debug_mode;
 #error
 #endif
 
-
 #if __x86_64__ || __ppc64__
 #define _ARCH_STR        "x86_64"
 #else
 #define _ARCH_STR        "i686"
 #endif
-
 
 #define F_GH_PRINT                      ((uint64_t)1 << 52)
 
@@ -52,11 +49,10 @@ typedef struct g_handle
   char w_mode[6];
   gzFile gz_fh, gz_fh1;
 #endif
-  off_t offset, bw, br, total_sz;
-  off_t rw, t_rw;
+
   uint32_t block_sz;
-  uint64_t flags, status;
-  mda buffer, w_buffer;
+  uint64_t flags;
+
   mda _match_rr;
   mda _accumulator;
   off_t max_results, max_hits;
@@ -65,10 +61,7 @@ typedef struct g_handle
   mda post_print_mech;
   mda pre_print_mech;
   pmda act_mech;
-  void *data;
-  mode_t st_mode;
-  key_t ipc_key;
-  int shmid;
+
   struct shmid_ds ipcbuf;
   int
   (*g_proc0)(void *, char *, char *);
@@ -82,17 +75,15 @@ typedef struct g_handle
   size_t j_offset, jm_offset;
   int d_memb;
   void *_x_ref;
-  int shmcflags;
-  int shmatflags;
+
   mda guid_stor;
   mda uuid_stor;
-  int hd_errno;
-  int h_errno_gz;
+
   const char *h_errstr_gz;
   char strerr_b[1024];
   void *v_b0;
   size_t v_b0_sz;
-  __d_wpid_cb execv_wpid_fp;
+
 #ifdef _G_SSYS_NET
   void *pso_ref;
 #endif
