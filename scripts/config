@@ -9,4 +9,4 @@ CONTACT_EMAIL="nixnodes.nic.dn42"
 SERVER_NAME_TIER0="nixnodes.root-servers.dn42"
 SERVER_NAME_TIER1="nixnodes.zone-servers.dn42"
 
-MASTERS="172.22.177.2;"
+MASTERS=""
