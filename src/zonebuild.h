@@ -24,6 +24,11 @@ regex_t pr_is_ipv4;
 #define F_INETNUM_RFC2317       ((uint32_t)1 << 14)
 #define F_INETNUM_FORCE_PROC    ((uint32_t)1 << 15)
 
+#define F_INETNUM_MISC_00       ((uint32_t)1 << 20)
+
+#define F_GH_POST_PRINT         ((uint64_t)1 << 46)
+#define F_GH_PRE_PRINT          ((uint64_t)1 << 47)
+
 #include <stdint.h>
 #include <sys/stat.h>
 
@@ -40,10 +45,14 @@ typedef struct ___ip_addr
   uint8_t data[16];
 } _ip_addr, *__ip_addr;
 
+#define F_NS_HAVE_GLUE          ((uint32_t)1 << 1)
+
 typedef struct ___nameservers
 {
   char *host;
   _ip_addr glue;
+  uint32_t flags;
+  char glue_str[128];
 } _nserver, *__nserver;
 
 #define NET_CLASS_A             (uint8_t) 1
@@ -63,11 +72,11 @@ typedef struct ___inetnum_object
   struct stat st;
   uint32_t *d_ip_start, *d_ip_end;
   _ip_addr ip_start, ip_end;
-  uint8_t pfx_size, pfx_class, rfc2317;
+  uint8_t pfx_size, pfx_class, rfc2317, hasglue;
   mda child_objects;
   pmda parent;
   void *parent_link;
-  char *fullpath;
+  char *fullpath, *servername, *email;
   mda nservers;
   uint32_t flags, tree_level, ns_level, nrecurse_d, pfx_mask;
   _nserver nserver_current;
@@ -113,8 +122,23 @@ int
 o_zb_setpath(void *arg, int m, void *opt);
 int
 o_zb_print_str(void *arg, int m, void *opt);
+int
+o_zb_pre_print_str(void *arg, int m, void *opt);
+int
+o_zb_post_print_str(void *arg, int m, void *opt);
+int
+o_zb_setlocsname(void *arg, int m, void *opt);
+int
+o_zb_setlocemail(void *arg, int m, void *opt);
 
 _d_cvp load_inetnum4_item;
+
+#define F_STDH_HAVE_PRINT               ((uint32_t)1 << 1)
+#define F_STDH_HAVE_PRE_PRINT           ((uint32_t)1 << 2)
+#define F_STDH_HAVE_POST_PRINT          ((uint32_t)1 << 3)
+
+
+#define F_STDH_HAVE_PRINT_ANY           (F_STDH_HAVE_PRINT|F_STDH_HAVE_PRE_PRINT|F_STDH_HAVE_POST_PRINT)
 
 typedef struct ___stdh_gopt
 {
@@ -124,7 +148,12 @@ typedef struct ___stdh_gopt
   uint8_t pfx_min_size;
   uint8_t pfx_max_size;
   char *print_str;
+  char *pre_print_str;
+  char *post_print_str;
+  char *loc_serv_name;
+  char *loc_email;
   _g_handle handle;
+  uint32_t flags;
 } _stdh_go, *__stdh_go;
 
 _stdh_go global_op;

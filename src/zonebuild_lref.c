@@ -75,6 +75,9 @@ zone_format_block_exp(void *ptr, char *output)
 #define _MC_ZONE_PFXMASK        "pfxmask"
 #define _MC_ZONE_NLEVEL         "nlevel"
 #define _MC_ZONE_RFC2317        "rfc2317"
+#define _MC_ZONE_SERVER         "server"
+#define _MC_ZONE_EMAIL          "email"
+#define _MC_ZONE_HASGLUE        "hasglue"
 
 void *
 ref_to_val_ptr_zone(void *arg, char *match, int *output)
@@ -117,8 +120,7 @@ ref_to_val_ptr_zone(void *arg, char *match, int *output)
     }
   else if (!strncmp(match, _MC_ZONE_NSGLUE, 6))
     {
-
-      *output = ((int) sizeof(data->nserver_current.glue));
+      *output = ((int) sizeof(uint32_t));
       return &data->nserver_current.glue;
     }
   else if (!strncmp(match, _MC_ZONE_RFC2317, 7))
@@ -130,6 +132,15 @@ ref_to_val_ptr_zone(void *arg, char *match, int *output)
     {
       *output = ((int) sizeof(data->nservers.offset));
       return &data->nservers.offset;
+    }
+  else if (!strncmp(match, _MC_ZONE_HASGLUE, 7))
+    {
+      *output = ((int) sizeof(data->hasglue));
+      return &data->hasglue;
+    }
+  else
+    {
+      *output = 0;
     }
 
   return NULL;
@@ -197,10 +208,7 @@ static char *
 dt_rval_zone_nsglue(void *arg, char *match, char *output, size_t max_size,
     void *mppd)
 {
-
-  IP_PRINT(&((__inet_obj) arg)->nserver_current.glue, b0);
-  snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, b0);
-
+  snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, ((__inet_obj) arg)->nserver_current.glue_str);
   return output;
 }
 
@@ -208,7 +216,6 @@ static char *
 dt_rval_zone_nsglue_ip(void *arg, char *match, char *output, size_t max_size,
     void *mppd)
 {
-
   snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, ((__inet_obj) arg)->nserver_current.glue);
   return output;
 }
@@ -242,6 +249,30 @@ dt_rval_zone_nscount(void *arg, char *match, char *output, size_t max_size,
     void *mppd)
 {
   snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, (uint64_t) ((__inet_obj) arg)->nservers.offset);
+  return output;
+}
+
+static char *
+dt_rval_zone_hasglue(void *arg, char *match, char *output, size_t max_size,
+    void *mppd)
+{
+  snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, (uint8_t) ((__inet_obj) arg)->hasglue);
+  return output;
+}
+
+static char *
+dt_rval_zone_server(void *arg, char *match, char *output, size_t max_size,
+    void *mppd)
+{
+  snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, ((__inet_obj) arg)->servername);
+  return output;
+}
+
+static char *
+dt_rval_zone_email(void *arg, char *match, char *output, size_t max_size,
+    void *mppd)
+{
+  snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, ((__inet_obj) arg)->email);
   return output;
 }
 
@@ -307,6 +338,18 @@ ref_to_val_lk_zone(void *arg, char *match, char *output, size_t max_size,
   else if (!strncmp(match, _MC_ZONE_NSCOUNT, 6))
     {
       return as_ref_to_val_lk(match, dt_rval_zone_nscount, (__d_drt_h) mppd, "%llu");
+    }
+  else if (!strncmp(match, _MC_ZONE_SERVER, 6))
+    {
+      return as_ref_to_val_lk(match, dt_rval_zone_server, (__d_drt_h) mppd, "%s");
+    }
+  else if (!strncmp(match, _MC_ZONE_EMAIL, 5))
+    {
+      return as_ref_to_val_lk(match, dt_rval_zone_email, (__d_drt_h) mppd, "%s");
+    }
+  else if (!strncmp(match, _MC_ZONE_HASGLUE, 7))
+    {
+      return as_ref_to_val_lk(match, dt_rval_zone_hasglue, (__d_drt_h) mppd, "%hhu");
     }
 
   return NULL;

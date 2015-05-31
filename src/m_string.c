@@ -61,7 +61,7 @@ g_cprg(void *arg, int m, int match_i_m, int fn_flags, int regex_flags,
   switch (flags & F_GM_TYPES)
     {
   case F_GM_ISREGEX:
-    pgm->regex_flags = regex_flags | REG_NOSUB;
+    pgm->regex_flags = regex_flags | REG_NOSUB | REG_EXTENDED;
 
     break;
   case F_GM_ISMATCH:

@@ -62,11 +62,15 @@ _gg_opt gg_f_ref[] =
     { .id = 0x2003, .on = "-or", .ac = 0, .op = opt_g_operator_or },
     { .id = 0x0004, .on = "(", .ac = 0, .op = opt_g_m_raise_level },
     { .id = 0x0005, .on = ")", .ac = 0, .op = opt_g_m_lower_level },
+    { .id = 0x1001, .on = "-l:", .ac = 1, .op = opt_g_lookup },
     { .id = 0x0468, .on = "-regexi", .ac = 1, .op = opt_g_d_regexi },
     { .id = 0x046A, .on = "-regex", .ac = 1, .op = opt_g_d_regex },
     { .id = 0x0441, .on = "-match", .ac = 1, .op = opt_g_d_match },
     { .id = 0x1441, .on = "-name", .ac = 1, .op = opt_g_d_fname },
     { .id = 0x1443, .on = "-namei", .ac = 1, .op = opt_g_d_fnamei },
-    { .id = 0x1001, .on = "-l:", .ac = 1, .op = opt_g_lookup },
+    { .id = 0x1501, .on = "-preprint", .ac = 1, .op = o_zb_pre_print_str },
+    { .id = 0x1502, .on = "-postprint", .ac = 1, .op = o_zb_post_print_str },
+    { .id = 0x1502, .on = "--server", .ac = 1, .op = o_zb_setlocsname },
+    { .id = 0x1502, .on = "--email", .ac = 1, .op = o_zb_setlocemail },
     { 0x0 } };
 
