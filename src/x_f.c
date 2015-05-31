@@ -18,8 +18,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-
-#include <zlib.h>
+#include <limits.h>
 
 static uint32_t crc_32_tab[] =
   { 0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F,

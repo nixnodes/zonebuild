@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <math.h>
+#include <limits.h>
 
 #include "common.h"
 #include "config.h"

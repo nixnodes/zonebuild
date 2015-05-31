@@ -14,7 +14,6 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <zlib.h>
 
 #define CRC_FILE_READ_BUFFER_SIZE       64512
 
