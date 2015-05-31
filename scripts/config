@@ -1,7 +1,7 @@
 ZBUILD=zbuild
 
 REGISTRY_PATH=/tmp/net.dn42.registry/data/inetnum
-OUT_PATH=${PWD}`dirname ${0} | sed -r 's/^[.]{1,2}//'`/build
+OUT_PATH=`dirname ${0}`/build
 
 DEFAULT_TTL=7200
 CONTACT_EMAIL="nixnodes.nic.dn42"
