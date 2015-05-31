@@ -8,11 +8,13 @@
 #ifndef M_COMP_H_
 #define M_COMP_H_
 
-#include "sort_hdr.h"
+#include "common.h"
+
+#include "fp_types.h"
 
 #include <regex.h>
 
-#define _D_DRT_HASREGEX         (a32 << 10)
+#define _D_DRT_HASREGEX         ((uint32_t)1 << 10)
 
 
 typedef struct ___d_drt_h
@@ -26,7 +28,7 @@ typedef struct ___d_drt_h
   char c_1;
   size_t vp_off1;
   size_t vp_off2;
-
+  __g_handle hdl;
   char *match;
   mda math;
   mda chains;
@@ -48,7 +50,7 @@ typedef struct ___d_drt_h
   char tp_b0[10000];
   char *varg_l;
   mda sub_mech;
-  uint32_t v_ui0;
+  uint32_t v_ui0, v_ui1;
   uint64_t ret0;
 } _d_drt_h, *__d_drt_h;
 

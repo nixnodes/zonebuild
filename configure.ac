@@ -1,7 +1,7 @@
 AC_PREREQ(2.63)
 
 
-AC_INIT([zonebuild], [0.01], [io@nixnodes.net],,[http://nixnodes.net/]) 
+AC_INIT([zonebuild], [0.2], [io@nixnodes.net],,[http://nixnodes.net/]) 
 AC_CONFIG_SRCDIR([src/main.c]) 
 
 AM_INIT_AUTOMAKE([subdir-objects silent-rules]) 

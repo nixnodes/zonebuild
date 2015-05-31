@@ -492,3 +492,38 @@ g_is_file_compressed(char *file)
 #endif
 
 
+int
+self_get_path(char *out)
+{
+  g_setjmp(0, "self_get_path", NULL, NULL);
+
+  char path[PATH_MAX];
+  path[0] = 0x0;
+  int r;
+
+  snprintf(path, PATH_MAX, "/proc/%d/exe", getpid());
+
+  if (access(path, R_OK))
+    {
+      snprintf(path, PATH_MAX, "/compat/linux/proc/%d/exe", getpid());
+    }
+  else
+    {
+      goto read;
+    }
+
+  if (access(path, R_OK))
+    {
+      snprintf(path, PATH_MAX, "/proc/%d/file", getpid());
+    }
+
+  read:
+
+  if ((r = readlink(path, out, PATH_MAX)) < 1)
+    {
+      return 0;
+    }
+
+  out[r] = 0x0;
+  return 0;
+}

@@ -42,8 +42,10 @@ char *g_sort_field;
 
 uint32_t g_sort_flags;
 
-#include <lc_oper.h>
-#include <m_comp.h>
+#include "lc_oper.h"
+#include "m_comp.h"
+
+#include "common.h"
 
 typedef struct g_sref_data
 {
@@ -58,63 +60,6 @@ typedef struct g_sref_data
 
 typedef int
 (*g_xsort_exec_p)(pmda m_ptr, __p_srd psrd);
-
-
-
-typedef struct g_handle
-{
-  FILE *fh;
-#ifdef HAVE_ZLIB_H
-  char w_mode[6];
-  gzFile gz_fh, gz_fh1;
-#endif
-  off_t offset, bw, br, total_sz;
-  off_t rw, t_rw;
-  uint32_t block_sz;
-  uint64_t flags, status;
-  mda buffer, w_buffer;
-  mda _match_rr;
-  mda _accumulator;
-  off_t max_results, max_hits;
-  __g_ipcbm ifrh_l0, ifrh_l1;
-
-  mda print_mech;
-  mda post_print_mech;
-  mda pre_print_mech;
-  pmda act_mech;
-  void *data;
-
-  mode_t st_mode;
-  key_t ipc_key;
-  int shmid;
-  struct shmid_ds ipcbuf;
-  int
-  (*g_proc0)(void *, char *, char *);
-  __g_proc_v g_proc1_ps;
-  __d_ref_to_pv g_proc2;
-  __g_proc_v g_proc1_lookup;
-  _d_proc3 g_proc3, g_proc3_batch, g_proc3_export, g_proc3_extra;
-  _d_gcb_pp_hook gcb_post_proc;
-  _d_omfp g_proc4, g_proc4_pr, g_proc4_po;
-  __d_is_wb w_d, w_d_pr, w_d_po;
-  size_t j_offset, jm_offset;
-  int d_memb;
-  void *_x_ref;
-  int shmcflags;
-  int shmatflags;
-  mda guid_stor;
-  mda uuid_stor;
-  int hd_errno;
-  int h_errno_gz;
-  const char *h_errstr_gz;
-  char strerr_b[1024];
-  void *v_b0;
-  size_t v_b0_sz;
-  __d_wpid_cb execv_wpid_fp;
-#ifdef _G_SSYS_NET
-  void *pso_ref;
-#endif
-} _g_handle, *__g_handle;
 
 int
 do_sort(__g_handle hdl, char *field, uint32_t flags);
@@ -131,7 +76,8 @@ g_heapsort(void **ref_arr, int64_t offset, int64_t dummy, __p_srd psrd);
 void
 g_qsort(void **arr, int64_t left, int64_t right, __p_srd psrd);
 int
-preproc_sort_numeric(__g_handle hdl, int vbs, char *field, uint32_t flags, __p_srd psrd);
+preproc_sort_numeric(__g_handle hdl, int vbs, char *field, uint32_t flags,
+    __p_srd psrd);
 int
 g_sort_string(__g_handle hdl, char *field, uint32_t flags, __p_srd psrd);
 int

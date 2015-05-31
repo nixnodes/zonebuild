@@ -14,6 +14,10 @@
 #include <string.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <math.h>
+
+#include "common.h"
+#include "config.h"
 
 #include "signal_t.h"
 #include "memory_t.h"
@@ -21,21 +25,22 @@
 #include "str.h"
 #include "fp_types.h"
 #include "arg_proc.h"
+#include "sort_hdr.h"
+#include "exech.h"
+#include "omfp.h"
+#include "m_general.h"
+#include "m_lom.h"
+#include "m_string.h"
+#include "zonebuild_lref.h"
 
 #include "zonebuild.h"
-
-#include "common.h"
-#include "config.h"
-
-#include "sort_hdr.h"
-
-#include <math.h>
 
 regex_t pr_is_ipv4;
 
 _stdh_go global_opt =
   { .load = NULL, .path = NULL, .root = NULL, .pfx_max_size = 32,
-      .pfx_min_size = 8 };
+      .pfx_min_size = 8, .print_str = NULL, .handle =
+        { 0 } };
 
 int
 o_zb_build(void *arg, int m, void *opt)
@@ -53,7 +58,7 @@ o_zb_build(void *arg, int m, void *opt)
     }
   else
     {
-      FAULT("o_zb_build: unknown mode: '%s' %s\n", mode);
+      ERROR("o_zb_build: unknown mode: '%s'\n", mode);
       return 1010;
     }
 
@@ -80,6 +85,19 @@ o_zb_setpath(void *arg, int m, void *opt)
   if ( NULL == global_opt.path)
     {
       return 3002;
+    }
+
+  return 0;
+}
+
+int
+o_zb_print_str(void *arg, int m, void *opt)
+{
+  global_opt.print_str = g_pg(arg, m);
+
+  if ( NULL == global_opt.print_str)
+    {
+      return 4002;
     }
 
   return 0;
@@ -129,8 +147,7 @@ convert_string_to_ipaddr(char *name, _ip_addr *ipdata)
 
       if (c > UCHAR_MAX || c < 0)
         {
-          FAULT(
-              "convert_string_to_ipaddr: '%s': IP octet out of range: '%d' %s\n",
+          ERROR("convert_string_to_ipaddr: '%s': IP octet out of range: '%d'\n",
               name, c);
           return NULL;
         }
@@ -144,7 +161,7 @@ convert_string_to_ipaddr(char *name, _ip_addr *ipdata)
 
       if (0 == i)
         {
-          FAULT("convert_string_to_ipaddr: '%s': invalid IP address %s\n", name);
+          ERROR("convert_string_to_ipaddr: '%s': invalid IP addressn", name);
           return NULL;
         }
 
@@ -152,6 +169,32 @@ convert_string_to_ipaddr(char *name, _ip_addr *ipdata)
     }
 
   return sptr;
+}
+
+static int
+int_sort(pmda base, size_t off, int vb, uint32_t flags)
+{
+
+  int retval;
+  _srd srd0;
+
+  retval = preproc_sort_numeric(NULL, vb, NULL, flags, &srd0);
+
+  if (retval)
+    {
+      ERROR("int_sort: preproc_sort_numeric failed: [%d]\n", retval);
+      return 1;
+    }
+
+  srd0.off = (size_t) &((__inet_obj ) NULL)->pfx_size;
+
+  if ((retval = g_qsort_exec(base, &srd0)))
+    {
+      ERROR("int_sort: g_qsort_exec failed: [%d]\n", retval);
+      return 1;
+    }
+
+  return 0;
 }
 
 static int
@@ -169,8 +212,8 @@ commit_inetnum4_item(char *name, __inet_obj object)
 
   if (sptr[0] != 0x5F)
     {
-      FAULT(
-          "commit_inetnum4_item: ip string does not terminate properly: '%s' %s\n",
+      ERROR(
+          "commit_inetnum4_item: ip string does not terminate properly: '%s'\n",
           name);
       return 1;
     }
@@ -184,8 +227,8 @@ commit_inetnum4_item(char *name, __inet_obj object)
 
   if (c > 32 || c < 1)
     {
-      FAULT("commit_inetnum_item: '%s': prefix size out of range: '%d'%s\n",
-          name, c);
+      ERROR("commit_inetnum_item: '%s': prefix size out of range: '%d'\n", name,
+          c);
       return 1;
     }
 
@@ -200,6 +243,12 @@ commit_inetnum4_item(char *name, __inet_obj object)
       ((uint32_t*) object->ip_start.data);
 
   *ip_end = *ip_start + ~(object->pfx_mask);
+
+  if (object->pfx_size > (32 - 8))
+    {
+      object->flags |= F_INETNUM_RFC2317;
+      object->rfc2317 = 1;
+    }
 
   return 0;
 }
@@ -353,6 +402,11 @@ parse_zone_records(char *name, __inet_obj object, __d_cvp3 callback)
 
     }
 
+  if (ferror(fh))
+    {
+      FAULT("parse_zone_file: fgets: %s: %s\n", object->fullpath);
+    }
+
   if (EOF == fclose(fh))
     {
       FAULT("parse_zone_file: fclose: %s: %s\n", object->fullpath);
@@ -401,15 +455,14 @@ load_inetnum4_item(char *name, void *data)
         }
     }
 
-  uint8_t *mres = (uint8_t*) &object->pfx_mask;
+  IP_PRINT(&object->ip_start,st_b0);
+  IP_PRINT(&object->ip_end,st_b1);
+  IP_PRINT((__ip_addr)&object->pfx_mask,st_b2);
 
   DEBUG(
-      "load_inetnum4_item: %hhu.%hhu.%hhu.%hhu - %hhu.%hhu.%hhu.%hhu (%u) | [%hhu.%hhu.%hhu.%hhu] - %u %u - %u, class %hhu\n",
-      object->ip_start.data[3], object->ip_start.data[2],
-      object->ip_start.data[1], object->ip_start.data[0],
-      object->ip_end.data[3], object->ip_end.data[2], object->ip_end.data[1],
-      object->ip_end.data[0], object->pfx_size, mres[3], mres[2], mres[1],
-      mres[0], *object->d_ip_start, ~object->pfx_mask, (object->flags & F_INETNUM_ROOT), object->pfx_class);
+      "load_inetnum4_item: %s - %s (%u) | [%s] - %u %u - %u, class %hhu\n",
+      st_b0, st_b1, object->pfx_size, st_b2, *object->d_ip_start, ~object->pfx_mask,
+      (object->flags & F_INETNUM_ROOT), object->pfx_class);
 
   return 0;
 }
@@ -534,7 +587,7 @@ link_hierarchy_tree(_def_ophdr option_header, __inet_obj object,
 
   b_level[b_count] = 0x0;
 
-  IP_PRINT((&object->ip_start));
+  IP_PRINT(&object->ip_start, st_b0);
 
   DEBUG("link_hierarchy_tree: %s entering %s/%hhu [%u] [%u]\n", b_level, st_b0,
       object->pfx_size, option_header.ufield.level, object->pfx_class);
@@ -558,7 +611,7 @@ link_hierarchy_tree(_def_ophdr option_header, __inet_obj object,
           goto e_loop;
         }
 
-      IP_PRINT((&ptr_object->ip_start));
+      IP_PRINT(&ptr_object->ip_start, st_b0);
 
       if ( ptr_object == parent )
         {
@@ -591,6 +644,10 @@ link_hierarchy_tree(_def_ophdr option_header, __inet_obj object,
       ptr = ptr->next;
     }
 
+  size_t offset = (size_t) &((__inet_obj) NULL)->pfx_size;
+
+  int_sort(&object->child_objects, offset, 1, F_SORT_DESC);
+
   DEBUG("link_hierarchy_tree: %s exiting %s/%hhu [%u] [%u]\n", b_level, st_b0,
       object->pfx_size, option_header.ufield.level, object->pfx_class);
 
@@ -601,20 +658,192 @@ link_hierarchy_tree(_def_ophdr option_header, __inet_obj object,
   return 0;
 }
 
+typedef int
+(*_chf)(p_md_obj pos, void *data, void *arg);
+
+typedef struct ___ch_funct
+{
+  _chf call;
+  uint32_t flags;
+} _ch_funct, *__ch_funct;
+
+#define CH_PROC_NEXT(pos) { p_md_obj next = pos->next; if (next) { return ((__ch_funct) next->ptr)->call(next, data, arg); }  }
+
+#define CH_PROC_ITEM(object) { \
+  if ( !g_bmatch((void*)object,&global_opt.handle,(object)->parent) ) { \
+              global_opt.handle.g_proc4(&global_opt.handle, object, NULL); \
+  }}
+
+static int
+ch_zone_nservers_1(p_md_obj pos, void *data, void *arg)
+{
+  __inet_obj object = (__inet_obj) data;
+  p_md_obj ptr = md_first(&object->nservers);
+
+  object->nrecurse_d = 0;
+
+  p_md_obj next = pos->next;
+
+  while (ptr)
+    {
+      __nserver ns_ptr = (__nserver) ptr->ptr;
+      object->nserver_current = *ns_ptr;
+
+      if (next)
+        {
+          ((__ch_funct) next->ptr)->call(next, data, arg);
+        }
+      else
+        {
+          CH_PROC_ITEM(object);
+        }
+
+      object->nrecurse_d++;
+
+      ptr =ptr->next;
+    }
+
+  return 0;
+}
+
+static __inet_obj
+find_block_by_address(pmda base, __inet_obj block, __inet_obj parent)
+{
+  p_md_obj ptr = md_first(base);
+
+  while (ptr)
+    {
+      __inet_obj object = (__inet_obj) ptr->ptr;
+
+      if ( *object->d_ip_start == *block->d_ip_start &&
+          object->pfx_size == block->pfx_size && block != parent)
+        {
+          return object;
+        }
+
+      ptr = ptr->next;
+    }
+  return NULL;
+}
+
+static int
+ch_zone4_breakdown_0(p_md_obj pos, void *data, void *arg)
+{
+  __inet_obj object = (__inet_obj) data;
+
+  if ( 0 == object->nservers.offset )
+    {
+      CH_PROC_ITEM(object);
+      return 0;
+    }
+
+  uint8_t class_size = ((( 32 - object->pfx_size ) / 8) * 8);
+
+  _inet_obj dummy = *object;
+  dummy.d_ip_start = (uint32_t*)&dummy.ip_start;
+  dummy.d_ip_end = (uint32_t*)&dummy.ip_end;
+
+  if ( 0 == class_size)
+    {
+      class_size = 24;
+    }
+  else
+    {
+      dummy.pfx_size = 32 - class_size;
+    }
+
+  dummy.flags |= F_INETNUM_FORCE_PROC;
+
+  uint32_t inc_f = 0x1;
+
+  int i = class_size -1;
+  while (i--)
+    {
+      inc_f <<= 1;
+      inc_f |= 0x1;
+    }
+  inc_f++;
+
+  p_md_obj next = pos->next;
+
+  while ( *dummy.d_ip_start < *dummy.d_ip_end - 1 )
+    {
+      __inet_obj block;
+      if ( NULL != (block=find_block_by_address(object->parent, &dummy, object)) )
+        {
+          if ( block->nservers.offset > 0 )
+            {
+              dummy.nservers = block->nservers;
+            }
+        }
+
+      if (next)
+        {
+          ((__ch_funct) next->ptr)->call(next, &dummy, arg);
+        }
+      else
+        {
+          CH_PROC_ITEM(&dummy);
+        }
+
+      *dummy.d_ip_start += inc_f;
+
+    }
+
+  return 0;
+}
+
+static __ch_funct
+register_ch_funct(pmda base, _chf function)
+{
+  if ( NULL == function)
+    {
+      return NULL;
+    }
+
+  __ch_funct ptr = md_alloc_le(base, sizeof(_ch_funct), 0, NULL);
+
+  if ( NULL == ptr)
+    {
+      ABORT("register_ch_funct: md_alloc_le failed\n");
+    }
+
+  ptr->call = function;
+
+  return ptr;
+}
+
+mda chf_data =
+  { 0 };
+
 static int
 walk_test(__inet_obj object, __def_ophdr option_header, void* arg)
 {
-  int b_count = option_header->ufield.level * 4;
 
-  char *b_level = malloc(b_count +1);
+  object->tree_level = option_header->ufield.level;
+  object->ns_level = option_header->ufield.ns_level;
 
-  memset(b_level, 0x2D, b_count);
+  if (global_opt.handle.flags & F_GH_PRINT)
+    {
 
-  b_level[b_count] = 0x0;
+      __ch_funct chf = (__ch_funct ) chf_data.first->ptr;
 
-  printf("|%s: %s\n", b_level, basename(object->fullpath));
+      chf->call(chf_data.first, object, option_header);
 
-  free(b_level);
+    }
+  else
+    {
+      int b_count = option_header->ufield.level * 4;
+      char *b_level = malloc(b_count + 1);
+
+      memset(b_level, 0x2D, b_count);
+      b_level[b_count] = 0x0;
+
+      printf("|%s: %s\n", b_level, basename(object->fullpath));
+
+      free(b_level);
+    }
+
   return 0;
 }
 
@@ -622,11 +851,19 @@ static int
 walk_zone_tree(__inet_obj object, __def_ophdr option_header, __d_zb_c0 callback,
     uint32_t flags)
 {
+  int retval = 0;
+
   option_header->ufield.level++;
+
+  if (object->nservers.offset > 0)
+    {
+      option_header->ufield.ns_level++;
+    }
+
   if (callback(object, option_header, NULL))
     {
-      option_header->ufield.level--;
-      return 1;
+      retval = 1;
+      goto finish;
     }
 
   p_md_obj ptr = md_first(&object->child_objects);
@@ -636,13 +873,96 @@ walk_zone_tree(__inet_obj object, __def_ophdr option_header, __d_zb_c0 callback,
       if (walk_zone_tree((__inet_obj ) ptr->ptr, option_header, callback,
           flags))
         {
-          option_header->ufield.level--;
-          return 2;
+          retval = 2;
+          goto finish;
         }
       ptr = ptr->next;
     }
 
+  finish: ;
+
   option_header->ufield.level--;
+
+  if (object->nservers.offset > 0)
+    {
+      option_header->ufield.ns_level--;
+    }
+
+  return retval;
+}
+
+static int
+g_h_deepcp_mrr(void *source, void *dest, void *d_ptr)
+{
+
+  __g_match src_pmd = (__g_match) source;
+  if ( src_pmd->flags & F_GM_IS_MOBJ)
+    {
+      pmda t_md = calloc(1, sizeof(mda));
+
+      md_copy(src_pmd->next, t_md, sizeof(_g_match), g_h_deepcp_mrr);
+
+      __g_match dest_pmd = (__g_match) d_ptr;
+
+      dest_pmd->next = t_md;
+    }
+
+  return 0;
+}
+
+static int
+load_print_params(char * _print_ptr)
+{
+  int r;
+  _g_handle *hdl = &global_opt.handle;
+
+  dt_set_inetobj(hdl);
+
+  hdl->v_b0 = malloc(65535);
+  hdl->v_b0_sz = 65535;
+
+  if ((r = g_op_load_print_mech(hdl, &hdl->print_mech, _print_ptr, hdl->v_b0_sz)))
+    {
+      return r;
+    }
+
+  hdl->fd_out = fileno(stdout);
+  hdl->g_proc4 = g_omfp_eassemble;
+  hdl->w_d = g_omfp_write;
+  hdl->act_mech = &hdl->print_mech;
+
+  hdl->flags |= F_GH_PRINT;
+
+  if (!(hdl->flags & F_GH_HASMATCHES) && _match_rr.count > 0)
+    {
+      if ((r = md_copy(&_match_rr, &hdl->_match_rr, sizeof(_g_match),
+          g_h_deepcp_mrr)))
+        {
+          ERROR("load_print_params: %s: md_copy(_match_rr, handle) failed\n",
+              hdl->file);
+          return 2000;
+        }
+      if (hdl->_match_rr.offset)
+        {
+          DEBUG("load_print_params: %s: commit %llu matches to handle\n",
+              hdl->file, (unsigned long long int ) hdl->_match_rr.offset);
+
+          hdl->flags |= F_GH_HASMATCHES;
+        }
+
+    }
+
+  if ((r = g_load_strm(hdl)))
+    {
+      return r;
+    }
+
+  if ((r = g_load_lom(hdl)))
+    {
+      return r;
+    }
+
+  hdl->ifrh_l1 = g_ipcbm;
 
   return 0;
 }
@@ -656,7 +976,6 @@ init(void)
   mda base =
     { 0 };
 
-
   check_glob_opts();
 
   md_init_le(&base, 65535);
@@ -665,11 +984,19 @@ init(void)
 
   global_opt.load(global_opt.path, &option_header, load_inetnum4_item);
 
-  int retval;
+  int retval = 0;
 
   if ( NULL == option_header.root)
     {
-      ERROR("main: NULL option_header.root\n");
+      ERROR("main: root zone '%s' not found\n", global_opt.root);
+      retval = 2;
+      goto cleanup;
+    }
+
+  if (option_header.root->nservers.offset == 0)
+    {
+      ERROR("main: root zone '%s' contains no valid 'nserver' records\n",
+          global_opt.root);
       retval = 2;
       goto cleanup;
     }
@@ -677,22 +1004,10 @@ init(void)
   NOTIFY("init: loaded %llu records\n", (unsigned long long int )
   option_header.base->offset);
 
-  _srd srd0;
+  size_t offset = (size_t) &((__inet_obj) NULL)->pfx_size;
 
-  retval = preproc_sort_numeric(NULL, 1, NULL, F_SORT_ASC, &srd0);
-
-  if (retval)
+  if (int_sort(option_header.base, offset, 1, F_SORT_DESC))
     {
-      ERROR("init: preproc_sort_numeric failed: [%d]\n", retval);
-      retval = 1;
-      goto cleanup;
-    }
-
-  srd0.off = (size_t) &((__inet_obj ) NULL)->pfx_size;
-
-  if ((retval = g_qsort_exec(option_header.base, &srd0)))
-    {
-      ERROR("init: g_qsort_exec failed: [%d]\n", retval);
       retval = 1;
       goto cleanup;
     }
@@ -704,6 +1019,22 @@ init(void)
       goto cleanup;
     }
 
+  if (NULL != global_opt.print_str)
+    {
+      if (load_print_params(global_opt.print_str))
+        {
+          ERROR("main: load_print_params failed: '%s'\n", global_opt.root);
+          retval = 1;
+          goto cleanup;
+        }
+
+    }
+
+  md_init_le(&chf_data, 16);
+
+  register_ch_funct(&chf_data, ch_zone4_breakdown_0);
+  register_ch_funct(&chf_data, ch_zone_nservers_1);
+
   NOTIFY("init: inetnum hierarchy tree created\n");
 
   walk_zone_tree(option_header.root, &option_header, walk_test, 0);
@@ -712,7 +1043,7 @@ init(void)
 
   md_g_free_l(&base);
 
-  return 0;
+  return retval;
 }
 
 int

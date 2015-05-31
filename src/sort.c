@@ -350,7 +350,7 @@ preproc_sort_numeric(__g_handle hdl, int vbs, char *field, uint32_t flags,
 
   switch (flags & F_SORT_ORDER)
     {
-  case F_SORT_DESC:
+  case F_SORT_ASC:
     psrd->m_op = gs_t_is_lower;
     psrd->m_op_opp = gs_t_is_higher;
     g_fh_f = gs_tf_is_lower;
@@ -358,7 +358,7 @@ preproc_sort_numeric(__g_handle hdl, int vbs, char *field, uint32_t flags,
     g_fh_s = gs_ts_is_lower;
     g_fh_s_opp = gs_ts_is_higher;
     break;
-  case F_SORT_ASC:
+  case F_SORT_DESC:
     psrd->m_op = gs_t_is_higher;
     psrd->m_op_opp = gs_t_is_lower;
     g_fh_f = gs_tf_is_higher;

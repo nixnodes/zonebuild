@@ -9,13 +9,13 @@
 #define LC_OPER_H_
 
 
-#include <stdio.h>
-#include <fp_types.h>
 
 int
 g_oper_and(int s, int d);
 int
 g_oper_or(int s, int d);
+
+#include "fp_types.h"
 
 typedef int
 __d_icomp(uint64_t s, uint64_t d);

@@ -39,4 +39,64 @@ char debug_mode;
 #endif
 
 
+#define F_GH_PRINT                      ((uint64_t)1 << 52)
+
+#include "fp_types.h"
+
+typedef struct g_handle
+{
+  FILE *fh;
+  char *file;
+  int fd_out;
+#ifdef HAVE_ZLIB_H
+  char w_mode[6];
+  gzFile gz_fh, gz_fh1;
+#endif
+  off_t offset, bw, br, total_sz;
+  off_t rw, t_rw;
+  uint32_t block_sz;
+  uint64_t flags, status;
+  mda buffer, w_buffer;
+  mda _match_rr;
+  mda _accumulator;
+  off_t max_results, max_hits;
+  __g_ipcbm ifrh_l0, ifrh_l1;
+  mda print_mech;
+  mda post_print_mech;
+  mda pre_print_mech;
+  pmda act_mech;
+  void *data;
+  mode_t st_mode;
+  key_t ipc_key;
+  int shmid;
+  struct shmid_ds ipcbuf;
+  int
+  (*g_proc0)(void *, char *, char *);
+  __g_proc_v g_proc1_ps;
+  __d_ref_to_pv g_proc2;
+  __g_proc_v g_proc1_lookup;
+  _d_proc3 g_proc3, g_proc3_batch, g_proc3_export, g_proc3_extra;
+  _d_gcb_pp_hook gcb_post_proc;
+  _d_omfp g_proc4, g_proc4_pr, g_proc4_po;
+  __d_is_wb w_d, w_d_pr, w_d_po;
+  size_t j_offset, jm_offset;
+  int d_memb;
+  void *_x_ref;
+  int shmcflags;
+  int shmatflags;
+  mda guid_stor;
+  mda uuid_stor;
+  int hd_errno;
+  int h_errno_gz;
+  const char *h_errstr_gz;
+  char strerr_b[1024];
+  void *v_b0;
+  size_t v_b0_sz;
+  __d_wpid_cb execv_wpid_fp;
+#ifdef _G_SSYS_NET
+  void *pso_ref;
+#endif
+  char mv1_b[MAX_VAR_LEN];
+} _g_handle, *__g_handle;
+
 #endif /* SRC_COMMON_H_ */
