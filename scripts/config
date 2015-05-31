@@ -1,9 +1,10 @@
+#
 ZBUILD=zbuild
 #
-##use absolute paths here
+##use absolute paths below
 #
 REGISTRY_PATH=/tmp/net.dn42.registry/data/inetnum
-OUT_PATH=/home/reboot/workspace/zonebuild/scripts/build/
+OUT_PATH=/home/reboot/workspace/zonebuild/scripts/build
 #
 #
 DEFAULT_TTL=7200
