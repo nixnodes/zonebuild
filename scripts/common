@@ -10,17 +10,16 @@ build_path_check
 #[1]:config file  [2]:zone name [3]:zone file
 config_update()
 {
-	[ -f "${1}" ] && {
-		cat ${1} | grep -q \"${2}\" && return 1
-	}
+        [ -f "${1}" ] && {
+                cat ${1} | grep -q \"${2}\" && return 1
+        }
 	echo "zone \"${2}\" {
-        type slave;
-        masters {
+        type master;
+        also-notify {
                 ${MASTERS}
                 };
-        file \"${3}\";
+        file \"`echo ${3} | sed -r 's/^[.]{1,2}//'`\";
         };
 	"
 	return 0
 }
-

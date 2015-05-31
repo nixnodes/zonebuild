@@ -1,7 +1,8 @@
 ZBUILD=zbuild
 
 REGISTRY_PATH=/tmp/net.dn42.registry/data/inetnum
-OUT_PATH=`dirname ${0}`/build
+OUT_PATH=/home/reboot/workspace/zonebuild/scripts/build/
+
 
 DEFAULT_TTL=7200
 CONTACT_EMAIL="nixnodes.nic.dn42"
