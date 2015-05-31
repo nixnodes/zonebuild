@@ -10,7 +10,7 @@ OUT_PATH=/home/reboot/workspace/zonebuild/scripts/build
 DEFAULT_TTL=7200
 CONTACT_EMAIL="unknown.nic.dn42"
 #
-SERVER_NAME_TIER0="nixnodes.root-servers.dn42"
-SERVER_NAME_TIER1="nixnodes.zone-servers.dn42"
+SERVER_NAME_TIER0="unknown.root-servers.dn42"
+SERVER_NAME_TIER1="unknown.zone-servers.dn42"
 #
 MASTERS=""
