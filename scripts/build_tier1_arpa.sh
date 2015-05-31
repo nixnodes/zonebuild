@@ -25,7 +25,7 @@ ROOT_FN=`${ZBUILD} --build rev --path ${REGISTRY_PATH} --root ${1} -lom "nslevel
 ${ZBUILD} --build rev --path ${REGISTRY_PATH} --root ${1} --server "${SERVER_NAME_TIER1}" --email "${CONTACT_EMAIL}" \
 	-lom "nscount > 0 && rfc2317 = 0 && nslevel <= 2" \
  	-print "{?L:pfxsize >= 24:(?Q:(\{?C:1:startip\}.)):(noop)}{?L:pfxsize >= 16:(?Q:(\{?C:2:startip\}.)):(noop)}{?L:pfxsize >= 8:(?Q:(\{?C:3:startip\}.)):(noop)}in-addr.arpa. {(?P:(?p: )#%-20s)}  {:t} IN {:t}NS  {:t} {?rd:(nserver):([.]+$)}. {:n}" \
- 	-preprint "\$TTL ${DEFAULT_TTL}{:n}{?L:pfxsize >= 24:(?Q:(\{?C:1:startip\}.)):(noop)}{?L:pfxsize >= 16:(?Q:(\{?C:2:startip\}.)):(noop)}{?L:pfxsize >= 8:(?Q:(\{?C:3:startip\}.)):(noop)}in-addr.arpa. {(?P:(?p: )#%-20s)}  {:t} IN {:t}SOA {:t} {server}. {email}. ({curtime} 14400 3600 120 9600 172800){:nl}" \
+ 	-preprint "\$TTL ${DEFAULT_TTL}{:n}{?L:pfxsize >= 24:(?Q:(\{?C:1:startip\}.)):(noop)}{?L:pfxsize >= 16:(?Q:(\{?C:2:startip\}.)):(noop)}{?L:pfxsize >= 8:(?Q:(\{?C:3:startip\}.)):(noop)}in-addr.arpa. {(?P:(?p: )#%-20s)}  {:t} IN {:t}SOA {:t} {server}. {email}. ({curtime} 14400 3600 9600 ${DEFAULT_TTL}){:nl}" \
  	> ${OUT_PATH}/tier1/${ROOT_FN}.db || rm -f ${OUT_PATH}/tier1/${ROOT_FN}.db
  	
  	
