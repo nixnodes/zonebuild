@@ -33,7 +33,8 @@ cu_add_master_zone ${OUT_PATH}/tier1/named.conf ${ROOT_FN}.arpa. ${OUT_PATH}/tie
  	
 case "${2}" in 
 	1)
-	${ZBUILD} --build rev --path  ${REGISTRY_PATH} --root ${1} --server "${SERVER_NAME_TIER1_ARPA}" --email "${CONTACT_EMAIL}" \
+	${ZBUILD} --build rev --path  ${REGISTRY_PATH} --root ${1} \
+		-l: nserver -regex "\.${AVAILABLE_TLDS}$" \
 		-lom "nscount > 0 && rfc2317 = 0 && nslevel <= 2 && hasglue = 1" \
 		-print "{(nserver#%-30s)} {:t} IN{:t}A{?L:nsglueip = 0:(?p:AAA):(noop)}  {:t} {nsglue}{:n}" \
 		| sort -n | uniq > ${OUT_PATH}/tier1/${ROOT_FN}.glues.db || rm -f ${OUT_PATH}/tier1/${ROOT_FN}.glues.db
