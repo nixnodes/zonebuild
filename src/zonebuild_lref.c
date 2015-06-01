@@ -133,6 +133,11 @@ ref_to_val_ptr_zone(void *arg, char *match, int *output)
       *output = ((int) sizeof(data->nservers.offset));
       return &data->nservers.offset;
     }
+  else if (!strncmp(match, _MC_ZONE_HASGLUE, 5))
+    {
+      *output = ((int) sizeof(data->hasglue));
+      return &data->hasglue;
+    }
   else if (!strncmp(match, _MC_ZONE_HASCHLD, 5))
     {
       *output = ((int) sizeof(data->child_objects.offset));
