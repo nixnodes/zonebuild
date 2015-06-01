@@ -8,7 +8,7 @@ build_path_check()
 build_path_check
 
 #[1]:config file  [2]:zone name [3]:zone file
-config_update()
+cu_add_master_zone()
 {
         [ -f "${1}" ] && {
                 cat ${1} | grep -q \"${2}\" && return 1
@@ -22,4 +22,10 @@ config_update()
         };
 	"
 	return 0
+}
+
+print_usage_and_exit() 
+{
+	echo "${USAGE_STR}"
+	exit 2
 }
