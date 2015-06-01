@@ -77,6 +77,7 @@ zone_format_block_exp(void *ptr, char *output)
 #define _MC_ZONE_SERVER         "server"
 #define _MC_ZONE_EMAIL          "email"
 #define _MC_ZONE_HASGLUE        "hasglue"
+#define _MC_ZONE_HASCHLD        "haschildren"
 
 void *
 ref_to_val_ptr_zone(void *arg, char *match, int *output)
@@ -132,10 +133,10 @@ ref_to_val_ptr_zone(void *arg, char *match, int *output)
       *output = ((int) sizeof(data->nservers.offset));
       return &data->nservers.offset;
     }
-  else if (!strncmp(match, _MC_ZONE_HASGLUE, 7))
+  else if (!strncmp(match, _MC_ZONE_HASCHLD, 5))
     {
-      *output = ((int) sizeof(data->hasglue));
-      return &data->hasglue;
+      *output = ((int) sizeof(data->child_objects.offset));
+      return &data->child_objects.offset;
     }
   else
     {
@@ -273,6 +274,15 @@ dt_rval_zone_email(void *arg, char *match, char *output, size_t max_size,
   return output;
 }
 
+static char *
+dt_rval_zone_hasch(void *arg, char *match, char *output, size_t max_size,
+    void *mppd)
+{
+  snprintf(output, max_size, ((__d_drt_h ) mppd)->direc,
+      (uint64_t) (unsigned long long int) ((__inet_obj) arg)->child_objects.offset);
+  return output;
+}
+
 void *
 ref_to_val_lk_zone(void *arg, char *match, char *output, size_t max_size,
     void *mppd)
@@ -347,6 +357,10 @@ ref_to_val_lk_zone(void *arg, char *match, char *output, size_t max_size,
   else if (!strncmp(match, _MC_ZONE_HASGLUE, 7))
     {
       return as_ref_to_val_lk(match, dt_rval_zone_hasglue, (__d_drt_h) mppd, "%hhu");
+    }
+  else if (!strncmp(match, _MC_ZONE_HASCHLD, 5))
+    {
+      return as_ref_to_val_lk(match, dt_rval_zone_hasch, (__d_drt_h) mppd, "%llu");
     }
 
   return NULL;
