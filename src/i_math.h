@@ -125,8 +125,6 @@ m_get_def_val(pmda math);
 #define M_PROC_ONE() { \
   if (math->flags & F_MATH_NITEM) \
     {  \
-      uint8_t v_b[8] = \
-        { 0 };\
       g_math_res(d_ptr, (pmda) math->next, v_b); \
       c_ptr = v_b; \
     } \
@@ -139,8 +137,9 @@ m_get_def_val(pmda math);
       else if (math->flags & F_MATH_STRCONV) { \
           char m_str_b[32]; \
           char *m_str = (char*)math->sconv_proc(d_ptr, NULL, m_str_b , (size_t) sizeof(m_str_b), math->sconv_mppd); \
-          uint64_t *sconv_res = (uint64_t*) v_b; \
-          *sconv_res = (uint64_t)strtoull(m_str, NULL, 10); \
+          uint64_t sconv_res = (uint64_t)strtoull(m_str, NULL, 10); \
+          bzero((void*) v_b, 8); \
+          memcpy((void*) v_b, (void*) &sconv_res , math->vb); \
           c_ptr = (void*) v_b; \
         } \
       else \

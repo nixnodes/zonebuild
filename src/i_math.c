@@ -345,18 +345,16 @@ g_process_math_string(__g_handle hdl, char *string, pmda mdm, pmda chain,
 
       uint32_t add_flags = 0;
 
-      if (ptr[0] == 0x2B || ptr[0] == 0x2D)
-        {
-          ptr++;
-        }
-      else if (ptr[0] == 0x3F)
+      char in_dummy[8192];
+
+      if (ptr[0] == 0x5B)
         {
           void *l_next_ref;
-          char in_dummy[8192];
-          char *s_ptr = l_mppd_shell_ex(&ptr[1], in_dummy, sizeof(in_dummy),
+
+          char *s_ptr = l_mppd_shell_ex(ptr, in_dummy, sizeof(in_dummy),
               &l_next_ref,
-              LMS_EX_L,
-              LMS_EX_R, F_MPPD_SHX_TZERO);
+              0x5B,
+              0x5D, F_MPPD_SHX_TZERO);
 
           if (NULL == s_ptr)
             {
@@ -364,7 +362,7 @@ g_process_math_string(__g_handle hdl, char *string, pmda mdm, pmda chain,
               goto f_end;
             }
 
-          if (NULL == l_next_ref || ((char*)l_next_ref)[0] == 0x0)
+          if (NULL == l_next_ref || ((char*) l_next_ref)[0] == 0x0)
             {
               f_ret = 131;
               goto f_end;
@@ -376,6 +374,12 @@ g_process_math_string(__g_handle hdl, char *string, pmda mdm, pmda chain,
         }
       else
         {
+
+          if (ptr[0] == 0x2B || ptr[0] == 0x2D)
+            {
+              ptr++;
+            }
+
           while (is_ascii_arith_bin_oper(ptr[0]) && ptr[0] && ptr[0] != 0x23
               && ptr[0] != 0x7D && ptr[0] != 0x29 && ptr[0] != 0x3A
               && ptr[0] != 0x29 && ptr[0] != 0x20)
@@ -641,7 +645,6 @@ g_get_math_g_t_ptr(__g_handle hdl, char *field, __g_math math, uint32_t flags,
           math->flags |= (p_math->flags & F_MATH_TYPES);
         }
 
-      errno = 0;
       uint32_t t_f = 0;
       int base = 10;
 
@@ -670,6 +673,8 @@ g_get_math_g_t_ptr(__g_handle hdl, char *field, __g_math math, uint32_t flags,
               math->flags |= F_MATH_INT;
             }
         }
+
+      errno = 0;
 
       void *v_stor = &math->vstor;
 

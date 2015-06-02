@@ -80,23 +80,39 @@ zone_format_block_exp(void *ptr, char *output)
 #define _MC_ZONE_HASGLUE        "hasglue"
 #define _MC_ZONE_HASCHLD        "chcount"
 #define _MC_ZONE_ISSHADOW       "isshadow"
+#define _MC_ZONE_PARENTREF      "p:"
 
 static int
 ref_to_val_ptr_offset(char *match, size_t *offset, size_t max_size)
 {
-  while (match[0] && match[0] != 0x5B)
-    {
-      match++;
-    }
+  char in_dummy[512];
+  void *l_next_ref;
 
-  if (match[0] != 0x5B)
+  char *s_ptr = l_mppd_shell_ex(match, in_dummy, sizeof(in_dummy),
+      &l_next_ref,
+      LMS_EX_L,
+      LMS_EX_R, F_MPPD_SHX_TZERO);
+
+  if (NULL == s_ptr || 0 == s_ptr[0])
     {
       return 1;
     }
 
-  match++;
+  while (s_ptr[0] && s_ptr[0] != 0x5B)
+    {
+      s_ptr++;
+    }
 
-  *offset = strtoull(match, NULL, 10);
+  if (s_ptr[0] != 0x5B)
+    {
+      return 1;
+    }
+
+  s_ptr++;
+
+  errno = 0;
+
+  *offset = strtoull(s_ptr, NULL, 10);
 
   if (errno == ERANGE || errno == EINVAL)
     {
@@ -358,6 +374,57 @@ dt_rval_zone_is_shadow(void *arg, char *match, char *output, size_t max_size,
   return output;
 }
 
+static char *
+dt_rval_zone_pref(void *arg, char *match, char *output, size_t max_size,
+    void *mppd)
+{
+  __inet_obj object = (__inet_obj) arg;
+
+  if ( NULL != object->parent_link)
+    {
+      __d_drt_h _mppd = (__d_drt_h ) mppd;
+      char *p_b0 = _mppd->fp_rval1(object->parent_link, match, _mppd->tp_b0, sizeof(_mppd->tp_b0),
+          _mppd->mppd_next);
+
+      if ( NULL != p_b0)
+        {
+          snprintf(output, max_size, ((__d_drt_h ) mppd)->direc,
+              p_b0);
+        }
+      else
+        {
+          output[0] = 0x0;
+        }
+    }
+  else
+    {
+      output[0] = 0x0;
+    }
+
+  return output;
+
+}
+
+static char *
+rt_af__zone_pref(void *arg, char *match, char *output, size_t max_size,
+    void *_mppd)
+{
+  __d_drt_h mppd = (__d_drt_h) _mppd;
+
+  mppd->mppd_next = l_mppd_create_copy(mppd);
+
+  mppd->fp_rval1 = mppd->hdl->g_proc1_lookup(arg, match, output, max_size,
+      mppd->mppd_next);
+
+  if (NULL == mppd->fp_rval1)
+    {
+      ERROR("dt_rval_zone_pref: could not resolve: '%s'\n", match);
+      return NULL;
+    }
+
+  return as_ref_to_val_lk(match, dt_rval_zone_pref, (__d_drt_h) mppd, "%s");
+}
+
 void *
 ref_to_val_lk_zone(void *arg, char *match, char *output, size_t max_size,
     void *mppd)
@@ -440,6 +507,10 @@ ref_to_val_lk_zone(void *arg, char *match, char *output, size_t max_size,
   else if (!strncmp(match, _MC_ZONE_ISSHADOW, 6))
     {
       return as_ref_to_val_lk(match, dt_rval_zone_is_shadow, (__d_drt_h) mppd, "%hhu");
+    }
+  else if (!strncmp(match, _MC_ZONE_PARENTREF, 2))
+    {
+      return rt_af__zone_pref(arg, &match[2], output, max_size,mppd);
     }
 
   return NULL;

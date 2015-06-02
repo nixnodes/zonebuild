@@ -73,7 +73,7 @@ g_extract_vfield(char *input, char *output, size_t max_size, size_t offset)
   return o_out;
 }
 
-static void *
+void *
 l_mppd_create_copy(__d_drt_h mppd)
 {
   __d_drt_h mppd_next = calloc(1, sizeof(_d_drt_h));
@@ -149,10 +149,10 @@ l_mppd_shell_ex(char *input, char *output, size_t max_size, void** l_nr, char l,
   char *ptr = input;
   char left, right;
 
-  if (ptr[0] == LMS_EX_L)
+  if (ptr[0] == l)
     {
-      left = LMS_EX_L;
-      right = LMS_EX_R;
+      left = l;
+      right = r;
       ptr++;
     }
   else
@@ -1316,82 +1316,6 @@ rt_af_print_format_int(void *arg, char *match, char *output, size_t max_size,
 
   return as_ref_to_val_lk(match, dt_rval_spec_print_format_int, mppd, "%s");
 }
-/*
- static char *
- dt_rval_xstat(void *arg, char *match, char *output, size_t max_size, void *mppd)
- {
- __d_drt_h mppd_x = (__d_drt_h ) ((__d_drt_h ) mppd)->mppd_next;
- __d_drt_h mppd_f = (__d_drt_h ) ((__d_drt_h ) mppd)->mppd_aux_next;
-
- char *p_o = ((__d_drt_h ) mppd)->fp_rval2(arg, ((__d_drt_h ) mppd)->varg_l,
- output, max_size, mppd_f);
-
- if (NULL != p_o)
- {
- __d_xref pxrf = ((__d_drt_h ) mppd)->v_p0;
-
- if (0 == g_preproc_dm(p_o, pxrf, 0x0, NULL))
- {
- char *x_p_o = ((__d_drt_h ) mppd)->fp_rval1((void*) pxrf,
- ((__d_drt_h ) mppd)->st_p0, ((__d_drt_h ) mppd)->tp_b0,
- sizeof(((__d_drt_h ) mppd)->tp_b0), mppd_x);
-
- snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, x_p_o);
- }
- else
- {
- output[0] = 0x0;
- }
- }
- else
- {
- output[0] = 0x0;
- }
-
- return output;
- }
-
- static void*
- rt_af_xstat(void *arg, char *match, char *output, size_t max_size,
- __d_drt_h mppd)
- {
-
- mppd->mppd_next = l_mppd_create_copy(mppd);
- mppd->mppd_aux_next = l_mppd_create_copy(mppd);
-
- mppd->st_p0 = strdup(match);
- mppd->v_p0 = calloc(1, sizeof(_d_xref));
-
- mppd->fp_rval1 = ref_to_val_lk_x(mppd->v_p0, match, output, max_size,
- mppd->mppd_next);
-
- if (NULL == mppd->fp_rval1)
- {
- print_str("ERROR: rt_af_xstat: could not resolve '%s'\n", match);
- return NULL;
- }
-
- if (NULL == ((__d_drt_h ) mppd->mppd_next)->varg_l
- || ((__d_drt_h ) mppd->mppd_next)->varg_l[0] == 0x0)
- {
- print_str("ERROR: rt_af_xstat: could not resolve field argument\n");
- return NULL;
- }
-
- mppd->fp_rval2 = mppd->hdl->g_proc1_lookup(arg,
- ((__d_drt_h ) mppd->mppd_next)->varg_l, output, max_size,
- mppd->mppd_aux_next);
-
- if (NULL == mppd->fp_rval2)
- {
- print_str("ERROR: rt_af_xstat: could not resolve '%s'\n",
- ((__d_drt_h ) mppd->mppd_next)->varg_l);
- return NULL;
- }
-
- return as_ref_to_val_lk(match, dt_rval_xstat, mppd, "%s");
- }
- */
 
 static void*
 rt_af_regex(void *arg, char *match, char *output, size_t max_size,
@@ -1716,7 +1640,7 @@ dt_rval_spec_offbyte(void *arg, char *match, char *output, size_t max_size,
 }
 
 static void*
-rt_af_dpec_offbyte(void *arg, char *match, char *output, size_t max_size,
+rt_af_spec_offbyte(void *arg, char *match, char *output, size_t max_size,
     __d_drt_h mppd)
 {
   void *l_next_ref;
@@ -1813,7 +1737,7 @@ rt_af_spec_chr(void *arg, char *match, char *output, size_t max_size,
 
   match = (char*) ((__d_drt_h ) mppd->mppd_next)->varg_l;
 
-  if (match[0] == 0x5C)
+  if (match[0] == 0x5C || match[0] == 0x2F)
     {
       match++;
       switch (match[0])
@@ -1832,6 +1756,14 @@ rt_af_spec_chr(void *arg, char *match, char *output, size_t max_size,
         break;
       case 0x73:
         mppd->c_1 = 0x20;
+        break;
+      case 0x78:
+        errno = 0;
+        mppd->c_1 = (char) strtol(&match[1], NULL, 16);
+        if (errno == ERANGE || errno == EINVAL)
+          {
+            mppd->c_1 = 11;
+          }
         break;
       default:
         mppd->c_1 = match[0];
@@ -2044,7 +1976,7 @@ ref_to_val_af(void *arg, char *match, char *output, size_t max_size,
         {
       case 0x43:
         ;
-        return rt_af_dpec_offbyte(arg, match, output, max_size, mppd);
+        return rt_af_spec_offbyte(arg, match, output, max_size, mppd);
         break;
       case 0x49:
         return rt_af_dpec_dectoip(arg, match, output, max_size, mppd);
@@ -2064,12 +1996,12 @@ ref_to_val_af(void *arg, char *match, char *output, size_t max_size,
         ;
         //DT_RVAL_GENPREPROC()
         mppd->mppd_next = l_mppd_create_copy(mppd);
-            mppd->fp_rval1 = mppd->hdl->g_proc1_lookup(arg, match, output, max_size,
-                mppd->mppd_next);
-            if (NULL == mppd->fp_rval1)
-              {
-                return NULL;
-              }
+        mppd->fp_rval1 = mppd->hdl->g_proc1_lookup(arg, match, output, max_size,
+            mppd->mppd_next);
+        if (NULL == mppd->fp_rval1)
+          {
+            return NULL;
+          }
         return as_ref_to_val_lk(match, dt_rval_spec_slen, (__d_drt_h ) mppd,
         NULL);
         break;

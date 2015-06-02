@@ -714,7 +714,7 @@ link_hierarchy_tree(_def_ophdr option_header, __inet_obj object,
       ptr = ptr->next;
     }
 
-  size_t offset = (size_t)&((__inet_obj) NULL)->ip_start;
+  size_t offset = (size_t) &((__inet_obj) NULL)->ip_start;
 
   int_sort(&object->child_objects, offset, 4, F_SORT_DESC);
 
@@ -913,9 +913,8 @@ mda chf_data =
   { 0 };
 
 static int
-walk_tree(__inet_obj object, __def_ophdr option_header, void* arg)
+process_tree_item(__inet_obj object, __def_ophdr option_header, void* arg)
 {
-
   object->tree_level = option_header->ufield.level;
   object->ns_level = option_header->ufield.ns_level;
 
@@ -1050,9 +1049,7 @@ preproc(void)
       hdl->g_proc4 = g_omfp_eassemble;
       hdl->w_d = g_omfp_write;
       hdl->act_mech = &hdl->print_mech;
-
       hdl->flags |= F_GH_PRINT;
-
     }
 
   //global_opt.print_str = "{?m:?(?C:1:startip)}{:n}";
@@ -1174,7 +1171,7 @@ init(void)
       register_ch_funct(&chf_data, ch_zone_nservers_1);
     }
 
-  walk_zone_tree(option_header.root, &option_header, walk_tree, 0);
+  walk_zone_tree(option_header.root, &option_header, process_tree_item, 0);
 
   if ( NULL != global_opt.post_print_str)
     {
@@ -1223,7 +1220,7 @@ main(int argc, char *argv[])
 
   if ( NULL == global_opt.load)
     {
-      ERROR("main: no -build option selected\n");
+      ERROR("main: -build <mode>\n");
       return 1;
     }
 
@@ -1233,5 +1230,5 @@ main(int argc, char *argv[])
 
   //release_regexes();
 
-  return retval;
+  exit(retval);
 }

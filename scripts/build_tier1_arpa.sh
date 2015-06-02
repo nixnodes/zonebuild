@@ -41,6 +41,28 @@ case "${2}" in
 	;;
 esac
 
+build_rfc2317_supernets()
+{
+	RFC2317_ALL=(`${ZBUILD} -build inetnum --path ${REGISTRY_PATH} -lom "rfc2317" --root 172.22.0.0_16 \
+	 			--noshadow -print '{?Q:({?C:3:startip\}.\{?C:2:startip\}.\{?C:1:startip\})}.{:n}' | sort -u`)
 
- 
+	for i in ${RFC2317_ALL[@]}; do
+		echo : $i
+	done
+	
+	if [[ ${RFC2317_ALL[@]} = *172.22.240.* ]]; then
+		echo lala
+	fi
+	
+	RFC2317_ALL=(`${ZBUILD} -build inetnum --path ${REGISTRY_PATH} --root 172.22.0.0_16  -lom "pfxsize=24" -l: ?I:startip -regex "^(\
+				`zbuild -build inetnum --path ${REGISTRY_PATH} -lom "rfc2317" --root 172.22.0.0_16 --noshadow -print '{?Q:({?C:3:startip\}\\.\{?C:2:startip\}\\.\{?C:1:startip\})}{:n}' | tr '\n' '|' | sed -r 's/\|$//'` \
+				)\.0$"  -print '{?Q:({?C:3:startip\}.\{?C:2:startip\}.\{?C:1:startip\})}.{:n}' --noshadow  | sort -u`)
+}
+
+case "${3}" in 
+	1)
+		build_rfc2317_supernets
+ 	;;
+esac
+
 exit 0
