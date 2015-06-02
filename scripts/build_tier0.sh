@@ -9,8 +9,7 @@ USAGE_STR="USAGE: ./`basename ${0}`"
 mkdir -p ${OUT_PATH}/tier0
 
 generate_soa ${SERVER_NAME_TIER0} "" > ${OUT_PATH}/tier0/root.db
-generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 "" noglue  >> ${OUT_PATH}/tier0/root.db
-generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 root-servers.dn42  >> ${OUT_PATH}/tier0/root.db
+generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ""   >> ${OUT_PATH}/tier0/root.db
 #generate_forward_zone ${REGISTRY_PATH}/dns/dn42 dn42 noglue >> ${OUT_PATH}/tier0/root.db
 generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 arpa noglue >> ${OUT_PATH}/tier0/root.db
 
@@ -29,7 +28,7 @@ generate_soa ${SERVER_NAME_TIER0} arpa > ${OUT_PATH}/tier0/arpa.db
 generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 arpa noglue >> ${OUT_PATH}/tier0/arpa.db
 generate_forward_zone ${REGISTRY_PATH}/dns/arpa in-addr.arpa >> ${OUT_PATH}/tier0/arpa.db
 
-generate_soa ${SERVER_NAME_TIER1} zone-servers.dn42 > ${OUT_PATH}/tier0/zone-servers.dn42.db 
+generate_soa ${SERVER_NAME_TIER0} zone-servers.dn42 > ${OUT_PATH}/tier0/zone-servers.dn42.db 
 generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 zone-servers.dn42  >>  ${OUT_PATH}/tier0/zone-servers.dn42.db 
 
 #rm -f /tmp/build_tier0.$$.tmp

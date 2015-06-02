@@ -17,7 +17,7 @@ USAGE_STR="USAGE: ./`basename ${0}` <tld>"
 mkdir -p ${OUT_PATH}/tier1
 
 generate_soa ${SERVER_NAME_TIER1} "" > ${OUT_PATH}/tier1/root.db
-generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 root-servers.dn42  >> ${OUT_PATH}/tier1/root.db
+generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ""  >> ${OUT_PATH}/tier1/root.db
 
 generate_soa ${SERVER_NAME_TIER1} dn42 > ${OUT_PATH}/tier1/${1}.db 
 generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 dn42 >> ${OUT_PATH}/tier1/${1}.db 
