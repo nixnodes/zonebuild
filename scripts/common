@@ -10,9 +10,16 @@ build_path_check
 #[1]:config file  [2]:zone name [3]:zone file
 cu_add_master_zone()
 {
-        [ -f "${1}" ] && {
-                cat ${1} | grep -q \"${2}\" && return 1
-        }
+    if [ -f "${1}" ]; then
+            cat ${1} | grep -q \"${2}\" && return 1
+    else
+    	echo "## Put into /etc/named.conf:
+#
+##  include \"${OUT_PATH}/tier1/named.conf\";
+#
+" > ${1}
+    fi
+    
 	echo "zone \"${2}\" {
         type master;
         also-notify {
@@ -20,7 +27,7 @@ cu_add_master_zone()
                 };
         file \"`echo ${3} | sed -r 's/^[.]{1,2}//'`\";
         };
-	"
+	" >> ${1}
 	return 0
 }
 

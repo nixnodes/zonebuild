@@ -72,7 +72,7 @@ typedef struct ___inetnum_object
   struct stat st;
   uint32_t *d_ip_start, *d_ip_end;
   _ip_addr ip_start, ip_end;
-  uint8_t pfx_size, pfx_class, rfc2317, hasglue;
+  uint8_t pfx_size, pfx_class, rfc2317, has_glue, is_shadow;
   mda child_objects;
   pmda parent;
   void *parent_link;

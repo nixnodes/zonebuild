@@ -2,9 +2,6 @@
  ============================================================================
  Name        : zonebuild.c
  Author      : siska
- Version     :
- Copyright   : Copyright (c) NixNodes
- Description : Hello World in C, Ansi-style
  ============================================================================
  */
 
@@ -54,7 +51,7 @@ o_zb_build(void *arg, int m, void *opt)
       return 1002;
     }
 
-  if (!strncmp("rev", mode, 3))
+  if (!strncmp("inetnum", mode, 8))
     {
       global_opt.load = load_inetnum_data;
     }
@@ -699,9 +696,9 @@ link_hierarchy_tree(_def_ophdr option_header, __inet_obj object,
       ptr = ptr->next;
     }
 
-  size_t offset = (size_t) &((__inet_obj) NULL)->pfx_size;
+  size_t offset = (size_t) ((__inet_obj) NULL)->d_ip_start;
 
-  int_sort(&object->child_objects, offset, 1, F_SORT_DESC);
+  int_sort(&object->child_objects, offset, 4, F_SORT_DESC);
 
   DEBUG("link_hierarchy_tree: %s exiting %s/%hhu [%u] [%u]\n", b_level, st_b0,
       object->pfx_size, option_header.ufield.level, object->pfx_class);
@@ -730,11 +727,11 @@ ch_zone_nservers_1(p_md_obj pos, void *data, void *arg)
       object->nserver_current = *ns_ptr;
       if (ns_ptr->flags & F_NS_HAVE_GLUE)
         {
-          object->hasglue = 1;
+          object->has_glue = 1;
         }
       else
         {
-          object->hasglue = 0;
+          object->has_glue = 0;
         }
 
       if (next)
@@ -755,7 +752,7 @@ ch_zone_nservers_1(p_md_obj pos, void *data, void *arg)
 }
 
 static __inet_obj
-find_block_by_address(pmda base, __inet_obj block, __inet_obj parent)
+find_block_by_address(pmda base, __inet_obj block)
 {
   p_md_obj ptr = md_first(base);
 
@@ -764,7 +761,7 @@ find_block_by_address(pmda base, __inet_obj block, __inet_obj parent)
       __inet_obj object = (__inet_obj) ptr->ptr;
 
       if ( *object->d_ip_start == *block->d_ip_start &&
-          object->pfx_size == block->pfx_size && block != parent)
+          object->pfx_size == block->pfx_size)
         {
           return object;
         }
@@ -785,6 +782,22 @@ ch_zone4_breakdown_0(p_md_obj pos, void *data, void *arg)
       return 0;
     }
 
+  p_md_obj next = pos->next;
+
+  if (next)
+    {
+      ((__ch_funct) next->ptr)->call(next, object, arg);
+    }
+  else
+    {
+      CH_PROC_ITEM(object);
+    }
+
+  if ( !(object->pfx_size % 8))
+    {
+      return 0;
+    }
+
   uint8_t class_size = ((( 32 - object->pfx_size ) / 8) * 8);
 
   _inet_obj dummy = *object;
@@ -800,7 +813,8 @@ ch_zone4_breakdown_0(p_md_obj pos, void *data, void *arg)
       dummy.pfx_size = 32 - class_size;
     }
 
-  dummy.flags |= F_INETNUM_FORCE_PROC;
+  //dummy.flags |= F_INETNUM_FORCE_PROC;
+  dummy.is_shadow = 1;
 
   uint32_t inc_f = 0x1;
 
@@ -812,26 +826,37 @@ ch_zone4_breakdown_0(p_md_obj pos, void *data, void *arg)
     }
   inc_f++;
 
-  p_md_obj next = pos->next;
+  //dummy.child_objects.offset =0;
 
   while ( *dummy.d_ip_start < *dummy.d_ip_end - 1 )
     {
       __inet_obj block;
-      if ( NULL != (block=find_block_by_address(object->parent, &dummy, object)) )
+      if ( NULL != (block=find_block_by_address(object->parent, &dummy)) )
         {
-          if ( block->nservers.offset > 0 )
+          /*if ( block->nservers.offset > 0 )
+           {
+           dummy.nservers = block->nservers;
+           }*/
+          block->ns_level = object->ns_level;
+
+          if (block->flags & F_INETNUM_MISC_00)
             {
-              dummy.nservers = block->nservers;
+              DEBUG("ch_zone4_breakdown_0: %s: already processed\n", object->fullpath);
+              return 0;
             }
+        }
+      else
+        {
+          block = &dummy;
         }
 
       if (next)
         {
-          ((__ch_funct) next->ptr)->call(next, &dummy, arg);
+          ((__ch_funct) next->ptr)->call(next, block, arg);
         }
       else
         {
-          CH_PROC_ITEM(&dummy);
+          CH_PROC_ITEM(block);
         }
 
       *dummy.d_ip_start += inc_f;
@@ -1177,15 +1202,15 @@ main(int argc, char *argv[])
 
   if ( NULL == global_opt.load)
     {
-      ERROR("main: no --build option selected\n");
+      ERROR("main: no -build option selected\n");
       return 1;
     }
 
-  initialize_regexes();
+  //initialize_regexes();
 
   retval = init();
 
-  release_regexes();
+  //release_regexes();
 
   return retval;
 }

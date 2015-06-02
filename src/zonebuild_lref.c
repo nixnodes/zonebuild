@@ -78,6 +78,7 @@ zone_format_block_exp(void *ptr, char *output)
 #define _MC_ZONE_EMAIL          "email"
 #define _MC_ZONE_HASGLUE        "hasglue"
 #define _MC_ZONE_HASCHLD        "haschildren"
+#define _MC_ZONE_ISSHADOW       "isshadow"
 
 void *
 ref_to_val_ptr_zone(void *arg, char *match, int *output)
@@ -135,13 +136,18 @@ ref_to_val_ptr_zone(void *arg, char *match, int *output)
     }
   else if (!strncmp(match, _MC_ZONE_HASGLUE, 5))
     {
-      *output = ((int) sizeof(data->hasglue));
-      return &data->hasglue;
+      *output = ((int) sizeof(data->has_glue));
+      return &data->has_glue;
     }
   else if (!strncmp(match, _MC_ZONE_HASCHLD, 5))
     {
       *output = ((int) sizeof(data->child_objects.offset));
       return &data->child_objects.offset;
+    }
+  else if (!strncmp(match, _MC_ZONE_ISSHADOW, 6))
+    {
+      *output = ((int) sizeof(data->is_shadow));
+      return &data->is_shadow;
     }
   else
     {
@@ -259,7 +265,7 @@ static char *
 dt_rval_zone_hasglue(void *arg, char *match, char *output, size_t max_size,
     void *mppd)
 {
-  snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, (uint8_t) ((__inet_obj) arg)->hasglue);
+  snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, (uint8_t) ((__inet_obj) arg)->has_glue);
   return output;
 }
 
@@ -285,6 +291,15 @@ dt_rval_zone_hasch(void *arg, char *match, char *output, size_t max_size,
 {
   snprintf(output, max_size, ((__d_drt_h ) mppd)->direc,
       (uint64_t) (unsigned long long int) ((__inet_obj) arg)->child_objects.offset);
+  return output;
+}
+
+static char *
+dt_rval_zone_is_shadow(void *arg, char *match, char *output, size_t max_size,
+    void *mppd)
+{
+  snprintf(output, max_size, ((__d_drt_h ) mppd)->direc,
+      (unsigned long long int) ((__inet_obj) arg)->is_shadow);
   return output;
 }
 
@@ -366,6 +381,10 @@ ref_to_val_lk_zone(void *arg, char *match, char *output, size_t max_size,
   else if (!strncmp(match, _MC_ZONE_HASCHLD, 5))
     {
       return as_ref_to_val_lk(match, dt_rval_zone_hasch, (__d_drt_h) mppd, "%llu");
+    }
+  else if (!strncmp(match, _MC_ZONE_ISSHADOW, 6))
+    {
+      return as_ref_to_val_lk(match, dt_rval_zone_is_shadow, (__d_drt_h) mppd, "%hhu");
     }
 
   return NULL;
