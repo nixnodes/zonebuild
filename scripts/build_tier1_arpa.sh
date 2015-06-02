@@ -3,7 +3,7 @@
 . `dirname ${0}`/config || exit 2
 . `dirname ${0}`/common || exit 2
 
-USAGE_STR="USAGE: ./`basename ${0}` <root zone path> [<build glues>]"
+USAGE_STR="USAGE: ./`basename ${0}` <root zone path> [<build glues>] [<process rfc2317 supernets>]"
 
 [ -z ${1} ] && {
 	print_usage_and_exit	
@@ -48,10 +48,9 @@ build_rfc2317_supernets()
 	RFC2317_ALL=(`${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum -lom "rfc2317 = 1 && ([p:nscount]) = 0" --root ${1} \
 	 			--noshadow -print '{?Q:({?C:1:startip\}.\{?C:2:startip\}.\{?C:3:startip\})}{:n}' | sort -u`)
 
-	for i in ${RFC2317_ALL[@]}; do
-		for n in ${RFC2317_SERVERS[@]}; do
-			echo "${i}.in-addr.arpa.       IN  NS   ${n}" >> ${OUT_PATH}/tier1/${ROOT_FN}.db
-		done
+	for i in ${RFC2317_ALL[@]}; do		
+		generate_forward_zone ${REGISTRY_PATH}/dns/arpa ${i}.in-addr.arpa noglue >> ${OUT_PATH}/tier1/${ROOT_FN}.db
+		
 	done
 	
 }
