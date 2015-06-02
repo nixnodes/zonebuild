@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 . `dirname ${0}`/config || exit 2
 . `dirname ${0}`/common || exit 2
