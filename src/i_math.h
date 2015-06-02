@@ -21,6 +21,7 @@
 
 #define F_MATH_VAR_KNOWN                ((uint32_t)1 << 4)
 #define F_MATH_NITEM                    ((uint32_t)1 << 5)
+#define F_MATH_STRCONV                  ((uint32_t)1 << 6)
 
 #define F_MATH_IS_SQRT                  ((uint32_t)1 << 10)
 #define F_MATH_IS_GLOB                  ((uint32_t)1 << 11)
@@ -52,6 +53,8 @@ typedef struct ___g_math
   uint8_t vstor[8];
   int vb;
   void *_glob_p;
+  __g_proc_v sconv_proc;
+  void * sconv_mppd;
 } _g_math, *__g_math;
 
 int
@@ -132,6 +135,13 @@ m_get_def_val(pmda math);
       if ((math->flags & F_MATH_VAR_KNOWN)) \
         { \
           c_ptr = math->vstor; \
+        } \
+      else if (math->flags & F_MATH_STRCONV) { \
+          char m_str_b[32]; \
+          char *m_str = (char*)math->sconv_proc(d_ptr, NULL, m_str_b , (size_t) sizeof(m_str_b), math->sconv_mppd); \
+          uint64_t *sconv_res = (uint64_t*) v_b; \
+          *sconv_res = (uint64_t)strtoull(m_str, NULL, 10); \
+          c_ptr = (void*) v_b; \
         } \
       else \
         { \

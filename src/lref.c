@@ -2062,7 +2062,14 @@ ref_to_val_af(void *arg, char *match, char *output, size_t max_size,
         return rt_af_dirname(arg, match, output, max_size, mppd);
       case 0x6C:
         ;
-        DT_RVAL_GENPREPROC()
+        //DT_RVAL_GENPREPROC()
+        mppd->mppd_next = l_mppd_create_copy(mppd);
+            mppd->fp_rval1 = mppd->hdl->g_proc1_lookup(arg, match, output, max_size,
+                mppd->mppd_next);
+            if (NULL == mppd->fp_rval1)
+              {
+                return NULL;
+              }
         return as_ref_to_val_lk(match, dt_rval_spec_slen, (__d_drt_h ) mppd,
         NULL);
         break;

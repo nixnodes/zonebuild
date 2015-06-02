@@ -57,4 +57,8 @@ g_extract_vfield(char *input, char *output, size_t max_size, size_t offset);
 size_t
 l_mppd_gvlen(char *input);
 
+typedef struct ___std_lref_header {
+
+} _std_lrh, *__std_lrh;
+
 #endif /* LREF_H_ */

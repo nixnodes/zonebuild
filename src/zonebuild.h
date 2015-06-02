@@ -136,6 +136,8 @@ _d_cvp load_inetnum4_item;
 #define F_STDH_HAVE_PRINT               ((uint32_t)1 << 1)
 #define F_STDH_HAVE_PRE_PRINT           ((uint32_t)1 << 2)
 #define F_STDH_HAVE_POST_PRINT          ((uint32_t)1 << 3)
+#define F_STDH_NO_SHADOW                ((uint32_t)1 << 4)
+#define F_STDH_NO_NSERVERS              ((uint32_t)1 << 5)
 
 #define F_STDH_HAVE_PRINT_ANY           (F_STDH_HAVE_PRINT|F_STDH_HAVE_PRE_PRINT|F_STDH_HAVE_POST_PRINT)
 
@@ -173,5 +175,11 @@ typedef struct ___ch_funct
               global_opt.handle.g_proc4(&global_opt.handle, object, NULL); } \
               (object)->flags |= F_INETNUM_MISC_00; \
 }
+
+int
+o_zb_noshadow(void *arg, int m, void *opt);
+int
+o_zb_nonservers(void *arg, int m, void *opt);
+
 
 #endif

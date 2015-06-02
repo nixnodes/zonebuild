@@ -39,7 +39,8 @@ _stdh_go global_opt =
   { .load = NULL, .path = NULL, .root = NULL, .pfx_max_size = 32,
       .pfx_min_size = 8, .print_str = NULL, .handle =
         { 0 }, .pre_print_str = NULL, .post_print_str = NULL, .loc_serv_name =
-      NULL, .loc_serv_name = "root.nic.dn42", .loc_email = "root.nic.dn42" };
+      NULL, .loc_serv_name = "root.nic.dn42", .loc_email = "root.nic.dn42",
+      .flags = 0 };
 
 int
 o_zb_build(void *arg, int m, void *opt)
@@ -154,6 +155,23 @@ o_zb_setlocemail(void *arg, int m, void *opt)
     {
       return 7002;
     }
+
+  return 0;
+}
+
+int
+o_zb_noshadow(void *arg, int m, void *opt)
+{
+
+  global_opt.flags |= F_STDH_NO_SHADOW;
+
+  return 0;
+}
+
+int
+o_zb_nonservers(void *arg, int m, void *opt)
+{
+  global_opt.flags |= F_STDH_NO_NSERVERS;
 
   return 0;
 }
@@ -696,7 +714,7 @@ link_hierarchy_tree(_def_ophdr option_header, __inet_obj object,
       ptr = ptr->next;
     }
 
-  size_t offset = (size_t) ((__inet_obj) NULL)->d_ip_start;
+  size_t offset = (size_t)&((__inet_obj) NULL)->ip_start;
 
   int_sort(&object->child_objects, offset, 4, F_SORT_DESC);
 
@@ -826,7 +844,7 @@ ch_zone4_breakdown_0(p_md_obj pos, void *data, void *arg)
     }
   inc_f++;
 
-  //dummy.child_objects.offset =0;
+  dummy.child_objects.offset =0;
 
   while ( *dummy.d_ip_start < *dummy.d_ip_end - 1 )
     {
@@ -837,16 +855,19 @@ ch_zone4_breakdown_0(p_md_obj pos, void *data, void *arg)
            {
            dummy.nservers = block->nservers;
            }*/
-          block->ns_level = object->ns_level;
 
           if (block->flags & F_INETNUM_MISC_00)
             {
               DEBUG("ch_zone4_breakdown_0: %s: already processed\n", object->fullpath);
-              return 0;
+              goto _l_cont;
             }
+
+          block->ns_level = object->ns_level;
+
         }
       else
         {
+
           block = &dummy;
         }
 
@@ -858,6 +879,8 @@ ch_zone4_breakdown_0(p_md_obj pos, void *data, void *arg)
         {
           CH_PROC_ITEM(block);
         }
+
+      _l_cont:;
 
       *dummy.d_ip_start += inc_f;
 
@@ -890,7 +913,7 @@ mda chf_data =
   { 0 };
 
 static int
-walk_test(__inet_obj object, __def_ophdr option_header, void* arg)
+walk_tree(__inet_obj object, __def_ophdr option_header, void* arg)
 {
 
   object->tree_level = option_header->ufield.level;
@@ -902,25 +925,15 @@ walk_test(__inet_obj object, __def_ophdr option_header, void* arg)
       return 0;
     }
 
-  if (global_opt.handle.flags & F_GH_PRINT)
+  if (chf_data.first)
     {
-
       __ch_funct chf = (__ch_funct ) chf_data.first->ptr;
 
       chf->call(chf_data.first, object, option_header);
-
     }
   else
     {
-      int b_count = option_header->ufield.level * 4;
-      char *b_level = malloc(b_count + 1);
-
-      memset(b_level, 0x2D, b_count);
-      b_level[b_count] = 0x0;
-
-      printf("|%s: %s\n", b_level, basename(object->fullpath));
-
-      free(b_level);
+      CH_PROC_ITEM(object);
     }
 
   return 0;
@@ -1042,6 +1055,8 @@ preproc(void)
 
     }
 
+  //global_opt.print_str = "{?m:?(?C:1:startip)}{:n}";
+
   if (global_opt.flags & F_STDH_HAVE_PRINT)
     {
       if (g_op_load_print_mech(hdl, &hdl->print_mech, global_opt.print_str,
@@ -1150,10 +1165,16 @@ init(void)
 
   md_init_le(&chf_data, 16);
 
-  register_ch_funct(&chf_data, ch_zone4_breakdown_0);
-  register_ch_funct(&chf_data, ch_zone_nservers_1);
+  if (!(global_opt.flags & F_STDH_NO_SHADOW))
+    {
+      register_ch_funct(&chf_data, ch_zone4_breakdown_0);
+    }
+  if (!(global_opt.flags & F_STDH_NO_NSERVERS))
+    {
+      register_ch_funct(&chf_data, ch_zone_nservers_1);
+    }
 
-  walk_zone_tree(option_header.root, &option_header, walk_test, 0);
+  walk_zone_tree(option_header.root, &option_header, walk_tree, 0);
 
   if ( NULL != global_opt.post_print_str)
     {

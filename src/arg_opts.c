@@ -72,5 +72,7 @@ _gg_opt gg_f_ref[] =
     { .id = 0x1502, .on = "-postprint", .ac = 1, .op = o_zb_post_print_str },
     { .id = 0x1502, .on = "--server", .ac = 1, .op = o_zb_setlocsname },
     { .id = 0x1502, .on = "--email", .ac = 1, .op = o_zb_setlocemail },
+    { .id = 0x2002, .on = "--noshadow", .ac = 0, .op = o_zb_noshadow },
+    { .id = 0x2003, .on = "--nons", .ac = 0, .op = o_zb_nonservers },
     { 0x0 } };
 

@@ -16,6 +16,7 @@
 #include "lref_gen.h"
 #include "omfp.h"
 
+#include <stdlib.h>
 #include <errno.h>
 
 void
@@ -77,84 +78,138 @@ zone_format_block_exp(void *ptr, char *output)
 #define _MC_ZONE_SERVER         "server"
 #define _MC_ZONE_EMAIL          "email"
 #define _MC_ZONE_HASGLUE        "hasglue"
-#define _MC_ZONE_HASCHLD        "haschildren"
+#define _MC_ZONE_HASCHLD        "chcount"
 #define _MC_ZONE_ISSHADOW       "isshadow"
+
+static int
+ref_to_val_ptr_offset(char *match, size_t *offset, size_t max_size)
+{
+  while (match[0] && match[0] != 0x5B)
+    {
+      match++;
+    }
+
+  if (match[0] != 0x5B)
+    {
+      return 1;
+    }
+
+  match++;
+
+  *offset = strtoull(match, NULL, 10);
+
+  if (errno == ERANGE || errno == EINVAL)
+    {
+      return 1;
+    }
+
+  if (*offset < 0 || *offset > max_size - 1)
+    {
+      return 2;
+    }
+
+  return 0;
+
+}
 
 void *
 ref_to_val_ptr_zone(void *arg, char *match, int *output)
 {
   __inet_obj data = (__inet_obj) arg;
+
+  int size;
+  void *ptr;
+
   if (!strncmp(match, _MC_ZONE_EIP, 5))
     {
-      *output = ((int) sizeof(uint32_t));
-      return &data->ip_end;
+      size = ((int) sizeof(uint32_t));
+      ptr = &data->ip_end;
     }
   else if (!strncmp(match, _MC_ZONE_SIP, 7))
     {
-      *output = ((int) sizeof(uint32_t));
-      return &data->ip_start;
+      size = ((int) sizeof(uint32_t));
+      ptr = &data->ip_start;
     }
   else if (!strncmp(match, _MC_ZONE_TREELVL, 9))
     {
-      *output = ((int) sizeof(data->tree_level));
-      return &data->tree_level;
+      size = ((int) sizeof(data->tree_level));
+      ptr = &data->tree_level;
     }
   else if (!strncmp(match, _MC_ZONE_NSLVL, 7))
     {
-      *output = ((int) sizeof(data->ns_level));
-      return &data->ns_level;
+      size = ((int) sizeof(data->ns_level));
+      ptr = &data->ns_level;
     }
   else if (!strncmp(match, _MC_ZONE_PFXSIZE, 7))
     {
-      *output = ((int) sizeof(data->pfx_size));
-      return &data->pfx_size;
+      size = ((int) sizeof(data->pfx_size));
+      ptr = &data->pfx_size;
     }
   else if (!strncmp(match, _MC_ZONE_PFXMASK, 7))
     {
-      *output = ((int) sizeof(data->pfx_mask));
-      return &data->pfx_mask;
+      size = ((int) sizeof(data->pfx_mask));
+      ptr = &data->pfx_mask;
     }
   else if (!strncmp(match, _MC_ZONE_NLEVEL, 6))
     {
-      *output = ((int) sizeof(data->nrecurse_d));
-      return &data->nrecurse_d;
+      size = ((int) sizeof(data->nrecurse_d));
+      ptr = &data->nrecurse_d;
     }
   else if (!strncmp(match, _MC_ZONE_NSGLUE, 6))
     {
-      *output = ((int) sizeof(uint32_t));
-      return &data->nserver_current.glue;
+      size = ((int) sizeof(uint32_t));
+      ptr = &data->nserver_current.glue;
     }
   else if (!strncmp(match, _MC_ZONE_RFC2317, 7))
     {
-      *output = ((int) sizeof(data->rfc2317));
-      return &data->rfc2317;
+      size = ((int) sizeof(data->rfc2317));
+      ptr = &data->rfc2317;
     }
   else if (!strncmp(match, _MC_ZONE_NSCOUNT, 6))
     {
-      *output = ((int) sizeof(data->nservers.offset));
-      return &data->nservers.offset;
+      size = ((int) sizeof(data->nservers.offset));
+      ptr = &data->nservers.offset;
     }
   else if (!strncmp(match, _MC_ZONE_HASGLUE, 5))
     {
-      *output = ((int) sizeof(data->has_glue));
-      return &data->has_glue;
+      size = ((int) sizeof(data->has_glue));
+      ptr = &data->has_glue;
     }
   else if (!strncmp(match, _MC_ZONE_HASCHLD, 5))
     {
-      *output = ((int) sizeof(data->child_objects.offset));
-      return &data->child_objects.offset;
+      size = ((int) sizeof(data->child_objects.offset));
+      ptr = &data->child_objects.offset;
     }
   else if (!strncmp(match, _MC_ZONE_ISSHADOW, 6))
     {
-      *output = ((int) sizeof(data->is_shadow));
-      return &data->is_shadow;
+      size = ((int) sizeof(data->is_shadow));
+      ptr = &data->is_shadow;
     }
   else
     {
-      *output = 0;
+      size = 0;
+      ptr = NULL;
     }
 
-  return NULL;
+  if ( size )
+    {
+      int retval;
+      size_t offset;
+      if ( 0 == (retval=ref_to_val_ptr_offset(match, &offset, size)) )
+        {
+          ptr = (void*)((size_t)ptr + offset);
+          size = 1;
+        }
+      else if ( 2 == retval )
+        {
+          ptr = NULL;
+          size = 0;
+        }
+    }
+
+  *output = size;
+
+  return ptr;
 }
 
 static char *
