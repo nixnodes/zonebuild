@@ -23,7 +23,7 @@ for i in ${RFC2317_ALL[@]}; do
 ${zname}.		IN 	SOA		${SERVER_NAME_TIER2_ARPA}. ${CONTACT_EMAIL}. (`date +%s` 14400 3600 1200 7200)
 \$ORIGIN	${zname}." >> ${OUT_PATH}/tier2/${ziname}.db
 	
-	generate_forward_zone ${REGISTRY_PATH}/dns/arpa ${zname} >>  $OUT_PATH/tier2/${ziname}.db 
+	generate_forward_zone ${REGISTRY_PATH}/dns/arpa ${zname} noglue>>  $OUT_PATH/tier2/${ziname}.db 
 	
 	${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum --nons --noshadow \
 	-print '$GENERATE {?m:startip[0]}-{?m:endip[0]} $ CNAME $.{?m:startip[0]}-{?m:endip[0]}{:n}' --root ${1} \
