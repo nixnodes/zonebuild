@@ -13,9 +13,9 @@ cu_add_master_zone()
     if [ -f "${1}" ]; then
             cat ${1} | grep -q \"${2}\" && return 1
     else
-    	echo "## Put into /etc/named.conf:
+    	echo "## Include in /etc/named.conf:
 #
-##  include \"${OUT_PATH}/tier1/named.conf\";
+##  include \"${1}\";
 #
 " > ${1}
     fi
@@ -30,6 +30,31 @@ cu_add_master_zone()
 	" >> ${1}
 	return 0
 }
+
+#[1]: nameserver [2]: zone
+generate_soa()
+{
+		echo '$TTL' ${DEFAULT_TTL}
+        echo "${2}. IN SOA ${1}. ${CONTACT_EMAIL}. (`date +%s` 14400 3600 1209600 7200)"
+}
+
+#[1]: registry file [2]:zone name [3]: options
+generate_forward_zone ()
+{
+		rm -f /tmp/zb.common.$$.tmp
+		echo "${3}" | egrep -q 'noglue' || {
+                sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)[ \t]\+\([0-9]\+\.[0-9.]\+\)[ \t]*$/\1. IN A \2/p" $1 >> /tmp/zb.common.$$.tmp
+                sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)[ \t]\+\([0-9a-fA-F]*:[0-9a-fA-F:]\+\)[ \t]*$/\1. IN AAAA \2/p" $1 >> /tmp/zb.common.$$.tmp
+        }
+		echo "${3}" | egrep -q 'nons' || {
+        		sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)$/${2}. IN NS \1./p" $1 >> /tmp/zb.common.$$.tmp
+        		sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)[ \t].*$/${2}. IN NS \1./p" $1 >> /tmp/zb.common.$$.tmp
+        }
+        
+        
+        cat /tmp/zb.common.$$.tmp | uniq
+}
+
 
 print_usage_and_exit() 
 {

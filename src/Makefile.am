@@ -8,6 +8,6 @@ MAIN_DEFAULTSRC=signal.c l_error.c memory.c thread.c str.c arg_proc.c arg_opts.c
 
 zbuild_SOURCES=$(MAIN_DEFAULTSRC)
 
-MAIN_DEFAULTLN=-lm
+MAIN_DEFAULTLN=
 
 zbuild_LDADD=$(MAIN_DEFAULTLN)
