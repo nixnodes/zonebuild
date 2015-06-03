@@ -11,6 +11,7 @@ USAGE_STR="USAGE: ./`basename ${0}` <options> .."
 	print_usage_and_exit	
 }
 
+
 rm -f ${OUT_PATH}/tier[0-9]/*.db ${OUT_PATH}/tier[0-9]/*.conf
 
 [[ "${@}" = *root* ]] && {

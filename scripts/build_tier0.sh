@@ -17,7 +17,6 @@ for item in ${TIER1_ZONES[@]}; do
 	generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 ${item} >> ${OUT_PATH}/tier0/root.db
 done
 
-
 generate_soa ${SERVER_NAME_TIER0} root.dn42 > ${OUT_PATH}/tier0/root.dn42.db
 generate_forward_zone ${REGISTRY_PATH}/dns/dn42 root.dn42  >> ${OUT_PATH}/tier0/root.dn42.db
 
@@ -34,11 +33,13 @@ generate_forward_zone ${REGISTRY_PATH}/dns/arpa in-addr-servers.arpa >> ${OUT_PA
 generate_soa ${SERVER_NAME_TIER0} zone-servers.dn42 > ${OUT_PATH}/tier0/zone-servers.dn42.db 
 generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 zone-servers.dn42  >>  ${OUT_PATH}/tier0/zone-servers.dn42.db 
 
-#rm -f /tmp/build_tier0.$$.tmp
-#for item in ${ARPA_ZONES[@]}; do		
-#	generate_forward_zone ${REGISTRY_PATH}/inetnum/${item} in-addr.arpa noglue >> /tmp/build_tier0.$$.tmp
-#done
-#cat /tmp/build_tier0.$$.tmp | sort -u
+get_icann_root_zone() {
+	for item in ${ICANN_AXFR_ENABLED_ROOTS[@]}; do
+		axfr_zone . ${item} | egrep '^[^.;]' && break
+	done
+}
+
+[ ${MERGE_ICANN_ROOT} -gt 0 ] && get_icann_root_zone | egrep -v '^arpa.' >> ${OUT_PATH}/tier0/root.db
 
 cu_add_master_zone ${OUT_PATH}/tier0/named.conf "." ${OUT_PATH}/tier0/root.db
 cu_add_master_zone ${OUT_PATH}/tier0/named.conf "arpa" ${OUT_PATH}/tier0/arpa.db

@@ -1,5 +1,6 @@
 #
 ZBUILD=zbuild
+DIG=dig
 #
 ##use absolute paths below
 #
@@ -11,14 +12,12 @@ DEFAULT_TTL=7200
 CONTACT_EMAIL="unknown.nic.dn42"
 
 ##
-SERVER_NAME_TIER1="unknown.dn42-servers.dn42"
-
-##
 ARPA_ZONES=(10.0.0.0_8 172.20.0.0_16 172.22.0.0_16 172.23.0.0_16 172.31.0.0_16)
 ARPA_TIERS=12
 
 ## tier 0
 SERVER_NAME_TIER0="unknown.root-servers.dn42"
+MERGE_ICANN_ROOT=1
 
 ## tier 1
 SERVER_NAME_TIER1="unknown.zone-servers.dn42"
@@ -27,14 +26,14 @@ TIER1_RESTRICT_ZONES=arpa
 TIER1_ZONES=(dn42)
 
 ## tier 1 arpa
-SERVER_NAME_TIER1_ARPA="unknown.in-addr-dn-servers.arpa " # /24 
+SERVER_NAME_TIER1_ARPA="unknown.in-addr-dn-servers.arpa" # /24 
 RFC2317_ROOT=arpa
 
 ##
-SERVER_NAME_TIER2_ARPA="unknown.in-addr-dn-servers.arpa " # < /24
+SERVER_NAME_TIER2_ARPA="unknown.in-addr-dn-servers.arpa" # < /24
 
 ##
 AVAILABLE_TLDS="dn42|arpa"
-
+ICANN_AXFR_ENABLED_ROOTS=(k.root-servers.net b.root-servers.net)
 ##
 MASTERS=""

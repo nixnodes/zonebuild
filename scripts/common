@@ -13,9 +13,9 @@ cu_add_master_zone()
     if [ -f "${1}" ]; then
             cat ${1} | grep -q \"${2}\" && return 1
     else
-    	echo "## Include in /etc/named.conf:
+    	echo "# Include in /etc/named.conf:
 #
-##  include \"${1}\";
+include \"${1}\";
 #
 " > ${1}
     fi
@@ -49,10 +49,16 @@ generate_forward_zone ()
 		echo "${3}" | egrep -q 'nons' || {
         		sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)$/${2}. IN NS \1./p" $1 >> /tmp/zb.common.$$.tmp
         		sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)[ \t].*$/${2}. IN NS \1./p" $1 >> /tmp/zb.common.$$.tmp
-        }
-        
+        }        
         
         cat /tmp/zb.common.$$.tmp | uniq
+}
+
+#[1]: zone [2]: server [3]: flags 
+axfr_zone()
+{
+	dig @${2} ${3} ${1} AXFR
+	return $?
 }
 
 
