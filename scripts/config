@@ -34,6 +34,10 @@ SERVER_NAME_TIER2_ARPA="unknown.in-addr-dn-servers.arpa" # < /24
 
 ##
 AVAILABLE_TLDS="dn42|arpa"
-ICANN_AXFR_ENABLED_ROOTS=(k.root-servers.net b.root-servers.net)
+ICANN_AXFR_ENABLED_ROOTS=(193.0.14.129 192.228.79.201)
 ##
 MASTERS=""
+
+BASE_PATH=`dirname ${0}`
+
+[ -f "${BASE_PATH}/config.user" ] && . ${BASE_PATH}/config.user 
