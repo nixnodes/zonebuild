@@ -15,7 +15,7 @@ cu_add_master_zone()
     else
     	echo "# Include in /etc/named.conf:
 #
-include \"${1}\";
+#include \"${1}\";
 #
 " > ${1}
     fi
