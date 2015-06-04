@@ -45,7 +45,6 @@ get_icann_root_zone() {
 [ ${MERGE_ICANN_ROOT} -gt 0 ] && get_icann_root_zone | egrep -v '^arpa.' >> ${OUT_PATH}/tier0/root.db
 
 cu_add_master_zone ${OUT_PATH}/tier0/named.conf "." ${OUT_PATH}/tier0/root.db
-cu_add_master_zone ${OUT_PATH}/tier0/named.conf "arpa" ${OUT_PATH}/tier0/arpa.db
 cu_add_master_zone ${OUT_PATH}/tier0/named.conf "in-addr-servers.dn42" ${OUT_PATH}/tier0/in-addr-servers.dn42.db
 cu_add_master_zone ${OUT_PATH}/tier0/named.conf "root-servers.dn42" ${OUT_PATH}/tier0/root-servers.dn42.db
 cu_add_master_zone ${OUT_PATH}/tier0/named.conf "zone-servers.dn42" ${OUT_PATH}/tier0/zone-servers.dn42.db
