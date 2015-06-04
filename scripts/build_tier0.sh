@@ -89,20 +89,20 @@ done
 b_path=`echo ${b_path} | sed -r 's/\|$//'`
 b_path="${b_path}"')$'
 
-icann_root=`get_icann_root_zone | egrep '^\.' | \
-		egrep 'root-servers.net' | egrep 'IN.*NS'`
-
-
-for octet in ${OCTETS[@]}; do
-	[ ${octet} = 10 ] && continue
-	i=0
-	while [ ${i} -lt 256 ]; do
-		echo ${i}.${octet} | egrep -q "${b_path}" || {
-			echo "${icann_root}" | sed -r "s/^./${i}.${octet}.in-addr.arpa./" >> ${OUT_PATH}/tier0/${octet}.in-addr.arpa.db			
-		}
-		i=$[i+1]
-	done	
-done
-
-
+[ ${MERGE_ICANN_ROOT} -gt 0 ] && {
+	icann_root=`get_icann_root_zone | egrep '^\.' | \
+			egrep 'root-servers.net' | egrep 'IN.*NS'`
+	
+	
+	for octet in ${OCTETS[@]}; do
+		[ ${octet} = 10 ] && continue
+		i=0
+		while [ ${i} -lt 256 ]; do
+			echo ${i}.${octet} | egrep -q "${b_path}" || {
+				echo "${icann_root}" | sed -r "s/^./${i}.${octet}.in-addr.arpa./" >> ${OUT_PATH}/tier0/${octet}.in-addr.arpa.db			
+			}
+			i=$[i+1]
+		done	
+	done
+}
 exit 0
