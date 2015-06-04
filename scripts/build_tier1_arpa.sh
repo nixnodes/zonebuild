@@ -61,6 +61,23 @@ case "${3}" in
  	;;
 esac
 
+[ ${TIER1_IPV6} -eq 1 ] && {
+
+	export SUBNETTR_CONTACT=${CONTACT_EMAIL}
+	export SUBNETTR_PERSON=${PERSON_HANDLE}
+	export SUBNETTR_PRIMARY=${SERVER_NAME_TIER1_ARPA}
+	export SUBNETTR_REVISION=$REVISION
+	
+	run_subnettr || {
+		echo ${0}: subnettr failed
+		exit 2;
+	}
+	
+	for zone in ${ARPA_IPV6_ZONES[@]}; do
+		cu_add_master_zone ${OUT_PATH}/tier1/named.conf "${zone}.ip6.arpa" ${OUT_PATH}/ipv6/db.${zone}.ip6.arpa
+	done
+}
+
 
 
 exit 0
