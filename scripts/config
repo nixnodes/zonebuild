@@ -26,6 +26,8 @@ TIER1_RESTRICT_ZONES=arpa
 TIER1_FORWARD_ZONES_RESTRICT=(arpa root-servers.dn42 zone-servers.dn42)
 TIER1_ZONES=(dn42)
 
+ARPA_ROOT_ZONE=172.20.0.0_14
+
 ## tier 1 arpa
 SERVER_NAME_TIER1_ARPA="unknown.in-addr-servers.dn42" # /24 
 RFC2317_ROOT=arpa

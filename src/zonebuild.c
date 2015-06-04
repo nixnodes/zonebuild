@@ -309,13 +309,11 @@ commit_inetnum4_item(char *name, __inet_obj object)
   object->pfx_class = get_ip4_class_from_size(object->pfx_size);
 
   /* get netmask */
-  object->pfx_mask = (UINT_MAX << (32 - object->pfx_size));
+  object->pfx_mask = (uint32_t) (UINT64_MAX << (32 - object->pfx_size));
 
   /* get last address in range */
-  uint32_t *ip_end = ((uint32_t*) object->ip_end.data), *ip_start =
-      ((uint32_t*) object->ip_start.data);
 
-  *ip_end = *ip_start + ~(object->pfx_mask);
+  *object->d_ip_end = *object->d_ip_start | ~object->pfx_mask;
 
   if (object->pfx_size > (32 - 8))
     {
@@ -538,7 +536,7 @@ load_inetnum4_item(char *name, void *data)
   DEBUG(
       "load_inetnum4_item: %s - %s (%u) | [%s] - %u %u - %u, class %hhu\n",
       st_b0, st_b1, object->pfx_size, st_b2, *object->d_ip_start, ~object->pfx_mask,
-      (object->flags & F_INETNUM_ROOT), object->pfx_class);
+      (object->flags & F_INETNUM_ROOT) > 0, object->pfx_class);
 
   return 0;
 }
@@ -680,14 +678,16 @@ link_hierarchy_tree(_def_ophdr option_header, __inet_obj object,
           goto e_loop;
         }
 
+      IP_PRINT(&ptr_object->ip_start, st_b0);
+
       if ( ptr_object->pfx_size <= object->pfx_size ||
           !((*ptr_object->d_ip_start >= *object->d_ip_start) &&
               (*ptr_object->d_ip_end <= *object->d_ip_end)) )
         {
+          /*DEBUG("link_hierarchy_tree: %s * out of range:  %s/%hhu %u %u - %u %u\n",b_level,st_b0,
+           ptr_object->pfx_size, *object->d_ip_start, *object->d_ip_end, *ptr_object->d_ip_start , *ptr_object->d_ip_end);*/
           goto e_loop;
         }
-
-      IP_PRINT(&ptr_object->ip_start, st_b0);
 
       if ( ptr_object == parent )
         {
