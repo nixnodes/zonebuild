@@ -23,7 +23,9 @@ USAGE_STR="USAGE: ./`basename ${0}` <options> .."
 
 rm -f ${OUT_PATH}/tier[0-9]/*.db ${OUT_PATH}/tier[0-9]/*.conf
 
-[ ${PULL_BEFORE_BUILD} -gt 0 ] && mtn_pull ${REGISTRY_PATH} || exit $?
+for hook in "${PRE_BUILD_HOOKS[@]}"; do
+	eval "${hook}"
+done
 
 [[ "${@}" = *root* ]] && {
 	echo "${0}: [T0] processing tier0.."	
@@ -61,3 +63,6 @@ rm -f ${OUT_PATH}/tier[0-9]/*.db ${OUT_PATH}/tier[0-9]/*.conf
 	}
 }
 
+for hook in "${POST_BUILD_HOOKS[@]}"; do
+	eval "${hook}"
+done

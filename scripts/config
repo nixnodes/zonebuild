@@ -51,6 +51,11 @@ SYNC_SERVERS=(  "mtn://172.22.177.77/?net.dn42.*"
 #                "mtn://46.4.248.203/?net.dn42.*"
 )
 
+##
+PRE_BUILD_HOOKS=("[ ${PULL_BEFORE_BUILD} -gt 0 ] && mtn_pull ${REGISTRY_PATH} || exit $?")
+
+POST_BUILD_HOOKS=("[ -e /etc/init.d/named ] && /etc/init.d/named restart" 
+"systemctl restart bind9")
 
 BASE_PATH=`dirname ${0}`
 
