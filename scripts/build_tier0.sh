@@ -11,7 +11,7 @@ mkdir -p ${OUT_PATH}/tier0
 generate_soa ${SERVER_NAME_TIER0} "" > ${OUT_PATH}/tier0/root.db
 generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ""   >> ${OUT_PATH}/tier0/root.db
 #generate_forward_zone ${REGISTRY_PATH}/dns/dn42 dn42 noglue >> ${OUT_PATH}/tier0/root.db
-generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 arpa noglue >> ${OUT_PATH}/tier0/root.db
+#generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 arpa noglue >> ${OUT_PATH}/tier0/root.db
 
 for item in ${TIER1_ZONES[@]}; do	
 	generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 ${item} >> ${OUT_PATH}/tier0/root.db
@@ -61,8 +61,9 @@ for item in ${ARPA_ZONES[@]}; do
 	}
 	generate_soa ${SERVER_NAME_TIER0} ${ZNAME}.in-addr.arpa > ${OUT_PATH}/tier0/${ZNAME}.in-addr.arpa.db
 	generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ${ZNAME}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/${ZNAME}.in-addr.arpa.db
-	generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${ZNAME}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/${ZNAME}.in-addr.arpa.db
+	generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${ZNAME}.in-addr.arpa >> ${OUT_PATH}/tier0/${ZNAME}.in-addr.arpa.db
 	cu_add_master_zone ${OUT_PATH}/tier0/named.conf ${ZNAME}.in-addr.arpa ${OUT_PATH}/tier0/${ZNAME}.in-addr.arpa.db
+	generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${ZNAME}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/root.db
 done
 
 exit 0
