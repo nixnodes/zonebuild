@@ -13,7 +13,7 @@ USAGE_STR="USAGE: ./`basename ${0}` <root zone path>"
 	mkdir -p ${OUT_PATH}/tier2 
 
 RFC2317_ALL=(`${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum --root ${1} \
-				-lom "rfc2317 = 1 && ([p:nscount]) = 0" \
+				-lom "rfc2317 = 1" -lom "([p:nscount]) = 0 || nslevel = 1" \
 	 			--noshadow -print '{?Q:({?C:1:startip\}.\{?C:2:startip\}.\{?C:3:startip\})}{:n}' | sort -u`)
 
 for i in ${RFC2317_ALL[@]}; do
