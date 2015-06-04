@@ -52,10 +52,13 @@ SYNC_SERVERS=(  "mtn://172.22.177.77/?net.dn42.*"
 )
 
 ##
-PRE_BUILD_HOOKS=("[ ${PULL_BEFORE_BUILD} -gt 0 ] && mtn_pull ${REGISTRY_PATH} || exit $?")
+PRE_BUILD_HOOKS=("[ ${PULL_BEFORE_BUILD} -gt 0 ] && { 
+[ -f "${BASE_PATH}/config.user" ] && . ${BASE_PATH}/config.user; mtn_pull ${REGISTRY_PATH} || exit $? 
+}"
 
-POST_BUILD_HOOKS=("[ -e /etc/init.d/named ] && /etc/init.d/named restart" 
-"systemctl restart bind9")
+)
+
+POST_BUILD_HOOKS=("rndc reload")
 
 BASE_PATH=`dirname ${0}`
 
