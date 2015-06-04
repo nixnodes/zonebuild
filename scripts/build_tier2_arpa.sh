@@ -12,7 +12,8 @@ USAGE_STR="USAGE: ./`basename ${0}` <root zone path>"
 ! [ -d "${OUT_PATH}/tier2" ] && 
 	mkdir -p ${OUT_PATH}/tier2 
 
-RFC2317_ALL=(`${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum -lom "rfc2317 = 1 && ([p:nscount]) = 0" --root ${1} \
+RFC2317_ALL=(`${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum --root ${1} \
+				-lom "rfc2317 = 1" \( -lom "([p:nscount]) = 0 && ([p:pfxsize]) = 24" -or -lom "([p:pfxsize]) < 24" \) \
 	 			--noshadow -print '{?Q:({?C:1:startip\}.\{?C:2:startip\}.\{?C:3:startip\})}{:n}' | sort -u`)
 
 for i in ${RFC2317_ALL[@]}; do

@@ -43,21 +43,21 @@ case "${2}" in
 	;;
 esac
 
-build_rfc2317_supernets()
+build_rfc2317_supernet_records()
 {
-	RFC2317_ALL=(`${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum -lom "rfc2317 = 1 && ([p:nscount]) = 0" --root ${1} \
+	RFC2317_ALL=(`${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum --root ${1} \
+				-lom "rfc2317 = 1" \( -lom "([p:nscount]) = 0 && ([p:pfxsize]) = 24" -or -lom "([p:pfxsize]) < 24" \) \
 	 			--noshadow -print '{?Q:({?C:1:startip\}.\{?C:2:startip\}.\{?C:3:startip\})}{:n}' | sort -u`)
 
 	for i in ${RFC2317_ALL[@]}; do		
 		generate_forward_zone ${REGISTRY_PATH}/dns/arpa ${i}.in-addr.arpa noglue >> ${OUT_PATH}/tier1/${ROOT_FN}.db
 		
 	done
-	
 }
 
 case "${3}" in 
 	1)
-		build_rfc2317_supernets ${1}
+		build_rfc2317_supernet_records ${1}
  	;;
 esac
 
