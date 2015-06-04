@@ -32,7 +32,7 @@ cu_add_master_zone ${OUT_PATH}/tier1/named.conf ${ROOT_FN}.arpa ${OUT_PATH}/tier
 		exit 2
 	}
 }
- 	
+
 case "${2}" in 
 	1)
 	${ZBUILD} -build inetnum --path  ${REGISTRY_PATH}/inetnum --root ${1} \
@@ -50,7 +50,7 @@ build_rfc2317_supernet_records()
 	 			--noshadow -print '{?Q:({?C:1:startip\}.\{?C:2:startip\}.\{?C:3:startip\})}{:n}' | sort -u`)
 
 	for i in ${RFC2317_ALL[@]}; do		
-		generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${i}.in-addr.arpa noglue >> ${OUT_PATH}/tier1/${ROOT_FN}.db
+		generate_forward_zone ${REGISTRY_PATH}/dns/dn42-servers.dn42 ${i}.in-addr.arpa noglue >> ${OUT_PATH}/tier1/${ROOT_FN}.db
 		
 	done
 }
