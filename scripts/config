@@ -56,7 +56,6 @@ BASE_PATH=`dirname ${0}`
 
 ##
 PRE_BUILD_HOOKS=("[ \${PULL_BEFORE_BUILD} -gt 0 ] && {
-[ -f "\${BASE_PATH}/config.user" ] && . \${BASE_PATH}/config.user
 mtn_pull \${REGISTRY_PATH} || exit $?
 }"
 
