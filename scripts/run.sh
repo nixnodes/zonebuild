@@ -53,8 +53,23 @@ done
 			echo "${0}: [T1-A]: processing ${item}"
 			${BASE_PATH}/build_tier1_arpa.sh ${item} 0 1 || {
 				echo "${0}: tier 1 arpa failed: ${?}"
-			}
+			}			
 		done
+		[ ${TIER1_IPV6} -eq 1 ] && {
+			export SUBNETTR_CONTACT=${CONTACT_EMAIL}
+			export SUBNETTR_PERSON=${PERSON_HANDLE}
+			export SUBNETTR_PRIMARY=${SERVER_NAME_TIER1_ARPA}
+			export SUBNETTR_REVISION=$REVISION
+			
+			run_subnettr || {
+				echo ${0}: subnettr failed
+				exit 2;
+			}
+			
+			for zone in ${ARPA_IPV6_ZONES[@]}; do
+				cu_add_master_zone ${OUT_PATH}/tier1/named.conf "${zone}.ip6.arpa" ${OUT_PATH}/ipv6/db.${zone}.ip6.arpa
+			done
+		}
 	}
 	[[ "${ARPA_TIERS}" = *2*  ]] && {
 		for item in ${ARPA_ZONES[@]}; do
