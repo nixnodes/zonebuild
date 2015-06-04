@@ -5,10 +5,7 @@
 
 USAGE_STR="USAGE: ./`basename ${0}`"
 
-
 mkdir -p ${OUT_PATH}/tier0
-
-rm -f ${OUT_PATH}/tier0/*
 
 generate_soa ${SERVER_NAME_TIER0} "" > ${OUT_PATH}/tier0/root.db
 generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ""   >> ${OUT_PATH}/tier0/root.db
