@@ -98,12 +98,11 @@ for octet in ${OCTETS[@]}; do
 	i=0
 	while [ ${i} -lt 256 ]; do
 		echo ${i}.${octet} | egrep -q "${b_path}" || {
-			echo "${icann_root}" | sed -r "s/^./${i}.${octet}.in-addr.arpa./" >> ${OUT_PATH}/tier0/${octet}.in-addr.arpa.db
+			echo "${icann_root}" | sed -r "s/^./${i}.${octet}.in-addr.arpa./" >> ${OUT_PATH}/tier0/${octet}.in-addr.arpa.db			
 		}
 		i=$[i+1]
-	done
+	done	
 done
-
 
 
 exit 0
