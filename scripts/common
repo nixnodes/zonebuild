@@ -61,12 +61,6 @@ axfr_zone()
 	return $?
 }
 
-SYNC_SERVERS=(  "mtn://mtn.nixnodes.dn42/?net.dn42.*"
-		"mtn://mtn.crest.dn42/?net.dn42.*"
-                "mtn://dn42.smrsh.net/?net.dn42.*"
-#                "mtn://46.4.248.203/?net.dn42.*"
-)
-
 mtn_io_all ()
 {
   [ -z "$1" ] && echo "missing cmd" && return 2
