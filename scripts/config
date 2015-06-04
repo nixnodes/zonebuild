@@ -23,6 +23,7 @@ MERGE_ICANN_ROOT=1
 SERVER_NAME_TIER1="unknown.zone-servers.dn42"
 
 TIER1_RESTRICT_ZONES=arpa
+TIER1_FORWARD_ZONES_RESTRICT=(arpa root-servers.dn42 zone-servers.dn42)
 TIER1_ZONES=(dn42)
 
 ## tier 1 arpa
