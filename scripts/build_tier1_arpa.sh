@@ -17,7 +17,7 @@ ROOT_FN=`${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum --root ${1} -l
 	exit 1
 }
 
-T1_ROOTS=`generate_forward_zone ${REGISTRY_PATH}/dns/arpa ${ROOT_FN}.arpa noglue`
+T1_ROOTS=`generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${ROOT_FN}.arpa noglue`
 
 ${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum --root ${1} --server "${SERVER_NAME_TIER1_ARPA}" --email "${CONTACT_EMAIL}" \
 	-lom "nscount > 0 && rfc2317 = 0 && nslevel <= 2 && nslevel > 1 && (pfxsize%8) = 0" \
@@ -50,7 +50,7 @@ build_rfc2317_supernet_records()
 	 			--noshadow -print '{?Q:({?C:1:startip\}.\{?C:2:startip\}.\{?C:3:startip\})}{:n}' | sort -u`)
 
 	for i in ${RFC2317_ALL[@]}; do		
-		generate_forward_zone ${REGISTRY_PATH}/dns/arpa ${i}.in-addr.arpa noglue >> ${OUT_PATH}/tier1/${ROOT_FN}.db
+		generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${i}.in-addr.arpa noglue >> ${OUT_PATH}/tier1/${ROOT_FN}.db
 		
 	done
 }

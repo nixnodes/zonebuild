@@ -30,7 +30,7 @@ rm -f ${OUT_PATH}/tier[0-9]/*.db ${OUT_PATH}/tier[0-9]/*.conf
 	[[ "${ARPA_TIERS}" = *1*  ]] && {
 		for item in ${ARPA_ZONES[@]}; do
 			echo "${0}: [T1-A]: processing ${item}"
-			${BASE_PATH}/build_tier1_arpa.sh ${item} 1 1
+			${BASE_PATH}/build_tier1_arpa.sh ${item} 0 1
 		done
 	}
 	[[ "${ARPA_TIERS}" = *2*  ]] && {
