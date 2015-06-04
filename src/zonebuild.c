@@ -1098,8 +1098,6 @@ init(void)
     {
       ERROR("main: root zone '%s' contains no valid 'nserver' records\n",
           global_opt.root);
-      retval = 2;
-      goto cleanup;
     }
 
   if ( NULL != global_opt.loc_serv_name)
