@@ -25,13 +25,17 @@ rm -f ${OUT_PATH}/tier[0-9]/*.db ${OUT_PATH}/tier[0-9]/*.conf
 
 [[ "${@}" = *root* ]] && {
 	echo "${0}: [T0] processing tier0.."	
-	${BASE_PATH}/build_tier0.sh dn42	
+	${BASE_PATH}/build_tier0.sh dn42 || {
+		echo "${0}: tier 0 failed: ${?}"
+	}
 }
 
 [[ "${@}" = *zone* ]] && {
 	for item in ${TIER1_ZONES[@]}; do	
 		echo "${0}: [T1] processing '${item}'"	
-		${BASE_PATH}/build_tier1.sh ${item}
+		${BASE_PATH}/build_tier1.sh ${item} || {
+		echo "${0}: tier 1 failed: ${?}"
+	}
 	done
 }
 
@@ -39,13 +43,18 @@ rm -f ${OUT_PATH}/tier[0-9]/*.db ${OUT_PATH}/tier[0-9]/*.conf
 	[[ "${ARPA_TIERS}" = *1*  ]] && {
 		for item in ${ARPA_ZONES[@]}; do
 			echo "${0}: [T1-A]: processing ${item}"
-			${BASE_PATH}/build_tier1_arpa.sh ${item} 0 1
+			${BASE_PATH}/build_tier1_arpa.sh ${item} 0 1 || {
+				echo "${0}: tier 1 arpa failed: ${?}"
+			}
 		done
 	}
 	[[ "${ARPA_TIERS}" = *2*  ]] && {
 		for item in ${ARPA_ZONES[@]}; do
 			echo "${0}: [T2-A]: processing ${item}"
-			${BASE_PATH}/build_tier2_arpa.sh ${item}	 
+			${BASE_PATH}/build_tier2_arpa.sh ${item}	
+			${BASE_PATH}/build_tier1_arpa.sh ${item} 0 1 || {
+				echo "${0}: tier 2 arpa failed: ${?}"
+			} 
 		done
 	}
 }
