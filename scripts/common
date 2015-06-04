@@ -61,6 +61,34 @@ axfr_zone()
 	return $?
 }
 
+SYNC_SERVERS=(  "mtn://mtn.nixnodes.dn42/?net.dn42.*"
+		"mtn://mtn.crest.dn42/?net.dn42.*"
+                "mtn://dn42.smrsh.net/?net.dn42.*"
+#                "mtn://46.4.248.203/?net.dn42.*"
+)
+
+mtn_io_all ()
+{
+  [ -z "$1" ] && echo "missing cmd" && return 2
+  r=0
+  for i in "${SYNC_SERVERS[@]}"; do
+        mtn $1 $i $2; r=$[r+$?]
+  done
+  return $r
+}
+
+# [1]: directory
+mtn_pull() {
+	old_dir=${PWD}
+	cd ${1}
+	
+	mtn_io_all pull &&
+		mtn merge &&
+			mtn update || return 2
+			
+	cd ${old_dir}
+}
+
 
 print_usage_and_exit() 
 {

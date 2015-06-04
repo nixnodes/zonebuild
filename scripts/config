@@ -42,6 +42,9 @@ AVAILABLE_TLDS="dn42|arpa"
 ##
 MASTERS=""
 
+##
+PULL_BEFORE_BUILD=1
+
 BASE_PATH=`dirname ${0}`
 
 [ -f "${BASE_PATH}/config.user" ] && . ${BASE_PATH}/config.user 
