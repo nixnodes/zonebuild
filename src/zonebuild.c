@@ -298,7 +298,7 @@ commit_inetnum4_item(char *name, __inet_obj object)
 
   int c = atoi(size);
 
-  if (c > 32 || c < 1)
+  if (c > 32 || c < 0)
     {
       ERROR("commit_inetnum_item: '%s': prefix size out of range: '%d'\n", name,
           c);
