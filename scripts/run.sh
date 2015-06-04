@@ -1,4 +1,13 @@
 #!/bin/bash
+#
+# Read config first, then copy your settings to config.user 
+#
+# Build options:
+#   root
+#   zone
+#   arpa
+#
+# Define arpa build tiers in scripts/config
 
 BASE_PATH=`dirname ${0}`
 
