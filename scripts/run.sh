@@ -51,7 +51,7 @@ done
 	[[ "${ARPA_TIERS}" = *1*  ]] && {
 		for item in ${ARPA_ZONES[@]}; do
 			echo "${0}: [T1-A]: processing ${item}"
-			${BASE_PATH}/build_tier1_arpa.sh ${item} 0 1 || {
+			${BASE_PATH}/build_tier1_arpa.sh ${item} ${BUILD_GLUE_RECORDS} ${BUILD_RFC2317_SUPERNETS} || {
 				echo "${0}: tier 1 arpa failed: ${?}"
 			}			
 		done
@@ -67,8 +67,7 @@ done
 			run_subnettr || {
 				echo ${0}: subnettr failed
 				exit 2;
-			}
-				
+			}				
 			
 			for zone in ${ARPA_IPV6_ZONES[@]}; do
 				echo ${OUT_PATH}/ipv6/db.${zone}.ip6.arpa
