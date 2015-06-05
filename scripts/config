@@ -29,7 +29,7 @@ TIER0_IPV6=1
 ## tier 1
 SERVER_NAME_TIER1="unknown.zone-servers.dn42"
 
-TIER1_FORWARD_ZONES_RESTRICT=(arpa root-servers.dn42 zone-servers.dn42)
+TIER1_FORWARD_ZONES_RESTRICT=(root-servers.dn42 zone-servers.dn42 dn42-servers.dn42)
 TIER1_ZONES=(dn42 hack ffhh)
 TIER1_IPV6=1
 
