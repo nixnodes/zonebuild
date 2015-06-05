@@ -86,11 +86,7 @@ def print_header(file, time, contact, primary, person, f):
   print('$TTL 300', file=f)
   print('{file}. IN SOA {primary}. {contact}. ({time} 14400 3600 1209600 300)'.format(file=file, time=time, contact=contact, primary=primary), file=f)
   print('@ IN TXT {0},person={1},rev={2},ts={3}'.format(primary, person, revision, UTC_DT), file=f)
-  print('_person._info IN TXT {0}'.format(person), file=f)
-  print('_contact._info IN TXT {0}'.format(contact), file=f)
-  print('_rev._info IN TXT {0}'.format(revision), file=f)
-  print('_ts._info IN TXT {0}'.format(UTC_DT), file=f)
-  print('_primary._info IN CNAME {0}'.format(primary), file=f)
+
 
 def print_glue(ns, addr, f):
     if is_ipv6(addr):
