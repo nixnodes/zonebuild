@@ -64,12 +64,12 @@
   
 * Build root zones:
   
-  `/etc/bind/zonebuild/scripts/run.sh arpa root -update` 
+  `/etc/bind/zonebuild/scripts/run.sh root -update` 
 
   * $REGISTRY_BASE_PATH/tier0/
 
 * Build resolver files:
   
-  `/etc/bind/zonebuild/scripts/run.sh arpa res -update` 
+  `/etc/bind/zonebuild/scripts/run.sh res -update` 
 
   * $REGISTRY_BASE_PATH/res/
