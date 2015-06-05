@@ -54,5 +54,22 @@
   
   Default settings are stored in`scripts/config`, all changes should be put in `scripts/config.user`
 
+## Run:
 
+* Build reverse and forward tier1 zones, self update before running:
+
+  `/etc/bind/zonebuild/scripts/run.sh arpa zone -update`
   
+  * $REGISTRY_BASE_PATH/tier[12]/
+  
+* Build root zones:
+  
+  `/etc/bind/zonebuild/scripts/run.sh arpa root -update` 
+
+  * $REGISTRY_BASE_PATH/tier0/
+
+* Build resolver files:
+  
+  `/etc/bind/zonebuild/scripts/run.sh arpa res -update` 
+
+  * $REGISTRY_BASE_PATH/res/
