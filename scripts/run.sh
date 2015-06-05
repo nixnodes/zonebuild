@@ -68,9 +68,12 @@ done
 				echo ${0}: subnettr failed
 				exit 2;
 			}
-			
+				
 			
 			for zone in ${ARPA_IPV6_ZONES[@]}; do
+				echo ${OUT_PATH}/ipv6/db.${zone}.ip6.arpa
+				sed -i -r "/^${zone}.ip6.arpa\. IN NS.*/d" ${OUT_PATH}/ipv6/db.${zone}.ip6.arpa
+				generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${zone}.ip6.arpa noglue >> ${OUT_PATH}/ipv6/db.${zone}.ip6.arpa	
 				cu_add_master_zone ${OUT_PATH}/tier1/named.conf "${zone}.ip6.arpa" ${OUT_PATH}/ipv6/db.${zone}.ip6.arpa
 			done
 		}
