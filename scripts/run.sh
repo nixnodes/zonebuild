@@ -3,9 +3,15 @@
 # Read config first, then copy your settings to config.user 
 #
 # Build options:
-#   root
-#   zone
-#   arpa
+#   root   - root (tier0) zone
+#   zone   - dn42., hack., etc.. (tier1)
+#   arpa   - in-addr.arpa, ip6.arpa, rfc2317 (tier1,tier2)
+#   res    - resolver config and hint zone
+#
+# Options:
+#
+#  -nosync - disable mtn registry repo pulls
+#  -update - perform git-pull before processing and re-enter
 #
 # Define arpa build tiers in scripts/config
 
@@ -14,12 +20,11 @@ BASE_PATH=`dirname ${0}`
 . "${BASE_PATH}/config" || exit 2
 . "${BASE_PATH}/common" || exit 2
 
-USAGE_STR="USAGE: ./`basename ${0}` <options> .."
+USAGE_STR="USAGE: ./`basename ${0}` <build options> .. <options>"
 
 [[ -z "${@}" ]] && {
 	print_usage_and_exit	
 }
-
 
 rm -f ${OUT_PATH}/tier[0-9]/*.db ${OUT_PATH}/tier[0-9]/*.conf
 
