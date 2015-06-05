@@ -9,11 +9,16 @@ mkdir -p ${OUT_PATH}/tier0
 
 generate_soa ${SERVER_NAME_TIER0} "" > ${OUT_PATH}/tier0/root.db
 generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ""   >> ${OUT_PATH}/tier0/root.db
-#generate_forward_zone ${REGISTRY_PATH}/dns/dn42 dn42 noglue >> ${OUT_PATH}/tier0/root.db
+
 #generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 arpa noglue >> ${OUT_PATH}/tier0/root.db
 
 for item in ${TIER1_ZONES[@]}; do	
-	generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 ${item} >> ${OUT_PATH}/tier0/root.db
+	if [[ "${item}" != "dn42" ]]; then
+		generate_forward_zone ${REGISTRY_PATH}/dns/${item} ${item} >> ${OUT_PATH}/tier0/root.db
+	else
+		generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 ${item} >> ${OUT_PATH}/tier0/root.db
+	fi
+	
 done
 
 generate_soa ${SERVER_NAME_TIER0} root.dn42 > ${OUT_PATH}/tier0/root.dn42.db
