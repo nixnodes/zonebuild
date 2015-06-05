@@ -66,6 +66,8 @@ done
 				exit 2;
 			}
 			
+			mkdir -p ${OUT_PATH}/ipv6
+			
 			for zone in ${ARPA_IPV6_ZONES[@]}; do
 				cu_add_master_zone ${OUT_PATH}/tier1/named.conf "${zone}.ip6.arpa" ${OUT_PATH}/ipv6/db.${zone}.ip6.arpa
 			done
