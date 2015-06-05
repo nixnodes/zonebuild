@@ -88,7 +88,10 @@ done
 	}
 }
 
-
+[[ "${@}" = *res* ]] && {
+	echo "${0}: [R] processing"	
+	${BASE_PATH}/build_resolver.sh
+}
 
 for hook in "${POST_BUILD_HOOKS[@]}"; do
 	eval "${hook}"

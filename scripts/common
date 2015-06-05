@@ -31,6 +31,48 @@ cu_add_master_zone()
 	return 0
 }
 
+#[1]:config file  [2]:zone name [3]:forwarders
+cu_add_forwarders_zone(){
+	if [ -f "${1}" ]; then
+            cat ${1} | grep -q \"${2}\" && return 1
+    else
+    	echo "# Include in /etc/named.conf:
+#
+#include \"${1}\";
+#
+" > ${1}
+    fi
+    
+	echo "zone \"${2}\" {
+        type forward;
+        fowarders {
+                ${3}
+                };        
+        };
+	" >> ${1}
+	return 0
+}
+
+#[1]:config file  [2]:zone name [3]: file
+cu_add_hint_zone(){
+	if [ -f "${1}" ]; then
+            cat ${1} | grep -q \"${2}\" && return 1
+    else
+    	echo "# Include in /etc/named.conf:
+#
+#include \"${1}\";
+#
+" > ${1}
+    fi
+    
+	echo "zone \"${2}\" {
+        type hint;
+        file \"`echo ${3} | sed -r 's/^[.]{1,2}//'`\";
+	" >> ${1}
+	return 0
+}
+
+
 #[1]: nameserver [2]: zone
 generate_soa()
 {
@@ -38,21 +80,25 @@ generate_soa()
         echo "${2}. IN SOA ${1}. ${CONTACT_EMAIL}. (`date +%s` 14400 3600 1209600 7200)"
 }
 
-#[1]: registry file [2]:zone name [3]: options
+#[1]: registry file [2]:zone name [3]: options [4]: ttl
 generate_forward_zone ()
 {
 		rm -f /tmp/zb.common.$$.tmp
-		echo "${3}" | egrep -q 'noglue' || {
-                sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)[ \t]\+\([0-9]\+\.[0-9.]\+\)[ \t]*$/\1. IN A \2/p" $1 >> /tmp/zb.common.$$.tmp
-                sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)[ \t]\+\([0-9a-fA-F]*:[0-9a-fA-F:]\+\)[ \t]*$/\1. IN AAAA \2/p" $1 >> /tmp/zb.common.$$.tmp
-        }
+		
 		echo "${3}" | egrep -q 'nons' || {
-        		sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)$/${2}. IN NS \1./p" $1 >> /tmp/zb.common.$$.tmp
-        		sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)[ \t].*$/${2}. IN NS \1./p" $1 >> /tmp/zb.common.$$.tmp
-        }        
+        		sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)$/${2}. ${4} IN NS \1./p" $1 >> /tmp/zb.common.$$.tmp
+        		sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)[ \t].*$/${2}. ${4} IN NS \1./p" $1 >> /tmp/zb.common.$$.tmp
+        }  
+		
+		echo "${3}" | egrep -q 'noglue' || {
+                sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)[ \t]\+\([0-9]\+\.[0-9.]\+\)[ \t]*$/\1. ${4} IN A \2/p" $1 >> /tmp/zb.common.$$.tmp
+                sed -n "s/^nserver:[ \t]\+\([^ \t]\+\)[ \t]\+\([0-9a-fA-F]*:[0-9a-fA-F:]\+\)[ \t]*$/\1. ${4} IN AAAA \2/p" $1 >> /tmp/zb.common.$$.tmp
+        }
+		      
         
         cat /tmp/zb.common.$$.tmp | uniq
 }
+
 
 #[1]: zone [2]: server [3]: flags 
 axfr_zone()

@@ -17,12 +17,12 @@ ROOT_FN=`${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum --root ${1} -l
 	exit 1
 }
 
-T1_ROOTS=`generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${ROOT_FN}.arpa noglue`
+#T1_ROOTS=`generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${ROOT_FN}.arpa noglue`
 
 ${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum --root ${1} --server "${SERVER_NAME_TIER1_ARPA}" --email "${CONTACT_EMAIL}" \
-	-lom "nscount > 0 && rfc2317 = 0 && nslevel <= 2 && nslevel > 1 && (pfxsize%8) = 0" \
+	-lom "nscount > 0 && rfc2317 = 0 && nslevel <= 2  && (pfxsize%8) = 0" \
  	-print "{?L:pfxsize >= 24:(?Q:(\{?C:1:startip\}.)):(noop)}{?L:pfxsize >= 16:(?Q:(\{?C:2:startip\}.)):(noop)}{?L:pfxsize >= 8:(?Q:(\{?C:3:startip\}.)):(noop)}in-addr.arpa. {(?P:(?p: )#%-20s)}  {:t} IN {:t}NS  {:t} {?rd:(nserver):([.]+$)}. {:n}" \
- 	-preprint "\$TTL ${DEFAULT_TTL}{:n}{?L:pfxsize >= 24:(?Q:(\{?C:1:startip\}.)):(noop)}{?L:pfxsize >= 16:(?Q:(\{?C:2:startip\}.)):(noop)}{?L:pfxsize >= 8:(?Q:(\{?C:3:startip\}.)):(noop)}in-addr.arpa. {(?P:(?p: )#%-20s)}  {:t} IN {:t}SOA {:t} {server}. {email}. ({curtime} 14400 3600 9600 ${DEFAULT_TTL}){:n}${T1_ROOTS}{:n}" \
+ 	-preprint "\$TTL ${DEFAULT_TTL}{:n}{?L:pfxsize >= 24:(?Q:(\{?C:1:startip\}.)):(noop)}{?L:pfxsize >= 16:(?Q:(\{?C:2:startip\}.)):(noop)}{?L:pfxsize >= 8:(?Q:(\{?C:3:startip\}.)):(noop)}in-addr.arpa. {(?P:(?p: )#%-20s)}  {:t} IN {:t}SOA {:t} {server}. {email}. ({curtime} 14400 3600 9600 ${DEFAULT_TTL}){:n}" \
  	> ${OUT_PATH}/tier1/${ROOT_FN}.db || rm -f ${OUT_PATH}/tier1/${ROOT_FN}.db
  	
 	

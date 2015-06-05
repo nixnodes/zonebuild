@@ -114,8 +114,8 @@ b_path="${b_path}"')$'
 	PARENT_ZONES=()
 	for zone in ${ARPA_IPV6_ZONES[@]}; do
 		zone_parent=`echo ${zone} | sed -r 's/^[0-9a-f]+\.//'`
-		generate_soa ${SERVER_NAME_TIER0} ${zone}.ip6.arpa > ${OUT_PATH}/tier0/db.${zone_parent}.ip6.arpa
-		generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ${zone}.ip6.arpa noglue >> ${OUT_PATH}/tier0/db.${zone_parent}.ip6.arpa
+		generate_soa ${SERVER_NAME_TIER0} ${zone_parent}.ip6.arpa > ${OUT_PATH}/tier0/db.${zone_parent}.ip6.arpa
+		generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ${zone_parent}.ip6.arpa noglue >> ${OUT_PATH}/tier0/db.${zone_parent}.ip6.arpa
 		generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${zone}.ip6.arpa noglue >> ${OUT_PATH}/tier0/db.${zone_parent}.ip6.arpa
 		cu_add_master_zone ${OUT_PATH}/tier0/named.conf ${zone_parent}.ip6.arpa ${OUT_PATH}/tier0/db.${zone_parent}.ip6.arpa
 		PROC_ZONES=(${PROC_ZONES[@]} ${zone})
