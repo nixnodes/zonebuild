@@ -140,6 +140,13 @@ run_subnettr(){
 	return $?
 }
 
+#[1]: server [2]: branch
+git_pull()
+{
+	${GIT} pull git://${1}/nixnodes/zonebuild ${2}
+	return $?
+}
+
 print_usage_and_exit() 
 {
 	echo "${USAGE_STR}"
