@@ -67,9 +67,9 @@ BASE_PATH=`dirname ${0}`
 PRE_BUILD_HOOKS=("[ \${PULL_BEFORE_BUILD} -gt 0 ] && {
 mtn_pull \${REGISTRY_PATH} || exit $?
 }"
-"[[ \"\${@}\" = *git*  ]] && {
+"[[ \"\${@}\" = *update*  ]] && {
 git_pull \${GIT_ADDRESS} ${GIT_BRANCH}
-${0} `echo ${@} | sed -r 's/git//g'`
+${0} `echo ${@} | sed -r 's/update//g'`
 exit $?
 }"
 )
