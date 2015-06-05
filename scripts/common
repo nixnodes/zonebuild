@@ -131,6 +131,15 @@ mtn_pull() {
 	cd ${old_dir}
 }
 
+# [1]: directory
+mtn_clone() {
+	old_dir=${PWD}
+	cd ${1}
+	mtn clone ${SYNC_SERVERS[0]} || exit $?
+	cd ${old_dir}
+}
+
+
 run_subnettr(){
 	save_path=${PWD}
 	cd ${REGISTRY_PATH}

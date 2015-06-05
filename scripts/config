@@ -5,7 +5,8 @@ GIT=git
 #
 ##use absolute paths below
 #
-REGISTRY_PATH=/tmp/net.dn42.registry/data
+REGISTRY_BASE_PATH=/tmp
+REGISTRY_PATH=${REGISTRY_BASE_PATH}/net.dn42.registry/data
 OUT_PATH=/home/reboot/workspace/zonebuild/scripts/build
 #
 
@@ -54,10 +55,10 @@ MASTERS=""
 ##
 PULL_BEFORE_BUILD=1
 
-SYNC_SERVERS=(  "mtn://172.22.177.77/?net.dn42.*"
-#				"mtn://172.22.228.11/?net.dn42.*"
-#         		"mtn://198.199.185.161/?net.dn42.*"
-#                "mtn://46.4.248.203/?net.dn42.*"
+SYNC_SERVERS=(  "mtn://172.22.177.77/?net.dn42.registry"
+#				"mtn://172.22.228.11/?net.dn42.registry"
+#         		"mtn://198.199.185.161/?net.dn42.registry"
+#                "mtn://46.4.248.203/?net.dn42.registry"
 )
 
 ##
@@ -73,7 +74,12 @@ PRE_BUILD_HOOKS=(
 	}"
 
 	"[ \${PULL_BEFORE_BUILD} -gt 0 ] && {
-		mtn_pull \${REGISTRY_PATH} || exit $?
+		if ! [ -d \${REGISTRY_PATH} ]; then
+			echo \"${0}: cloning to \${REGISTRY_BASE_PATH}..\"
+			mtn_clone \${REGISTRY_BASE_PATH} || exit $?
+		else
+			mtn_pull \${REGISTRY_PATH} || exit $?
+		fi
 	}"
 
 )
