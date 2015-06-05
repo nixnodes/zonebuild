@@ -47,7 +47,7 @@ AVAILABLE_TLDS="dn42|arpa"
 
 ##
 GIT_ADDRESS=192.30.252.131
-
+GIT_BRANCH=master
 ##
 MASTERS=""
 
@@ -67,7 +67,11 @@ BASE_PATH=`dirname ${0}`
 PRE_BUILD_HOOKS=("[ \${PULL_BEFORE_BUILD} -gt 0 ] && {
 mtn_pull \${REGISTRY_PATH} || exit $?
 }"
-"[[ \"\${@}\" = *git*  ]] && git_pull \${GIT_ADDRESS} master"
+"[[ \"\${@}\" = *git*  ]] && {
+git_pull \${GIT_ADDRESS} ${GIT_BRANCH}
+${0} `echo ${@} | sed -r 's/git//g'`
+exit $?
+}"
 )
 
 POST_BUILD_HOOKS=("rndc reload")
