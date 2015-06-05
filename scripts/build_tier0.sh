@@ -105,11 +105,26 @@ b_path="${b_path}"')$'
 }
 
 [ ${TIER0_IPV6} -eq 1 ] && {	
+	PROC_ZONES=()
+	PARENT_ZONES=()
 	for zone in ${ARPA_IPV6_ZONES[@]}; do
-		generate_soa ${SERVER_NAME_TIER0} ${zone}.ip6.arpa > ${OUT_PATH}/tier0/db.${zone}.ip6.arpa
-		generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ${zone}.ip6.arpa noglue >> ${OUT_PATH}/tier0/db.${zone}.ip6.arpa
-		generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${zone}.ip6.arpa >> ${OUT_PATH}/tier0/db.${zone}.ip6.arpa
-		cu_add_master_zone ${OUT_PATH}/tier0/named.conf ${zone}.ip6.arpa ${OUT_PATH}/tier0/db.${zone}.ip6.arpa
+		zone_parent=`echo ${zone} | sed -r 's/^[0-9a-f]+\.//'`
+		generate_soa ${SERVER_NAME_TIER0} ${zone}.ip6.arpa > ${OUT_PATH}/tier0/db.${zone_parent}.ip6.arpa
+		generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ${zone}.ip6.arpa noglue >> ${OUT_PATH}/tier0/db.${zone_parent}.ip6.arpa
+		generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${zone}.ip6.arpa noglue >> ${OUT_PATH}/tier0/db.${zone_parent}.ip6.arpa
+		cu_add_master_zone ${OUT_PATH}/tier0/named.conf ${zone_parent}.ip6.arpa ${OUT_PATH}/tier0/db.${zone_parent}.ip6.arpa
+		PROC_ZONES=(${PROC_ZONES[@]} ${zone})
+		PARENT_ZONES=(${PARENT_ZONES[@]} ${zone_parent})
+	done
+		
+	for p_zone in ${PARENT_ZONES[@]}; do
+		i=0
+		while [ ${i} -lt 16 ]; do
+			zone_c=`printf %x ${i}`.${p_zone}
+			[[ "${PROC_ZONES[@]}" = *"${zone_c}"* ]] && i=$[i+1] && continue
+			echo "${icann_root}" | sed -r "s/^./${zone_c}.ip6.arpa./" >> ${OUT_PATH}/tier0/db.${p_zone}.ip6.arpa	
+			i=$[i+1]
+		done
 	done
 }
 
