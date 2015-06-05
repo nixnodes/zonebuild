@@ -42,7 +42,7 @@ generate_forward_zone ${REGISTRY_PATH}/dns/dn42-servers.dn42 dn42-servers.dn42  
 for file in ${REGISTRY_PATH}/dns/*.${1}; do
 	zone=`basename $file`
 	[[ "${TIER1_FORWARD_ZONES_RESTRICT[@]}" = *${zone}* ]] && continue
-	echo ${zone}
+	printf "%-40s\r" ${zone}
 	generate_forward_zone ${file} ${zone} >> ${OUT_PATH}/tier1/${1}.db 
 done
 

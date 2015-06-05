@@ -64,14 +64,18 @@ SYNC_SERVERS=(  "mtn://172.22.177.77/?net.dn42.*"
 BASE_PATH=`dirname ${0}`
 
 ##
-PRE_BUILD_HOOKS=("[ \${PULL_BEFORE_BUILD} -gt 0 ] && {
-mtn_pull \${REGISTRY_PATH} || exit $?
-}"
-"[[ \"\${@}\" = *update*  ]] && {
-git_pull \${GIT_ADDRESS} ${GIT_BRANCH}
-${0} `echo ${@} | sed -r 's/update//g'`
-exit $?
-}"
+PRE_BUILD_HOOKS=(
+
+	"[[ \"\${@}\" = *-update*  ]] && {
+		git_pull \${GIT_ADDRESS} ${GIT_BRANCH}
+		${0} `echo ${@} | sed -r 's/\-update//g'`
+		exit $?
+	}"
+
+	"[ \${PULL_BEFORE_BUILD} -gt 0 ] && {
+		mtn_pull \${REGISTRY_PATH} || exit $?
+	}"
+
 )
 
 POST_BUILD_HOOKS=("rndc reload")
