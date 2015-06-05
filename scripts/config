@@ -28,7 +28,7 @@ TIER0_IPV6=1
 SERVER_NAME_TIER1="unknown.zone-servers.dn42"
 
 TIER1_FORWARD_ZONES_RESTRICT=(arpa root-servers.dn42 zone-servers.dn42)
-TIER1_ZONES=(dn42)
+TIER1_ZONES=(dn42 hack)
 TIER1_IPV6=1
 
 ARPA_ROOT_ZONE=172.20.0.0_14
