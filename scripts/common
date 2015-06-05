@@ -45,7 +45,7 @@ cu_add_forwarders_zone(){
     
 	echo "zone \"${2}\" {
         type forward;
-        fowarders {
+        forwarders {
                 ${3}
                 };        
         };
