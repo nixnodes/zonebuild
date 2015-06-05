@@ -154,7 +154,10 @@ run_subnettr(){
 #[1]: server [2]: branch
 git_pull()
 {
+	save_path=${PWD}
+	cd ${BASE_PATH}
 	${GIT} pull git://${1}/nixnodes/zonebuild ${2}
+	cd ${save_path}
 	return $?
 }
 
