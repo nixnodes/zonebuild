@@ -61,13 +61,14 @@ done
 			export SUBNETTR_PRIMARY=${SERVER_NAME_TIER1_ARPA}
 			export SUBNETTR_REVISION=$REVISION
 			
+			mkdir -p ${OUT_PATH}/ipv6
+			cp ${BASE_PATH}/ipv6/subnettr.py ${OUT_PATH}/ipv6
+			
 			run_subnettr || {
 				echo ${0}: subnettr failed
 				exit 2;
 			}
 			
-			mkdir -p ${OUT_PATH}/ipv6
-			cp ${BASE_PATH}/ipv6/subnettr.py ${OUT_PATH}/ipv6
 			
 			for zone in ${ARPA_IPV6_ZONES[@]}; do
 				cu_add_master_zone ${OUT_PATH}/tier1/named.conf "${zone}.ip6.arpa" ${OUT_PATH}/ipv6/db.${zone}.ip6.arpa

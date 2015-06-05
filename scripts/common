@@ -87,8 +87,8 @@ run_subnettr(){
 	save_path=${PWD}
 	cd ${REGISTRY_PATH}
 	cd ..
-	grep nserver data/inet6num/* | sed -E 's_:nserver:[\ \t]+_,_' | sed -E 's_[\ \t]+_,_' | sed s/_/,/ | sed s_data/inet6num/__ > ${BASE_PATH}/ipv6/inet6.txt
-	cd  ${BASE_PATH}/ipv6
+	grep nserver data/inet6num/* | sed -E 's_:nserver:[\ \t]+_,_' | sed -E 's_[\ \t]+_,_' | sed s/_/,/ | sed s_data/inet6num/__ > ${OUT_PATH}/ipv6/inet6.txt
+	cd  ${OUT_PATH}/ipv6
     ./subnettr.py
     cd ${save_path}
 	return $?
