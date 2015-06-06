@@ -79,11 +79,17 @@ for item in ${ARPA_ZONES[@]}; do
 		generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ${o_octet}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/${o_octet}.in-addr.arpa.db
 		#generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ${o_octet}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/root.db
 		cu_add_master_zone ${OUT_PATH}/tier0/named.conf ${o_octet}.in-addr.arpa ${OUT_PATH}/tier0/${o_octet}.in-addr.arpa.db
-		OCTETS=(${OCTETS[@]} ${o_octet})
+		if [[ "${ZNAME}" != "${o_octet}" ]]; then
+			OCTETS=(${OCTETS[@]} ${o_octet})
+		else
+			OCTETS=(${OCTETS[@]} :${o_octet})
+		fi
 		touch ${OUT_PATH}/tmp/az-${o_octet}.bt0.tmp
 	} 
 	
-	generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${ZNAME}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/${o_octet}.in-addr.arpa.db
+	if [[ "${ZNAME}" != "${o_octet}" ]]; then
+		generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${ZNAME}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/${o_octet}.in-addr.arpa.db
+	fi
 	
 	b_path="${b_path}${ZNAME}|"
 	
@@ -92,22 +98,33 @@ done
 b_path=`echo ${b_path} | sed -r 's/\|$//'`
 b_path="${b_path}"')$'
 
-[ ${MERGE_ICANN_ROOT} -gt 0 ] && {
-	icann_root=`get_icann_root_zone | egrep '^\.' | \
-			egrep 'root-servers.net' | egrep 'IN.*NS'`
-	
-	
-	for octet in ${OCTETS[@]}; do
-		[ ${octet} = 10 ] && continue
-		i=0
-		while [ ${i} -lt 256 ]; do
-			echo ${i}.${octet} | egrep -q "${b_path}" || {
-				echo "${icann_root}" | sed -r "s/^./${i}.${octet}.in-addr.arpa./" >> ${OUT_PATH}/tier0/${octet}.in-addr.arpa.db			
-			}
-			i=$[i+1]
-		done	
-	done
+icann_root=`get_icann_root_zone | egrep '^\.' | \
+		egrep 'root-servers.net' | egrep 'IN.*NS'`
+		
+generate_icann_entries() {
+	echo "${icann_root}" | sed -r "s/^./${1}.${2}.in-addr.arpa./" >> ${OUT_PATH}/tier0/${2}.in-addr.arpa.db	
 }
+
+generate_native_entries() {
+	generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${1}.${2}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/${2}.in-addr.arpa.db	
+}
+
+for octet in "${OCTETS[@]}"; do
+	if [[ "${octet:0:1}" = ":" ]]; then
+		octet=${octet:1}
+		call=generate_native_entries
+	else
+		call=generate_icann_entries
+	fi
+	i=0
+	while [ ${i} -lt 256 ]; do
+		echo ${i}.${octet} | egrep -q "${b_path}" || {
+			${call} ${i} ${octet}	
+		}
+		i=$[i+1]
+	done	
+done
+
 
 [ ${TIER0_IPV6} -eq 1 ] && {	
 	PROC_ZONES=()
