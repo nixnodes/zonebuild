@@ -123,7 +123,7 @@ generate_icann_entries() {
 	
 		if [ ${#ICANN_ITEM_NS[@]} -gt 0 ]; then			
 			for ns_item in ${ICANN_ITEM_NS[@]}; do
-				echo -e "${1}.${2}.in-addr.arpa\tIN\tNS\t${ns_item}" >> ${OUT_PATH}/tier0/${2}.in-addr.arpa.db	
+				echo -e "${1}.${2}.in-addr.arpa.\tIN\tNS\t${ns_item}." >> ${OUT_PATH}/tier0/${2}.in-addr.arpa.db	
 			done
 		fi
 	fi
