@@ -39,7 +39,7 @@ done
 
 
 
-cu_add_forwarders_zone ${OUT_PATH}/res/named-forwards.conf '.' "${forwarders}"
+cu_add_forwarders_zone ${OUT_PATH}/res/named.conf '.' "${forwarders}"
 
 exit 0
 
