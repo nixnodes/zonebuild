@@ -37,7 +37,7 @@ for zone in ${TIER1_ZONES[@]}; do
 	cu_add_forwarders_zone ${OUT_PATH}/res/named-forwards.conf ${zone} "${forwarders}"
 done
 
-#exit 0
+exit 0
 
 #cu_add_forwarders_zone ${OUT_PATH}/res/named-forwards.conf '.' "${forwarders}"
 
