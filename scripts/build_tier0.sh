@@ -50,7 +50,11 @@ get_icann_root_zone()
 get_zone_ns_tr() 
 {
 	for item in ${ICANN_AXFR_ENABLED_ROOTS[@]}; do
-		${DIG} @${item} ${1} +trace A | egrep "^${1}." | grep $'IN\tNS\t' | cut -f5 | sed -r 's/\.$//' && break
+		res=`${DIG} @${item} ${1} +trace A` && {
+			echo "${res}" | egrep "^${1}." | grep $'IN\tNS\t' | cut -f5 | sed -r 's/\.$//'
+			break
+		}
+		
 	done	
 }
 
@@ -108,8 +112,9 @@ for item in ${ARPA_ZONES[@]}; do
 	
 done
 
-b_path=`echo ${b_path} | sed -r 's/\|$//'`
-b_path="${b_path}"')$'
+b_path="${b_path}"'1[6-9].172|2[4-9].172|(30|21).172)$'
+
+echo $b_path
 
 icann_root=`get_icann_root_zone | egrep '^\.' | \
 		egrep 'root-servers.net' | egrep 'IN.*NS'`
