@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:42
+#@REVISION:43
 
 . `dirname ${0}`/config || exit 2
 . `dirname ${0}`/common || exit 2
@@ -135,7 +135,7 @@ generate_native_entries() {
 	generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${1}.${2}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/${2}.in-addr.arpa.db	
 }
 
-echo "${0}: [T0]: generating nameserver information (will take a while).."
+echo "${0}: [T0]: resolving nameserver information (will take a while).."
 
 for octet in "${OCTETS[@]}"; do
 	if [[ "${octet:0:1}" = ":" ]]; then

@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:42
+#@REVISION:43
 
 . `dirname ${0}`/config || exit 2
 . `dirname ${0}`/common || exit 2
@@ -24,6 +24,7 @@ for i in ${RFC2317_ALL[@]}; do
 
 	echo "\$TTL ${DEFAULT_TTL}
 ${zname}.		IN 	SOA		${SERVER_NAME_TIER2_ARPA}. ${CONTACT_EMAIL}. (`date +%s` 14400 3600 1200 7200)
+`generate_version_txt ${zname}`
 \$ORIGIN	${zname}." >> ${OUT_PATH}/tier2/${ziname}.db
 	
 	generate_forward_zone ${REGISTRY_PATH}/dns/dn42-servers.dn42 ${zname} noglue>>  $OUT_PATH/tier2/${ziname}.db 
