@@ -85,7 +85,7 @@ generate_soa()
 
 generate_version_txt()
 {
-	echo "${1}. IN TXT \"ver=${VERSION},person=${PERSON_HANDLE},rev=`mtn_get_revision ${REGISTRY_PATH}`\""
+	echo "${1}. IN TXT \"ver=${VERSION},person=${PERSON_HANDLE},rev=`mtn_get_revision ${REGISTRY_PATH}`,ts=`date +%s`\""
 }
 
 #[1]: registry file [2]:zone name [3]: options [4]: ttl
