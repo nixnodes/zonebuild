@@ -114,8 +114,6 @@ done
 
 b_path="${b_path}"'1[6-9].172|2[4-9].172|(30|21).172)$'
 
-echo $b_path
-
 icann_root=`get_icann_root_zone | egrep '^\.' | \
 		egrep 'root-servers.net' | egrep 'IN.*NS'`
 		
