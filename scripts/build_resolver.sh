@@ -36,6 +36,8 @@ for zone in ${TIER1_ZONES[@]}; do
 	cu_add_forwarders_zone ${OUT_PATH}/res/named-forwards.conf ${zone} "${forwarders}"
 done
 
+exit 0
+
 echo "${0}: [R]: generating RFC1918 zones"
 
 i=16
@@ -51,4 +53,3 @@ generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 10.in-addr.arpa nog
 cu_add_master_zone ${OUT_PATH}/res/named.conf 10.in-addr.arpa ${OUT_PATH}/res/10.in-addr.arpa.db
 
 
-exit 0
