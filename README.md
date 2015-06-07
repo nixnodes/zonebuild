@@ -56,12 +56,11 @@
 
 ## Run:
 
-* Build reverse and forward tier1 zones, self update before running:
+* Build reverse and forward tier1 and tier2 zones, self update before running:
 
   `/etc/bind/zonebuild/scripts/run.sh arpa zone -update`
   
-  * include "$REGISTRY_BASE_PATH/tier1/named.conf";
-  * include "$REGISTRY_BASE_PATH/tier2/named.conf";
+  * include "$REGISTRY_BASE_PATH/tier(1|2)/named.conf";
   
 * Build root zones:
   
