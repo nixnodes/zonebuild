@@ -84,7 +84,7 @@ PRE_BUILD_HOOKS=(
 
 )
 
-POST_BUILD_HOOKS=("rndc reload")
+POST_BUILD_HOOKS=("/usr/sbin/rndc reload")
 
 
 [ -f "${BASE_PATH}/config.user" ] && . ${BASE_PATH}/config.user 
