@@ -9,7 +9,7 @@ rm -f ${OUT_PATH}/res/*
 
 mkdir -p ${OUT_PATH}/res
 
-#cu_add_hint_zone ${OUT_PATH}/res/named.conf '.' ${OUT_PATH}/res/hints.db
+cu_add_hint_zone ${OUT_PATH}/res/named.conf '.' ${OUT_PATH}/res/hints.db
 
 generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 "" "" 3600000 >> ${OUT_PATH}/res/hints.db
 
@@ -41,7 +41,6 @@ done
 
 cu_add_forwarders_zone ${OUT_PATH}/res/named.conf '.' "${forwarders}"
 
-exit 0
 
 echo "${0}: [R]: generating RFC1918 zones"
 
