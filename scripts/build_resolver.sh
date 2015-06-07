@@ -46,9 +46,9 @@ while [ ${i} -lt 32 ]; do
 	i=$[i+1]
 done
 
-generate_soa a.resolvers.dn42 0.in-addr.arpa > ${OUT_PATH}/res/10.in-addr.arpa.db
+generate_soa a.resolvers.dn42 10.in-addr.arpa > ${OUT_PATH}/res/10.in-addr.arpa.db
 generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 10.in-addr.arpa noglue >> ${OUT_PATH}/res/10.in-addr.arpa.db
-cu_add_master_zone ${OUT_PATH}/res/named.conf  10.in-addr.arpa ${OUT_PATH}/res/10.in-addr.arpa.db
+cu_add_master_zone ${OUT_PATH}/res/named.conf 10.in-addr.arpa ${OUT_PATH}/res/10.in-addr.arpa.db
 
 
 exit 0
