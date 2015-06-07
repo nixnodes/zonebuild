@@ -2,6 +2,7 @@
 ZBUILD=zbuild
 DIG=dig
 GIT=git
+MTN=mtn
 #
 ##use absolute paths below
 #
@@ -33,16 +34,13 @@ TIER1_FORWARD_ZONES_RESTRICT=(root-servers.dn42 zone-servers.dn42 dn42-servers.d
 TIER1_ZONES=(dn42 hack ffhh)
 TIER1_IPV6=1
 
-ARPA_ROOT_ZONE=172.20.0.0_14
-
 ## tier 1 arpa
 SERVER_NAME_TIER1_ARPA="unknown.in-addr-servers.dn42" # /24 
 RFC2317_ROOT=arpa
 BUILD_GLUE_RECORDS=0
-
+BUILD_RFC2317_SUPERNETS=1
 ##
 SERVER_NAME_TIER2_ARPA="unknown.in-addr-servers.dn42" # < /24
-BUILD_RFC2317_SUPERNETS=1
 ##
 AVAILABLE_TLDS="dn42|arpa"
 

@@ -1,4 +1,6 @@
 #!/bin/bash
+#@VERSION:0
+#@REVISION:42
 
 . `dirname ${0}`/config || exit 2
 . `dirname ${0}`/common || exit 2

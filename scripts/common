@@ -80,6 +80,7 @@ generate_soa()
 {
 		echo '$TTL' ${DEFAULT_TTL}
         echo "${2}. IN SOA ${1}. ${CONTACT_EMAIL}. (`date +%s` 14400 3600 1209600 7200)"
+        echo "${2}. IN TXT \"ver=${VERSION},person=${PERSON_HANDLE},rev=`mtn_get_revision ${REGISTRY_PATH}`\""
 }
 
 #[1]: registry file [2]:zone name [3]: options [4]: ttl
@@ -114,7 +115,7 @@ mtn_io_all ()
   [ -z "$1" ] && echo "missing cmd" && return 2
   r=0
   for i in "${SYNC_SERVERS[@]}"; do
-        mtn $1 $i $2; r=$[r+$?]
+        ${MTN} $1 $i $2; r=$[r+$?]
   done
   return $r
 }
@@ -125,8 +126,8 @@ mtn_pull() {
 	cd ${1}
 	
 	mtn_io_all pull &&
-		mtn merge &&
-			mtn update || return 2
+		${MTN} merge &&
+			${MTN} update || return 2
 			
 	cd ${old_dir}
 }
@@ -135,10 +136,17 @@ mtn_pull() {
 mtn_clone() {
 	old_dir=${PWD}
 	cd ${1}
-	mtn clone ${SYNC_SERVERS[0]} || exit $?
+	${MTN} clone ${SYNC_SERVERS[0]} || exit $?
 	cd ${old_dir}
 }
 
+mtn_get_revision()
+{
+	old_dir=${PWD}
+	cd ${1}
+	${MTN} status|grep Revision:|cut -d ' ' -f 2
+	cd ${old_dir}
+}
 
 run_subnettr(){
 	save_path=${PWD}
@@ -160,6 +168,29 @@ git_pull()
 	cd ${save_path}
 	return $?
 }
+
+script_get_vr()
+{
+	[ -f "${1}" ] || {
+		echo 0
+		return 0
+	}
+	g_vers=`cat "${1}" | egrep "^#@${2}" | sed -r "s/(^#@${2}:)//g"`
+	
+	[ -z "${g_vers}" ] && {
+		g_vers=0
+	}
+	
+	echo -n ${g_vers}
+}
+
+
+script_join_verstring()
+{
+	echo "`script_get_vr "${1}" VERSION`.`script_get_vr "${1}" REVISION`"
+}
+
+VERSION=`script_join_verstring ${0}`
 
 print_usage_and_exit() 
 {
