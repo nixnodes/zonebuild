@@ -60,7 +60,8 @@
 
   `/etc/bind/zonebuild/scripts/run.sh arpa zone -update`
   
-  * include "$REGISTRY_BASE_PATH/tier[12]/named.conf";
+  * include "$REGISTRY_BASE_PATH/tier1/named.conf";
+  * include "$REGISTRY_BASE_PATH/tier2/named.conf";
   
 * Build root zones:
   
