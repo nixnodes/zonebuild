@@ -39,7 +39,7 @@ done
 
 #exit 0
 
-cu_add_forwarders_zone ${OUT_PATH}/res/named-forwards.conf '.' "${forwarders}"
+#cu_add_forwarders_zone ${OUT_PATH}/res/named-forwards.conf '.' "${forwarders}"
 
 echo "${0}: [R]: generating RFC1918 zones"
 
