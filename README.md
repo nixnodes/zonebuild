@@ -56,6 +56,8 @@
 
 ## Run:
 
+Execute with absolute path:
+
 * Build reverse and forward tier1 and tier2 zones, self update before running:
 
   `/etc/bind/zonebuild/scripts/run.sh arpa zone -update`
