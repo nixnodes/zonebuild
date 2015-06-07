@@ -42,6 +42,7 @@ generate_soa ${SERVER_NAME_TIER1} dn42-servers.dn42 > ${OUT_PATH}/tier1/dn42-ser
 generate_forward_zone ${REGISTRY_PATH}/dns/dn42-servers.dn42 dn42-servers.dn42  >>  ${OUT_PATH}/tier1/dn42-servers.dn42.db 
 
 for file in ${REGISTRY_PATH}/dns/*.${1}; do
+	[ -f "${file}" ] || continue
 	zone=`basename $file`
 	[[ "${TIER1_FORWARD_ZONES_RESTRICT[@]}" = *${zone}* ]] && continue
 	printf "%-40s\r" ${zone}
