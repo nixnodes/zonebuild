@@ -7,7 +7,7 @@
 
   ```sh
   apt-get update
-  apt-get install bind9
+  apt-get install bind9 monotone git
   cd /etc/bind
   ```
 * Clone:
