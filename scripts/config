@@ -67,8 +67,8 @@ SYNC_SERVERS=(  "mtn://172.22.177.77/?net.dn42.registry"
 ##############################################################################
 BASE_PATH=`dirname ${0}`
 ##
-PRE_BUILD_HOOKS=(
 
+OPTION_HOOKS=(
 	"[[ \"\${@}\" = *-update*  ]] && {
 		git_pull \${GIT_ADDRESS} ${GIT_BRANCH}
 		\${0} \`echo \${@} | sed -r 's/\-update//g'\`
@@ -85,6 +85,9 @@ PRE_BUILD_HOOKS=(
 			exit 2
 		fi
 	}'
+)
+
+PRE_BUILD_HOOKS=(	
 
 	'[ ${PULL_BEFORE_BUILD} -gt 0 ] && {
 		if ! [ -d ${REGISTRY_PATH} ]; then

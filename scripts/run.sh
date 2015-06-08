@@ -36,6 +36,10 @@ rm -f ${OUT_PATH}/tier[0-9]/*.db ${OUT_PATH}/tier[0-9]/*.conf
 	PULL_BEFORE_BUILD=0
 }
 
+for hook in "${OPTION_HOOKS[@]}"; do
+	eval "${hook}"
+done
+
 for hook in "${PRE_BUILD_HOOKS[@]}"; do
 	eval "${hook}"
 done
