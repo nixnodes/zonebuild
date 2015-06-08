@@ -58,9 +58,14 @@ SYNC_SERVERS=(  "mtn://172.22.177.77/?net.dn42.registry"
 #                "mtn://46.4.248.203/?net.dn42.registry"
 )
 
-##
-BASE_PATH=`dirname ${0}`
 
+##
+##############################################################################
+##                                                                          ##
+## DO NOT COPY ANY VARIABLE OR FUNCTION BELOW INTO USER CONFIGURATION FILES ##
+##                                                                          ##
+##############################################################################
+BASE_PATH=`dirname ${0}`
 ##
 PRE_BUILD_HOOKS=(
 
@@ -94,6 +99,17 @@ PRE_BUILD_HOOKS=(
 
 POST_BUILD_HOOKS=('/usr/sbin/rndc reload')
 
+
+## Use these functions to add hooks from user configuration files
+register_pre_hook()
+{
+	PRE_BUILD_HOOKS+=("${1}")
+}
+
+register_post_hook()
+{
+	POST_BUILD_HOOKS+=("${1}")
+}
 
 [ -f "${BASE_PATH}/${ucfile}" ] && . "${BASE_PATH}/${ucfile}" || {
 	echo "${0}: could not load ${BASE_PATH}/${ucfile}"

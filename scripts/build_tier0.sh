@@ -5,7 +5,7 @@
 if [ -n "${1}" ]; then
 	ucfile="${1}"
 else
-	ucfile="`dirname ${0}`/config"
+	ucfile="config.user"
 fi
 
 . `dirname ${0}`/config || exit 2
