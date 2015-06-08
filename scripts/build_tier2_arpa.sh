@@ -56,8 +56,8 @@ ${zname}.		IN 	SOA		${SERVER_NAME_TIER2_ARPA}. ${CONTACT_EMAIL}. (`date +%s` 144
 
 done
 
-generate_soa ${SERVER_NAME_TIER2} dn42-servers.dn42 > ${OUT_PATH}/tier2/dn42-servers.dn42.db 
+generate_soa ${SERVER_NAME_TIER2_ARPA} dn42-servers.dn42 > ${OUT_PATH}/tier2/dn42-servers.dn42.db 
 generate_forward_zone ${REGISTRY_PATH}/dns/dn42-servers.dn42 dn42-servers.dn42 >> ${OUT_PATH}/tier2/dn42-servers.dn42.db 
-cu_add_master_zone ${OUT_PATH}/tier2/named.conf "dn42-servers.dn42" ${OUT_PATH}/tier2/dn42-servers.dn42.db
+cu_add_master_zone ${OUT_PATH}/tier2/named.conf dn42-servers.dn42 ${OUT_PATH}/tier2/dn42-servers.dn42.db
 
 exit 0
