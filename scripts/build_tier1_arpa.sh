@@ -1,6 +1,12 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:44
+#@REVISION:45
+
+if [ -n "${4}" ]; then
+	ucfile="`dirname ${0}`/${4}"
+else
+	ucfile="`dirname ${0}`/config.user"
+fi
 
 . `dirname ${0}`/config || exit 2
 . `dirname ${0}`/common || exit 2

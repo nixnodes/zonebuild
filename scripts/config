@@ -71,12 +71,8 @@ PRE_BUILD_HOOKS=(
 	}"
 	
 	"[[ \"\${@}\" = *-config*  ]] && {
-		int_opt=-c
-		conf=\`get_opt \"\${@}\"\` 
-		[ -f \"\${BASE_PATH}/\${conf}\" ] && . \"\${BASE_PATH}/\${conf}\" || {
-			echo \"\${0}: \${BASE_PATH}/\${conf} not found\"
-			exit 2
-		}
+		int_opt=-config
+		NCONF=\`get_opt \"\${@}\"\` 
 	}"
 
 	"[ \${PULL_BEFORE_BUILD} -gt 0 ] && {
@@ -93,4 +89,6 @@ PRE_BUILD_HOOKS=(
 POST_BUILD_HOOKS=("/usr/sbin/rndc reload")
 
 
-[ -f "${BASE_PATH}/config.user" ] && . ${BASE_PATH}/config.user 
+[ -f "${BASE_PATH}/${ucfile}" ] && . "${BASE_PATH}/${ucfile}" || echo -n
+
+

@@ -1,6 +1,12 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:42
+#@REVISION:43
+
+if [ -n "${2}" ]; then
+	ucfile="${2}"
+else
+	ucfile="${BASE_PATH}/config"
+fi
 
 . `dirname ${0}`/config || exit 2
 . `dirname ${0}`/common || exit 2

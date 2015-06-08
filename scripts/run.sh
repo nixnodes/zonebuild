@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:42
+#@REVISION:43
 #
 # Read config first, then copy your settings to config.user 
 #
@@ -38,9 +38,13 @@ for hook in "${PRE_BUILD_HOOKS[@]}"; do
 	eval "${hook}"
 done
 
+[ -n "${NCONF}" ] && {
+	shc_append="${NCONF}"
+}
+
 [[ "${@}" = *root* ]] && {
 	echo "${0}: [T0] processing tier0.."	
-	${BASE_PATH}/build_tier0.sh dn42 || {
+	eval "${BASE_PATH}/build_tier0.sh ${shc_append}" || {
 		echo "${0}: tier 0 failed: ${?}"
 	}
 }
@@ -48,7 +52,7 @@ done
 [[ "${@}" = *zone* ]] && {
 	for item in ${TIER1_ZONES[@]}; do	
 		echo "${0}: [T1] processing '${item}'"	
-		${BASE_PATH}/build_tier1.sh ${item} || {
+		eval "${BASE_PATH}/build_tier1.sh ${item} ${shc_append}" || {
 		echo "${0}: tier 1 failed: ${?}"
 	}
 	done
@@ -56,9 +60,10 @@ done
 
 [[ "${@}" = *arpa* ]] && {
 	[[ "${ARPA_TIERS}" = *1*  ]] && {
+		
 		for item in ${ARPA_ZONES[@]}; do
 			echo "${0}: [T1-A]: processing ${item}"
-			${BASE_PATH}/build_tier1_arpa.sh ${item} ${BUILD_GLUE_RECORDS} ${BUILD_RFC2317_SUPERNETS} || {
+			eval "${BASE_PATH}/build_tier1_arpa.sh ${item} ${BUILD_GLUE_RECORDS} ${BUILD_RFC2317_SUPERNETS} ${shc_append}" || {
 				echo "${0}: tier 1 arpa failed: ${?}"
 			}			
 		done
@@ -86,8 +91,8 @@ done
 	[[ "${ARPA_TIERS}" = *2*  ]] && {
 		for item in ${ARPA_ZONES[@]}; do
 			echo "${0}: [T2-A]: processing ${item}"
-			${BASE_PATH}/build_tier2_arpa.sh ${item}	
-			${BASE_PATH}/build_tier1_arpa.sh ${item} 0 1 || {
+			${BASE_PATH}/build_tier2_arpa.sh ${item} ${shc_append}	
+			eval "${BASE_PATH}/build_tier1_arpa.sh ${item} 0 1 ${shc_append}" || {
 				echo "${0}: tier 2 arpa failed: ${?}"
 			} 
 		done
@@ -96,7 +101,7 @@ done
 
 [[ "${@}" = *res* ]] && {
 	echo "${0}: [R] processing"	
-	${BASE_PATH}/build_resolver.sh
+	${BASE_PATH}/build_resolver.sh ${shc_append}
 }
 
 for hook in "${POST_BUILD_HOOKS[@]}"; do
