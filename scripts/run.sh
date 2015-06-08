@@ -19,7 +19,7 @@
 
 BASE_PATH=`dirname ${0}`
 
-ucfile="${BASE_PATH}/config"
+ucfile="config.user"
 
 . "${BASE_PATH}/config" || exit 2
 . "${BASE_PATH}/common" || exit 2
@@ -46,6 +46,7 @@ done
 
 [[ "${@}" = *root* ]] && {
 	echo "${0}: [T0] processing tier0.."	
+	
 	eval "${BASE_PATH}/build_tier0.sh ${shc_append}" || {
 		echo "${0}: tier 0 failed: ${?}"
 	}

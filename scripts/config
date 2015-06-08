@@ -70,25 +70,33 @@ PRE_BUILD_HOOKS=(
 		exit \$?
 	}"
 	
-	"[[ \"\${@}\" = *-config*  ]] && {
-		int_opt=-config
-		NCONF=\`get_opt \"\${@}\"\` 
-	}"
-
-	"[ \${PULL_BEFORE_BUILD} -gt 0 ] && {
-		if ! [ -d \${REGISTRY_PATH} ]; then
-			echo \"\${0}: cloning to \${REGISTRY_BASE_PATH}..\"
-			mtn_clone \${REGISTRY_BASE_PATH} || exit $?
+	'[[ "${@}" = *-config*  ]] && {
+		int_opt="-config"
+		NCONF=`get_opt "${@}"` 
+		if [ -f "${BASE_PATH}/${NCONF}" ]; then
+			. "${BASE_PATH}/${NCONF}"
 		else
-			mtn_pull \${REGISTRY_PATH} || exit $?
+			echo "${0}: ${BASE_PATH}/${NCONF} not found"
+			exit 2
 		fi
-	}"
+	}'
+
+	'[ ${PULL_BEFORE_BUILD} -gt 0 ] && {
+		if ! [ -d ${REGISTRY_PATH} ]; then
+			echo "${0}: cloning to ${REGISTRY_BASE_PATH}.."
+			mtn_clone ${REGISTRY_BASE_PATH} || exit $?
+		else
+			mtn_pull ${REGISTRY_PATH} || exit $?
+		fi
+	}'
 
 )
 
-POST_BUILD_HOOKS=("/usr/sbin/rndc reload")
+POST_BUILD_HOOKS=('/usr/sbin/rndc reload')
 
 
-[ -f "${BASE_PATH}/${ucfile}" ] && . "${BASE_PATH}/${ucfile}" || . "${BASE_PATH}/config.user"
+[ -f "${BASE_PATH}/${ucfile}" ] && . "${BASE_PATH}/${ucfile}" || {
+	echo "${0}: could not load ${BASE_PATH}/${ucfile}"
+}
 
 

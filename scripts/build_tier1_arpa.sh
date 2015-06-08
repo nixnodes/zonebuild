@@ -3,7 +3,7 @@
 #@REVISION:45
 
 if [ -n "${4}" ]; then
-	ucfile="`dirname ${0}`/${4}"
+	ucfile="${4}"
 else
 	ucfile="`dirname ${0}`/config.user"
 fi
