@@ -39,7 +39,7 @@ SERVER_NAME_TIER1_ARPA="unknown.in-addr-servers.dn42" # /24
 BUILD_GLUE_RECORDS=0
 BUILD_RFC2317_SUPERNETS=1
 ##
-SERVER_NAME_TIER2_ARPA="unknown.in-addr-servers.dn42" # < /24
+SERVER_NAME_TIER2_ARPA="unknown.dn42-servers.dn42" # < /24
 ##
 AVAILABLE_TLDS="dn42|arpa"
 
