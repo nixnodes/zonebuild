@@ -78,7 +78,8 @@ done
 			export SUBNETTR_CONTACT=${CONTACT_EMAIL}
 			export SUBNETTR_PERSON=${PERSON_HANDLE}
 			export SUBNETTR_PRIMARY=${SERVER_NAME_TIER1_ARPA}
-			export SUBNETTR_REVISION=$REVISION
+			export SUBNETTR_REVISION=`mtn_get_revision ${REGISTRY_PATH}`
+			export SUBNETTR_VERSION=${VERSION}
 			
 			mkdir -p ${OUT_PATH}/ipv6
 			cp ${BASE_PATH}/ipv6/subnettr.py ${OUT_PATH}/ipv6

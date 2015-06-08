@@ -37,6 +37,7 @@ import csv,hashlib,os,time
 #
 ####
 
+version=os.getenv('SUBNETTR_VERSION', '0.0')
 contact=os.getenv('SUBNETTR_CONTACT', 'dummy.example.com')
 primary=os.getenv('SUBNETTR_PRIMARY', 'dummy.root.dn42')
 person=os.getenv('SUBNETTR_PERSON', 'DUMMY-DN42')
@@ -85,7 +86,7 @@ def print_header(file, time, contact, primary, person, f):
   print('; File: db.' + file, file=f)
   print('$TTL 300', file=f)
   print('{file}. IN SOA {primary}. {contact}. ({time} 14400 3600 1209600 300)'.format(file=file, time=time, contact=contact, primary=primary), file=f)
-  print('@ IN TXT {0},person={1},rev={2},ts={3}'.format(primary, person, revision, UTC_DT), file=f)
+  print('@ IN TXT ver={0},person={1},rev={2},ts={3}'.format(version, person, revision, UTC_DT), file=f)
 
 
 def print_glue(ns, addr, f):
