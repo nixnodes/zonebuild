@@ -19,6 +19,8 @@
 
 BASE_PATH=`dirname ${0}`
 
+ucfile="`dirname ${0}`/config"
+
 . "${BASE_PATH}/config" || exit 2
 . "${BASE_PATH}/common" || exit 2
 
