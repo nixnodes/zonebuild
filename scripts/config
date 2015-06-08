@@ -66,13 +66,22 @@ PRE_BUILD_HOOKS=(
 
 	"[[ \"\${@}\" = *-update*  ]] && {
 		git_pull \${GIT_ADDRESS} ${GIT_BRANCH}
-		${0} `echo ${@} | sed -r 's/\-update//g'`
-		exit $?
+		\${0} \`echo \${@} | sed -r 's/\-update//g'\`
+		exit \$?
+	}"
+	
+	"[[ \"\${@}\" = *-config*  ]] && {
+		int_opt=-c
+		conf=\`get_opt \"\${@}\"\` 
+		[ -f \"\${BASE_PATH}/\${conf}\" ] && . \"\${BASE_PATH}/\${conf}\" || {
+			echo \"\${0}: \${BASE_PATH}/\${conf} not found\"
+			exit 2
+		}
 	}"
 
 	"[ \${PULL_BEFORE_BUILD} -gt 0 ] && {
 		if ! [ -d \${REGISTRY_PATH} ]; then
-			echo \"${0}: cloning to \${REGISTRY_BASE_PATH}..\"
+			echo \"\${0}: cloning to \${REGISTRY_BASE_PATH}..\"
 			mtn_clone \${REGISTRY_BASE_PATH} || exit $?
 		else
 			mtn_pull \${REGISTRY_PATH} || exit $?

@@ -189,6 +189,20 @@ script_get_vr()
 	echo -n ${g_vers}
 }
 
+get_opt()
+{
+	tn=0
+	for opt in ${@}; do
+		[ $tn -eq 1 ] && {
+			echo $opt
+			return 0
+		}
+		[[ "${opt}" = *${int_opt}* ]] && {
+			tn=1
+		}
+	done
+	return 1
+}
 
 script_join_verstring()
 {
