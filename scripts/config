@@ -89,6 +89,6 @@ PRE_BUILD_HOOKS=(
 POST_BUILD_HOOKS=("/usr/sbin/rndc reload")
 
 
-[ -f "${BASE_PATH}/${ucfile}" ] && . "${BASE_PATH}/${ucfile}" || "${BASE_PATH}/config.user"
+[ -f "${BASE_PATH}/${ucfile}" ] && . "${BASE_PATH}/${ucfile}" || . "${BASE_PATH}/config.user"
 
 
