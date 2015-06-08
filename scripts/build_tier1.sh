@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:44
+#@REVISION:45
 
 if [ -n "${2}" ]; then
 	ucfile="${2}"
@@ -65,3 +65,5 @@ cu_add_master_zone ${OUT_PATH}/tier1/named.conf root-servers.dn42 ${OUT_PATH}/ti
 cu_add_master_zone ${OUT_PATH}/tier1/named.conf zone-servers.dn42 ${OUT_PATH}/tier1/zone-servers.dn42.db 
 cu_add_master_zone ${OUT_PATH}/tier1/named.conf dn42-servers.dn42 ${OUT_PATH}/tier1/dn42-servers.dn42.db
 cu_add_master_zone ${OUT_PATH}/tier1/named.conf ${1} ${OUT_PATH}/tier1/${1}.db 
+
+exit 0

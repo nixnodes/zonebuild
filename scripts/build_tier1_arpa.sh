@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:45
+#@REVISION:46
 
 if [ -n "${4}" ]; then
 	ucfile="${4}"
@@ -68,9 +68,6 @@ case "${3}" in
 		build_rfc2317_supernet_records ${1}
  	;;
 esac
-
-
-
 
 
 exit 0
