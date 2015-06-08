@@ -41,16 +41,6 @@
   * Registry repo will be created in `$REGISTRY_BASE_PATH`
   
   -
-
-  ```
-  SERVER_NAME_TIER0=<a-z>.root-servers.dn42
-  SERVER_NAME_TIER1=<a-z>.zone-servers.dn42
-  SERVER_NAME_TIER2=<a-z>.dn42-servers.dn42
-  ```
-  
-  * Select a free letter and enter the proper glue record into each respective zone: https://io.nixnodes.net/?q=zone-servers|dn42-servers|root-servers
-  
-  -
   
   Default settings are stored in`scripts/config`, all changes should be put in `scripts/config.user`
 
@@ -64,7 +54,7 @@ Execute with absolute path:
   
   * include "$REGISTRY_BASE_PATH/tier(1|2)/named.conf";
   
-* Build root zones:
+* Build root zones (<a-z>.root-servers.dn42):
   
   `/etc/bind/zonebuild/scripts/run.sh root -update` 
 
