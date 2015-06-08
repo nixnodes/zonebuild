@@ -107,7 +107,7 @@ for item in ${ARPA_ZONES[@]}; do
 	} 
 	
 	if [[ "${ZNAME}" != "${o_octet}" ]]; then
-		generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${ZNAME}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/${o_octet}.in-addr.arpa.db
+		generate_forward_zone ${REGISTRY_PATH}/inetnum/${item} ${ZNAME}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/${o_octet}.in-addr.arpa.db
 	fi
 	
 	b_path="${b_path}${ZNAME}|"
