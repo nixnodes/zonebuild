@@ -20,6 +20,7 @@ ARPA_ZONES=(10.0.0.0_8 172.20.0.0_16 172.22.0.0_16 172.23.0.0_16 172.31.0.0_16)
 ARPA_IPV6_ZONES=(d.f)
 ARPA_TIERS=1
 
+
 ## tier 0
 SERVER_NAME_TIER0="unknown.root-servers.dn42"
 MERGE_ICANN_ROOT=1
@@ -29,9 +30,9 @@ TIER0_IPV6=1
 
 ## tier 1
 SERVER_NAME_TIER1="unknown.zone-servers.dn42"
-
 TIER1_FORWARD_ZONES_RESTRICT=()
 TIER1_ZONES=(dn42 hack ffhh ffac 020 adm ffa ffhb ffc ffda ffdh ff3l fffl ffffm fffr fffd ffgl fflln ffbcd ffbgl ffgoe ffgt ffh helgo ffhef ffj ffka ffki ffhl fflux ffms mueritz ffnord ffnw ffoh ffpb ffpi ffrade ffrgb ffrg rzl ffsaar fftr fftdf ffwk ffgro ffwk ffwp ffw)
+TIER1_AUTH_ZONES=(dn42 hack ffhh)
 TIER1_IPV6=1
 
 ## tier 1 arpa

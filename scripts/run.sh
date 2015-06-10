@@ -57,7 +57,7 @@ done
 }
 
 [[ "${@}" = *zone* ]] && {
-	for item in ${TIER1_ZONES[@]}; do	
+	for item in ${TIER1_AUTH_ZONES[@]}; do	
 		echo "${0}: [T1] processing '${item}'"	
 		eval "${BASE_PATH}/build_tier1.sh ${item} ${shc_append}" || {
 		echo "${0}: tier 1 failed: ${?}"
