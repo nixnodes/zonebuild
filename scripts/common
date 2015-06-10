@@ -130,9 +130,8 @@ mtn_pull() {
 	old_dir=${PWD}
 	cd ${1}
 	
-	mtn_io_all pull &&
-		${MTN} merge &&
-			${MTN} update || return 2
+	mtn_io_all pull &&		
+		${MTN} update || return 2
 			
 	cd ${old_dir}
 }
