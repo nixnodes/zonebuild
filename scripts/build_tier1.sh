@@ -28,7 +28,7 @@ mkdir -p ${OUT_PATH}/tier1
 #generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ""  >> ${OUT_PATH}/tier1/root.db
 
 generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 '' '' 3600000 > ${OUT_PATH}/tier1/hints.db
-cu_add_hint_zone ${OUT_PATH}/tier1/named.conf '.' ${OUT_PATH}/res/hints.db
+cu_add_hint_zone ${OUT_PATH}/tier1/named.conf '.' ${OUT_PATH}/tier1/hints.db
 
 generate_soa ${SERVER_NAME_TIER1} root-servers.dn42 > ${OUT_PATH}/tier1/root-servers.dn42.db
 generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 root-servers.dn42 >> ${OUT_PATH}/tier1/root-servers.dn42.db
