@@ -91,6 +91,9 @@ OPTION_HOOKS=(
 PRE_BUILD_HOOKS=(	
 
 	'[ ${PULL_BEFORE_BUILD} -gt 0 ] && {
+		! [ -f ${REGISTRY_BASE_PATH}/r.db ] && {
+			rm -Rf ${REGISTRY_BASE_PATH}/net.dn42.registry
+		}
 		if ! [ -d ${REGISTRY_PATH} ]; then
 			echo "${0}: cloning to ${REGISTRY_BASE_PATH}.."
 			mtn_clone ${REGISTRY_BASE_PATH} || exit $?

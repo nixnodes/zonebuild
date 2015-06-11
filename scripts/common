@@ -120,7 +120,7 @@ mtn_io_all ()
   [ -z "$1" ] && echo "missing cmd" && return 2
   r=0
   for i in "${SYNC_SERVERS[@]}"; do
-        ${MTN} --db ${OUT_PATH}/r.db $1 $i $2; r=$[r+$?]
+        ${MTN} --db ${REGISTRY_BASE_PATH}/r.db $1 $i $2; r=$[r+$?]
   done
   return $r
 }
@@ -131,7 +131,7 @@ mtn_pull() {
 	cd ${1}
 	
 	mtn_io_all pull &&		
-		${MTN} --db ${OUT_PATH}/r.db update || return 2
+		${MTN} --db ${REGISTRY_BASE_PATH}/r.db update || return 2
 			
 	cd ${old_dir}
 }
@@ -140,7 +140,7 @@ mtn_pull() {
 mtn_clone() {
 	old_dir=${PWD}
 	cd ${1}
-	${MTN} --db ${OUT_PATH}/r.db clone ${SYNC_SERVERS[0]} || exit $?
+	${MTN} --db ${REGISTRY_BASE_PATH}/r.db clone ${SYNC_SERVERS[0]} || exit $?
 	cd ${old_dir}
 }
 
@@ -148,7 +148,7 @@ mtn_get_revision()
 {
 	old_dir=${PWD}
 	cd ${1}
-	${MTN} --db ${OUT_PATH}/r.db status|grep Revision:|cut -d ' ' -f 2
+	${MTN} --db ${REGISTRY_BASE_PATH}/r.db status|grep Revision:|cut -d ' ' -f 2
 	cd ${old_dir}
 }
 
