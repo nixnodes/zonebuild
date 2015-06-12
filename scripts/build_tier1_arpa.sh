@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:47
+#@REVISION:49
 
 if [ -n "${4}" ]; then
 	ucfile="${4}"
