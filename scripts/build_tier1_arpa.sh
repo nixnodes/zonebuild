@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:46
+#@REVISION:47
 
 if [ -n "${4}" ]; then
 	ucfile="${4}"
@@ -69,5 +69,12 @@ case "${3}" in
  	;;
 esac
 
+generate_soa ${SERVER_NAME_TIER1} in-addr-servers.dn42 > ${OUT_PATH}/tier1/in-addr-servers.dn42.db
+generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 in-addr-servers.dn42 >> ${OUT_PATH}/tier1/in-addr-servers.dn42.db
+generate_soa ${SERVER_NAME_TIER1} dn42-servers.dn42 > ${OUT_PATH}/tier1/dn42-servers.dn42.db 
+generate_forward_zone ${REGISTRY_PATH}/dns/dn42-servers.dn42 dn42-servers.dn42  >>  ${OUT_PATH}/tier1/dn42-servers.dn42.db 
+
+cu_add_master_zone ${OUT_PATH}/tier1/named.conf zone-servers.dn42 ${OUT_PATH}/tier1/zone-servers.dn42.db 
+cu_add_master_zone ${OUT_PATH}/tier1/named.conf in-addr-servers.dn42 ${OUT_PATH}/tier1/in-addr-servers.dn42.db
 
 exit 0
