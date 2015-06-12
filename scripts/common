@@ -131,6 +131,7 @@ mtn_pull() {
 	cd ${1}
 	
 	mtn_io_all pull &&		
+		${MTN} --db ${REGISTRY_BASE_PATH}/r.db merge &&
 		${MTN} --db ${REGISTRY_BASE_PATH}/r.db update || return 2
 			
 	cd ${old_dir}
