@@ -74,7 +74,7 @@ generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 in-addr-servers.
 generate_soa ${SERVER_NAME_TIER1} dn42-servers.dn42 > ${OUT_PATH}/tier1/dn42-servers.dn42.db 
 generate_forward_zone ${REGISTRY_PATH}/dns/dn42-servers.dn42 dn42-servers.dn42  >>  ${OUT_PATH}/tier1/dn42-servers.dn42.db 
 
-cu_add_master_zone ${OUT_PATH}/tier1/named.conf zone-servers.dn42 ${OUT_PATH}/tier1/zone-servers.dn42.db 
+cu_add_master_zone ${OUT_PATH}/tier1/named.conf dn42-servers.dn42 ${OUT_PATH}/tier1/dn42-servers.dn42.db
 cu_add_master_zone ${OUT_PATH}/tier1/named.conf in-addr-servers.dn42 ${OUT_PATH}/tier1/in-addr-servers.dn42.db
 
 exit 0
