@@ -37,12 +37,12 @@ ${zname}.		IN 	SOA		${SERVER_NAME_TIER2_ARPA}. ${CONTACT_EMAIL}. (`date +%s` 144
 	generate_forward_zone ${REGISTRY_PATH}/dns/dn42-servers.dn42 ${zname} noglue>>  $OUT_PATH/tier2/${ziname}.db 
 	
 	${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum --nons --noshadow \
-	-print '$GENERATE {?m:startip[0]}-{?m:endip[0]} $ CNAME $.{?m:startip[0]}-{?m:endip[0]}{:n}' --root ${1} \
+	-print '$GENERATE {?m:startip[0]}-{?m:endip[0]} $ CNAME $.{?m:startip[0]}/{pfxsize}{:n}' --root ${1} \
 	-lom "rfc2317 = 1 && ([p:rfc2317]) != 1 && nscount > 0" -l: "(?Q:(\{?m:startip[1]\}.\{?m:startip[2]\}.\{?m:startip[3]\}))" \
 	-regex "^${i}$" \
 	>> $OUT_PATH/tier2/${ziname}.db
 	
-	${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum -print '{?m:startip[0]}-{?m:endip[0]} IN NS {nserver}.{:n}' --root ${1} \
+	${ZBUILD} -build inetnum --path ${REGISTRY_PATH}/inetnum -print '{?m:startip[0]}/{pfxsize} IN NS {nserver}.{:n}' --root ${1} \
 	-lom "rfc2317 = 1 && ([p:rfc2317]) != 1 && nscount > 0" -l: "(?Q:(\{?m:startip[1]\}.\{?m:startip[2]\}.\{?m:startip[3]\}))" \
 	-regex "^${i}$" \
 	>> $OUT_PATH/tier2/${ziname}.db
