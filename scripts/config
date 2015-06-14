@@ -8,7 +8,7 @@ MTN=mtn
 #
 REGISTRY_BASE_PATH=/tmp
 REGISTRY_PATH=${REGISTRY_BASE_PATH}/net.dn42.registry/data
-OUT_PATH=/home/reboot/workspace/zonebuild/scripts/m
+OUT_PATH=/home/reboot/workspace/zonebuild/scripts/build
 #
 
 DEFAULT_TTL=7200
