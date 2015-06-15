@@ -6,7 +6,7 @@ MTN=mtn
 #
 ##use absolute paths below
 #
-REGISTRY_BASE_PATH=/tmp
+REGISTRY_BASE_PATH=/home/reboot/workspace/zonebuild/scripts/build
 REGISTRY_PATH=${REGISTRY_BASE_PATH}/net.dn42.registry/data
 OUT_PATH=/home/reboot/workspace/zonebuild/scripts/build
 #

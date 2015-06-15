@@ -33,20 +33,20 @@ for zone in ${ARPA_ZONES[@]}; do
 				-lom "treelevel = 1" --nons --noshadow \
 	 			-print '{?L:pfxsize >= 24:(?Q:(\{?C:1:startip\}.)):(noop)}{?L:pfxsize >= 16:(?Q:(\{?C:2:startip\}.)):(noop)}{?L:pfxsize >= 8:(?Q:(\{?C:3:startip\})):(noop)}'`)
 	
-	cu_add_forwarders_zone ${OUT_PATH}/res/named-forwards.conf ${ZNAME}.in-addr.arpa "${forwarders}"
+	cu_add_hint_zone ${OUT_PATH}/res/named-forwards.conf ${ZNAME}.in-addr.arpa ${OUT_PATH}/res/hints.db
 done
 
 for zone in ${ARPA_IPV6_ZONES[@]}; do
-	cu_add_forwarders_zone ${OUT_PATH}/res/named-forwards.conf ${zone}.ip6.arpa "${forwarders}"
+	cu_add_hint_zone ${OUT_PATH}/res/named-forwards.conf ${zone}.ip6.arpa ${OUT_PATH}/res/hints.db
 done
 
 for zone in ${TIER1_ZONES[@]}; do	
-	cu_add_forwarders_zone ${OUT_PATH}/res/named-forwards.conf ${zone} "${forwarders}"
+	cu_add_hint_zone ${OUT_PATH}/res/named-forwards.conf ${zone} ${OUT_PATH}/res/hints.db
 done
 
 
 
-cu_add_forwarders_zone ${OUT_PATH}/res/named.conf '.' "${forwarders}"
+cu_add_hint_zone ${OUT_PATH}/res/named.conf '.' ${OUT_PATH}/res/hints.db
 
 
 echo "${0}: [R]: generating RFC1918 zones"
@@ -55,12 +55,12 @@ i=16
 while [ ${i} -lt 32 ]; do
 	#generate_soa a.resolvers.dn42 ${i}.172.in-addr.arpa > ${OUT_PATH}/res/${i}.172.in-addr.arpa.db
 	#generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ${i}.172.in-addr.arpa noglue >> ${OUT_PATH}/res/${i}.172.in-addr.arpa.db
-	cu_add_forwarders_zone ${OUT_PATH}/res/named.conf ${i}.172.in-addr.arpa "${forwarders}"
+	cu_add_hint_zone ${OUT_PATH}/res/named.conf ${i}.172.in-addr.arpa ${OUT_PATH}/res/hints.db
 	i=$[i+1]
 done
 
 #generate_soa a.resolvers.dn42 10.in-addr.arpa > ${OUT_PATH}/res/10.in-addr.arpa.db
 #generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 10.in-addr.arpa noglue >> ${OUT_PATH}/res/10.in-addr.arpa.db
-cu_add_forwarders_zone ${OUT_PATH}/res/named.conf 10.in-addr.arpa "${forwarders}"
+cu_add_hint_zone ${OUT_PATH}/res/named.conf 10.in-addr.arpa ${OUT_PATH}/res/hints.db
 
 exit 0
