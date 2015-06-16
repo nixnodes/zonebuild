@@ -105,6 +105,22 @@ OPTION_HOOKS=(
 		exit 0
 	}'
 	
+	'[[ "${arg}" = "-arpalist" ]] && {
+		for zone in ${ARPA_ZONES[@]}; do
+			resolv=`zbuild -build inetnum --path ${REGISTRY_PATH}/inetnum --root ${zone} -lom "treelevel=1" --noshadow --nons \
+				-print "{?L:pfxsize >= 24:(?Q:(\{?C:1:startip\}.)):(noop)}{?L:pfxsize >= 16:(?Q:(\{?C:2:startip\}.)):(noop)}{?L:pfxsize >= 8:(?Q:(\{?C:3:startip\}.)):(noop)}in-addr.arpa"`
+			echo "${resolv}"
+		done
+		exit 0
+	}'
+	
+	'[[ "${arg}" = "-arpa6list" ]] && {
+		for zone in ${ARPA_IPV6_ZONES[@]}; do
+			echo "${zone}.ip6.arpa"
+		done
+		exit 0
+	}'	
+		
 	'[[ "${arg}" = "-getns" ]] && {		
 		int_opt="-getns"
 		opt=`get_opt "${@}"`
