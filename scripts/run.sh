@@ -62,6 +62,10 @@ done
 	}'
 }
 
+[ ${#PROC_OPTIONS[@]} -eq 0 ] && {
+	exit 0
+}
+
 for hook in "${PRE_BUILD_HOOKS[@]}"; do
 	eval "${hook}"
 done
