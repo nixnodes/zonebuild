@@ -1,11 +1,10 @@
 build_path_check() 
 {
-	! [ -d "${OUT_PATH}" ] && mkdir -p "${OUT_PATH}" 
+	! [ -d "${OUT_PATH}" ] && {
+		mkdir -p "${OUT_PATH}" || return 1
+	}
 	return 0
 }
-
-
-build_path_check
 
 #[1]:config file  [2]:zone name [3]:zone file
 cu_add_master_zone()

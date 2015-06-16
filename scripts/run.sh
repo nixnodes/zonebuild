@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:47
+#@REVISION:48
 #
 # Read config first, then copy your settings to config.user 
 #
@@ -31,8 +31,6 @@ USAGE_STR="USAGE: ./`basename ${0}` <build options> .. <options>"
 [[ -z "${@}" ]] && {
 	print_usage_and_exit	
 }
-
-#rm -f ${OUT_PATH}/tier[0-9]/*.db ${OUT_PATH}/tier[0-9]/*.conf
 
 [[ "${@}" = *-nosync* ]] && {
 	PULL_BEFORE_BUILD=0
@@ -65,6 +63,8 @@ done
 [ ${#PROC_OPTIONS[@]} -eq 0 ] && {
 	exit 0
 }
+
+build_path_check || exit 2
 
 for hook in "${PRE_BUILD_HOOKS[@]}"; do
 	eval "${hook}"
