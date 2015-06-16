@@ -75,16 +75,20 @@ OPTION_HOOKS=(
 	'[[ "${arg}" = "-update"  ]] && {
 		if git_pull ${GIT_ADDRESS} ${GIT_BRANCH}; then
 			${0} `echo ${@} | sed -r "s/\\-update//g"`
+			exit $?
 		else
 			echo "${0}: git pull failed"
 		fi
-		exit $?
+		exit 2
 	}'
 	
 	'[[ "${arg}" = "-config"  ]] && {
 		int_opt="-config"
 		NCONF=`get_opt "${@}"` 
 		if [ -f "${BASE_PATH}/${NCONF}" ]; then
+			TIER1_ZONES=()
+			POST_BUILD_HOOKS=()
+			PRE_BUILD_HOOKS=()
 			. "${BASE_PATH}/${NCONF}"
 		else
 			echo "${0}: ${BASE_PATH}/${NCONF} not found"
@@ -119,12 +123,12 @@ POST_BUILD_HOOKS=('/usr/sbin/rndc reload')
 ## Use these functions to add hooks from user configuration files
 register_pre_hook()
 {
-	PRE_BUILD_HOOKS+=("${1}")
+	PRE_BUILD_HOOKS+=("${@}")
 }
 
 register_post_hook()
 {
-	POST_BUILD_HOOKS+=("${1}")
+	POST_BUILD_HOOKS+=("${@}")
 }
 
 register_tier1_zones()
