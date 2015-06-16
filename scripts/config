@@ -100,6 +100,11 @@ OPTION_HOOKS=(
 		exit 0
 	}'
 	
+	'[[ "${arg}" = "-authzonelist" ]] && {
+		echo "${TIER1_AUTH_ZONES[@]}"
+		exit 0
+	}'
+	
 	'[[ "${arg}" = "-getns" ]] && {		
 		int_opt="-getns"
 		opt=`get_opt "${@}"`
