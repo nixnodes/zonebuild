@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:46
+#@REVISION:47
 #
 # Read config first, then copy your settings to config.user 
 #
@@ -12,8 +12,10 @@
 #
 # Options:
 #
-#  -nosync - disable mtn registry repo pulls
-#  -update - perform git-pull before processing and re-enter
+#  -nosync -        disable mtn registry repo pulls
+#  -update -        perform git-pull before processing and re-enter
+#  -config <file> - set configuration file
+#
 #
 # Define arpa build tiers in scripts/config
 
