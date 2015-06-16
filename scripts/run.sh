@@ -121,14 +121,12 @@ done
 			done
 		}
 	}
+	
 	[[ "${ARPA_TIERS}" = *2*  ]] && {
 		clean_on_enter tier2 || exit 1
 		for item in ${ARPA_ZONES[@]}; do
 			echo "${0}: [T2-A]: processing ${item}"
-			${BASE_PATH}/build_tier2_arpa.sh ${item} ${shc_append}	
-			eval "${BASE_PATH}/build_tier1_arpa.sh ${item} 0 1 ${shc_append}" || {
-				echo "${0}: tier 2 arpa failed: ${?}"
-			} 
+			${BASE_PATH}/build_tier2_arpa.sh ${item} ${shc_append}				
 		done
 	}
 }

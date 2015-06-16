@@ -71,13 +71,9 @@ PROC_OPTIONS=()
 
 OPTION_HOOKS=(
 	'[[ "${arg}" = "-update"  ]] && {
-		if git_pull ${GIT_ADDRESS} ${GIT_BRANCH}; then
-			${0} `echo ${@} | sed -r "s/\\-update//g"`
-			exit $?
-		else
-			echo "${0}: git pull failed"
-		fi
-		exit 2
+		git_pull ${GIT_ADDRESS} ${GIT_BRANCH} || echo "${0}: git pull failed"
+		${0} `echo ${@} | sed -r "s/\\-update//g"`
+		exit ${?}
 	}'
 	
 	'[[ "${arg}" = "-config"  ]] && {
@@ -98,6 +94,11 @@ OPTION_HOOKS=(
 	'[[ "${arg}" = "zone" ]] && PROC_OPTIONS+=(2)'
 	'[[ "${arg}" = "arpa" ]] && PROC_OPTIONS+=(3)'
 	'[[ "${arg}" = "res" ]] && PROC_OPTIONS+=(4)'
+	
+	'[[ "${arg}" = "-zonelist" ]] && {
+		echo "${TIER1_ZONES[@]}"
+		exit 0
+	}'
 )
 
 PRE_BUILD_HOOKS=()
