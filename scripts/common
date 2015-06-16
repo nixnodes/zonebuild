@@ -170,8 +170,9 @@ git_pull()
 	save_path=${PWD}
 	cd ${BASE_PATH}
 	${GIT} pull git://${1}/nixnodes/zonebuild ${2}
+	git_exit=$?
 	cd ${save_path}
-	return $?
+	return ${git_exit}
 }
 
 script_get_vr()
@@ -202,6 +203,24 @@ get_opt()
 		}
 	done
 	return 1
+}
+
+TIERS_CLEANED=()
+
+#[1]: tier
+clean_on_enter()
+{
+	[[ "${1}" != tier[012] ]] && {
+		echo "${0}: invalid tier: ${1}"
+		return 1
+	}
+	[[ "${TIERS_CLEANED[@]}" = *"${1}"* ]] && {
+		echo "${0}: ${1} was already cleaned, skipping.."
+		return 0
+	}
+	rm -f "${OUT_PATH}/${1}/*.db" "${OUT_PATH}/${1}/*.conf" || return 1
+	TIERS_CLEANED+=("${1}")
+	return 0
 }
 
 script_join_verstring()

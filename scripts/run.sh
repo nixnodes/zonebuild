@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:43
+#@REVISION:44
 #
 # Read config first, then copy your settings to config.user 
 #
@@ -30,14 +30,20 @@ USAGE_STR="USAGE: ./`basename ${0}` <build options> .. <options>"
 	print_usage_and_exit	
 }
 
-rm -f ${OUT_PATH}/tier[0-9]/*.db ${OUT_PATH}/tier[0-9]/*.conf
+#rm -f ${OUT_PATH}/tier[0-9]/*.db ${OUT_PATH}/tier[0-9]/*.conf
 
 [[ "${@}" = *-nosync* ]] && {
 	PULL_BEFORE_BUILD=0
 }
 
-for hook in "${OPTION_HOOKS[@]}"; do
-	eval "${hook}"
+ARGV=(${@})
+arg_i=0
+
+for arg in ${ARGV[@]}; do
+	for hook in "${OPTION_HOOKS[@]}"; do
+		eval "${hook}"
+	done
+	arg_i=$[arg_i+1]
 done
 
 for hook in "${PRE_BUILD_HOOKS[@]}"; do
@@ -48,15 +54,18 @@ done
 	shc_append="${NCONF}"
 }
 
-[[ "${@}" = *root* ]] && {
-	echo "${0}: [T0] processing tier0.."	
+[[ "${PROC_OPTIONS[@]}" = *1* ]] && {
+	echo "${0}: [T0] processing tier0.."
+	
+	clean_on_enter tier0 || exit 1
 	
 	eval "${BASE_PATH}/build_tier0.sh ${shc_append}" || {
 		echo "${0}: tier 0 failed: ${?}"
 	}
 }
 
-[[ "${@}" = *zone* ]] && {
+[[ "${PROC_OPTIONS[@]}" = *2* ]] && {
+	clean_on_enter tier1 || exit 1
 	for item in ${TIER1_AUTH_ZONES[@]}; do	
 		echo "${0}: [T1] processing '${item}'"	
 		eval "${BASE_PATH}/build_tier1.sh ${item} ${shc_append}" || {
@@ -65,9 +74,9 @@ done
 	done
 }
 
-[[ "${@}" = *arpa* ]] && {
+[[ "${PROC_OPTIONS[@]}" = *3* ]] && {
 	[[ "${ARPA_TIERS}" = *1*  ]] && {
-		
+		clean_on_enter tier1 || exit 1
 		for item in ${ARPA_ZONES[@]}; do
 			echo "${0}: [T1-A]: processing ${item}"
 			eval "${BASE_PATH}/build_tier1_arpa.sh ${item} ${BUILD_GLUE_RECORDS} ${BUILD_RFC2317_SUPERNETS} ${shc_append}" || {
@@ -75,6 +84,8 @@ done
 			}			
 		done
 		[ ${TIER1_IPV6} -eq 1 ] && {
+			echo "${0}: [T1-A]: building IPv6 reverse zones using subnettr.py"
+		
 			export SUBNETTR_CONTACT=${CONTACT_EMAIL}
 			export SUBNETTR_PERSON=${PERSON_HANDLE}
 			export SUBNETTR_PRIMARY=${SERVER_NAME_TIER1_ARPA}
@@ -85,7 +96,7 @@ done
 			cp ${BASE_PATH}/ipv6/subnettr.py ${OUT_PATH}/ipv6
 			
 			run_subnettr || {
-				echo ${0}: subnettr failed
+				echo "${0}: failed executing subnettr"
 				exit 2;
 			}				
 			
@@ -97,6 +108,7 @@ done
 		}
 	}
 	[[ "${ARPA_TIERS}" = *2*  ]] && {
+		clean_on_enter tier2 || exit 1
 		for item in ${ARPA_ZONES[@]}; do
 			echo "${0}: [T2-A]: processing ${item}"
 			${BASE_PATH}/build_tier2_arpa.sh ${item} ${shc_append}	
@@ -107,11 +119,14 @@ done
 	}
 }
 
-[[ "${@}" = *res* ]] && {
-	echo "${0}: [R] processing"	
+[[ "${PROC_OPTIONS[@]}" = *4* ]] && {
+	rm -f "${OUT_PATH}/res/*.conf"
+	echo "${0}: [R] generating resolver configuration"	
 	${BASE_PATH}/build_resolver.sh ${shc_append}
 }
 
 for hook in "${POST_BUILD_HOOKS[@]}"; do
 	eval "${hook}"
 done
+
+exit 0

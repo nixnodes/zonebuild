@@ -69,14 +69,19 @@ SYNC_SERVERS=(  "mtn://172.22.177.77/?net.dn42.registry"
 BASE_PATH=`dirname ${0}`
 ##
 
+PROC_OPTIONS=()
+
 OPTION_HOOKS=(
-	"[[ \"\${@}\" = *-update*  ]] && {
-		git_pull \${GIT_ADDRESS} ${GIT_BRANCH}
-		\${0} \`echo \${@} | sed -r 's/\-update//g'\`
-		exit \$?
-	}"
+	'[[ "${arg}" = "-update"  ]] && {
+		if git_pull ${GIT_ADDRESS} ${GIT_BRANCH}; then
+			${0} `echo ${@} | sed -r "s/\\-update//g"`
+		else
+			echo "${0}: git pull failed"
+		fi
+		exit $?
+	}'
 	
-	'[[ "${@}" = *-config*  ]] && {
+	'[[ "${arg}" = "-config"  ]] && {
 		int_opt="-config"
 		NCONF=`get_opt "${@}"` 
 		if [ -f "${BASE_PATH}/${NCONF}" ]; then
@@ -85,11 +90,15 @@ OPTION_HOOKS=(
 			echo "${0}: ${BASE_PATH}/${NCONF} not found"
 			exit 2
 		fi
-	}'	
+	}'
+	
+	'[[ "${arg}" = "root" ]] && PROC_OPTIONS+=(1)'
+	'[[ "${arg}" = "zone" ]] && PROC_OPTIONS+=(2)'
+	'[[ "${arg}" = "arpa" ]] && PROC_OPTIONS+=(3)'
+	'[[ "${arg}" = "res" ]] && PROC_OPTIONS+=(4)'
 )
 
-PRE_BUILD_HOOKS=(	
-
+PRE_BUILD_HOOKS=(
 	'[ ${PULL_BEFORE_BUILD} -gt 0 ] && {
 		! [ -f ${REGISTRY_BASE_PATH}/r.db ] && {
 			rm -Rf ${REGISTRY_BASE_PATH}/net.dn42.registry
