@@ -99,6 +99,28 @@ OPTION_HOOKS=(
 		echo "${TIER1_ZONES[@]}"
 		exit 0
 	}'
+	
+	'[[ "${arg}" = "-getns" ]] && {		
+		int_opt="-getns"
+		opt=`get_opt "${@}"`
+		unset opt_gen
+		case ${opt} in
+			root)
+				opt_gen="root-servers.dn42"			
+			;;
+			zone)
+				opt_gen="zone-servers.dn42"			
+			;;
+			arpa)
+				opt_gen="in-addr-servers.dn42"
+			;;
+			*)
+				exit 2
+			;;
+		esac
+		generate_forward_zone "${REGISTRY_PATH}/dns/${opt_gen}" "${opt_gen}" noglue | awk "{print \$4}" | sed -r 's/\.$//'
+		exit 0
+	}'
 )
 
 PRE_BUILD_HOOKS=()
