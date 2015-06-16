@@ -41,8 +41,6 @@ BUILD_GLUE_RECORDS=0
 BUILD_RFC2317_SUPERNETS=1
 ##
 SERVER_NAME_TIER2_ARPA="unknown.dn42-servers.dn42" # < /24
-##
-AVAILABLE_TLDS="dn42|arpa"
 
 ##
 GIT_ADDRESS=192.30.252.131
@@ -102,23 +100,9 @@ OPTION_HOOKS=(
 	'[[ "${arg}" = "res" ]] && PROC_OPTIONS+=(4)'
 )
 
-PRE_BUILD_HOOKS=(
-	'[ ${PULL_BEFORE_BUILD} -gt 0 ] && {
-		! [ -f ${REGISTRY_BASE_PATH}/r.db ] && {
-			rm -Rf ${REGISTRY_BASE_PATH}/net.dn42.registry
-		}
-		if ! [ -d ${REGISTRY_PATH} ]; then
-			echo "${0}: cloning to ${REGISTRY_BASE_PATH}.."
-			mtn_clone ${REGISTRY_BASE_PATH} || exit $?
-		else
-			mtn_pull ${REGISTRY_PATH} || exit $?
-		fi
-	}'
-
-)
+PRE_BUILD_HOOKS=()
 
 POST_BUILD_HOOKS=('/usr/sbin/rndc reload')
-
 
 ## Use these functions to add hooks from user configuration files
 register_pre_hook()

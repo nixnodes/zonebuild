@@ -218,7 +218,7 @@ clean_on_enter()
 		echo "${0}: ${1} was already cleaned, skipping.."
 		return 0
 	}
-	rm -f "${OUT_PATH}/${1}/*.db" "${OUT_PATH}/${1}/*.conf" || return 1
+	rm -f ${OUT_PATH}/${1}/*.db ${OUT_PATH}/${1}/*.conf || return 1
 	TIERS_CLEANED+=("${1}")
 	return 0
 }

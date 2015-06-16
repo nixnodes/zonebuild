@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:44
+#@REVISION:45
 #
 # Read config first, then copy your settings to config.user 
 #
@@ -45,6 +45,20 @@ for arg in ${ARGV[@]}; do
 	done
 	arg_i=$[arg_i+1]
 done
+
+[ ${PULL_BEFORE_BUILD} -gt 0 ] && {
+	register_pre_hook '[ ${PULL_BEFORE_BUILD} -gt 0 ] && {
+		! [ -f ${REGISTRY_BASE_PATH}/r.db ] && {
+			rm -Rf ${REGISTRY_BASE_PATH}/net.dn42.registry
+		}
+		if ! [ -d ${REGISTRY_PATH} ]; then
+			echo "${0}: cloning to ${REGISTRY_BASE_PATH}.."
+			mtn_clone ${REGISTRY_BASE_PATH} || exit $?
+		else
+			mtn_pull ${REGISTRY_PATH} || exit $?
+		fi
+	}'
+}
 
 for hook in "${PRE_BUILD_HOOKS[@]}"; do
 	eval "${hook}"
