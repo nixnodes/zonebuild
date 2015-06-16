@@ -77,6 +77,7 @@ done
 	
 	eval "${BASE_PATH}/build_tier0.sh ${shc_append}" || {
 		echo "${0}: tier 0 failed: ${?}"
+		exit 1
 	}
 }
 
@@ -85,8 +86,9 @@ done
 	for item in ${TIER1_AUTH_ZONES[@]}; do	
 		echo "${0}: [T1] processing '${item}'"	
 		eval "${BASE_PATH}/build_tier1.sh ${item} ${shc_append}" || {
-		echo "${0}: tier 1 failed: ${?}"
-	}
+			echo "${0}: tier 1 failed: ${?}"
+			exit 1
+		}
 	done
 }
 
@@ -97,6 +99,7 @@ done
 			echo "${0}: [T1-A]: processing ${item}"
 			eval "${BASE_PATH}/build_tier1_arpa.sh ${item} ${BUILD_GLUE_RECORDS} ${BUILD_RFC2317_SUPERNETS} ${shc_append}" || {
 				echo "${0}: tier 1 arpa failed: ${?}"
+				exit 1
 			}			
 		done
 		[ ${TIER1_IPV6} -eq 1 ] && {
@@ -128,7 +131,10 @@ done
 		clean_on_enter tier2 || exit 1
 		for item in ${ARPA_ZONES[@]}; do
 			echo "${0}: [T2-A]: processing ${item}"
-			${BASE_PATH}/build_tier2_arpa.sh ${item} ${shc_append}				
+			eval "${BASE_PATH}/build_tier2_arpa.sh ${item} ${shc_append}" || {
+				echo "${0}: tier 1 arpa failed: ${?}"
+				exit 1
+			}
 		done
 	}
 }

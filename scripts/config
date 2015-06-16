@@ -71,7 +71,7 @@ PROC_OPTIONS=()
 
 OPTION_HOOKS=(
 	'[[ "${arg}" = "-update"  ]] && {
-		git_pull ${GIT_ADDRESS} ${GIT_BRANCH} || echo "${0}: git pull failed"
+		git_pull ${GIT_ADDRESS} ${GIT_BRANCH} 1>&2 || echo "${0}: git pull failed"
 		${0} `echo ${@} | sed -r "s/\\-update//g"`
 		exit ${?}
 	}'
