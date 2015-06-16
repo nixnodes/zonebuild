@@ -122,7 +122,7 @@ register_tier1_zones()
 }
 
 [ -f "${BASE_PATH}/${ucfile}" ] && . "${BASE_PATH}/${ucfile}" || {
-	echo "${0}: could not load ${BASE_PATH}/${ucfile}"
+	echo "${0}: could not load ${BASE_PATH}/${ucfile}" 1>&2
 }
 
 
