@@ -135,6 +135,9 @@ OPTION_HOOKS=(
 			arpa)
 				opt_gen="in-addr-servers.dn42"
 			;;
+			rfc2317)
+				opt_gen="dn42-servers.dn42"
+			;;
 			*)
 				exit 2
 			;;
