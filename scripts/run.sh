@@ -53,7 +53,7 @@ done
 			rm -Rf ${REGISTRY_BASE_PATH}/net.dn42.registry
 		}
 		if ! [ -d ${REGISTRY_PATH} ]; then
-			echo "${0}: cloning to ${REGISTRY_BASE_PATH}.."
+			echo "${0}: cloning to ${REGISTRY_BASE_PATH}.."			
 			mtn_clone ${REGISTRY_BASE_PATH} || exit $?
 		else
 			mtn_pull ${REGISTRY_PATH} || exit $?
