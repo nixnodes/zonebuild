@@ -94,6 +94,10 @@ OPTION_HOOKS=(
 	'[[ "${arg}" = "zone" ]] && PROC_OPTIONS+=(2)'
 	'[[ "${arg}" = "arpa" ]] && PROC_OPTIONS+=(3)'
 	'[[ "${arg}" = "res" ]] && PROC_OPTIONS+=(4)'
+	'[[ "${arg}" = "sync" ]] && {
+		PULL_BEFORE_BUILD=1
+		PROC_OPTIONS+=(5)
+	}'
 	
 	'[[ "${arg}" = "-zonelist" ]] && {
 		echo "${TIER1_ZONES[@]}"
@@ -144,7 +148,8 @@ OPTION_HOOKS=(
 		esac
 		generate_forward_zone "${REGISTRY_PATH}/dns/${opt_gen}" "${opt_gen}" noglue | awk "{print \$4}" | sed -r 's/\.$//'
 		exit 0
-	}'
+	}'	
+	
 )
 
 PRE_BUILD_HOOKS=()

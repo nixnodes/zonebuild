@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:48
+#@REVISION:49
 #
 # Read config first, then copy your settings to config.user 
 #
@@ -9,6 +9,7 @@
 #   zone   - dn42., hack., etc.. (tier1)
 #   arpa   - in-addr.arpa, ip6.arpa, rfc2317 (tier1,tier2)
 #   res    - resolver config and hint zone
+#   sync   - pull registry and exit
 #
 # Options:
 #
@@ -47,7 +48,7 @@ for arg in ${ARGV[@]}; do
 done
 
 [ ${PULL_BEFORE_BUILD} -gt 0 ] && {
-	register_pre_hook '[ ${PULL_BEFORE_BUILD} -gt 0 ] && {
+	pre_hook='[ ${PULL_BEFORE_BUILD} -gt 0 ] && {
 		! [ -f ${REGISTRY_BASE_PATH}/r.db ] && {
 			rm -Rf ${REGISTRY_BASE_PATH}/net.dn42.registry
 		}
@@ -57,7 +58,14 @@ done
 		else
 			mtn_pull ${REGISTRY_PATH} || exit $?
 		fi
-	}'
+	}
+	'
+	[[ "${PROC_OPTIONS[@]}" = *5* ]] && {
+		PRE_BUILD_HOOKS=()
+		pre_hook+='exit 0'
+	}
+	
+	register_pre_hook "${pre_hook}"
 }
 
 [ ${#PROC_OPTIONS[@]} -eq 0 ] && {
