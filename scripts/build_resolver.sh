@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:45
+#@REVISION:46
 
 if [ -n "${2}" ]; then
 	ucfile="${2}"
@@ -62,5 +62,7 @@ done
 #generate_soa a.resolvers.dn42 10.in-addr.arpa > ${OUT_PATH}/res/10.in-addr.arpa.db
 #generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 10.in-addr.arpa noglue >> ${OUT_PATH}/res/10.in-addr.arpa.db
 cu_add_forwarders_zone ${OUT_PATH}/res/named.conf 10.in-addr.arpa "${forwarders}"
+
+cu_add_forwarders_zone ${OUT_PATH}/res/named.conf d.f.ip6.arpa "${forwarders}"
 
 exit 0
