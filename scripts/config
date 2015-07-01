@@ -31,7 +31,7 @@ TIER0_IPV6=1
 ## tier 1
 SERVER_NAME_TIER1="unknown.zone-servers.dn42"
 TIER1_FORWARD_ZONES_RESTRICT=()
-TIER1_ZONES=(dn42 hack ffac 020 adm ffa ffhb hack ffc ffda ffdh ff3l fffl ffffm fffr fffd ffge ffgl fflln ffbcd ffbgl ffgoe ffgt ffhal ffde ffwb ffhh ffh helgo ffhef ffhw ffin ffj ffka ffki ffhl fflux ffms mueritz ffnord ffnw ffoh ffpb ffpi ffrade ffrgb ffrg rzl ffsaar ffsg fftr fftdf ffgro ffwk ffwp ffw)
+TIER1_ZONES=(020 adm dn42 ff3l ffa ffac ffbcd ffbgl ffc ffda ffde ffdh fffd ffffm fffl fffr ffge ffgl ffgoe ffgro ffgt ffh ffhal ffhb ffhef ffhh ffhl ffhw ffin ffj ffka ffki fflln fflux ffmee ffms ffnord ffnw ffoh ffpb ffpi ffrade ffrg ffrgb ffsaar ffsg fftdf fftr ffw ffwb ffwk ffwp hack helgo mueritz rzl)
 TIER1_AUTH_ZONES=(dn42)
 TIER1_IPV6=1
 
