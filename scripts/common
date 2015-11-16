@@ -118,11 +118,11 @@ axfr_zone()
 mtn_io_all ()
 {
   [ -z "$1" ] && echo "missing cmd" && return 2
-  r=0
+  OK=1
   for i in "${SYNC_SERVERS[@]}"; do
-        ${MTN} --db ${REGISTRY_BASE_PATH}/r.db $1 $i $2; r=$[r+$?]
+        ${MTN} --db ${REGISTRY_BASE_PATH}/r.db $1 $i $2 && OK=0
   done
-  return $r
+  return $OK
 }
 
 # [1]: directory
