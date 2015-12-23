@@ -44,6 +44,7 @@
   
   Default settings are stored in`scripts/config`, all changes should be put in `scripts/config.user`
 
+
 ## Run:
 
 Execute with absolute path:
@@ -65,3 +66,5 @@ Execute with absolute path:
   `/etc/bind/zonebuild/scripts/run.sh res -update` 
 
   * include "$REGISTRY_BASE_PATH/res/named.conf";
+  * **NOTE** you have to restart your bind the first time you include this configuration, 
+    after an `rndc reload` the new root hints will be not used.
