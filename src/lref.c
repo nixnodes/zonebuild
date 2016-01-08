@@ -28,7 +28,7 @@
 char rs_o[65535];
 
 size_t
-l_mppd_gvlen(char *input)
+l_mppd_gvlen (char *input)
 {
   size_t ret = 0;
   while (input[0] != 0x0 && input[0] != 0x7D)
@@ -41,7 +41,7 @@ l_mppd_gvlen(char *input)
 }
 
 char *
-g_extract_vfield(char *input, char *output, size_t max_size, size_t offset)
+g_extract_vfield (char *input, char *output, size_t max_size, size_t offset)
 {
   char *o_out = output;
   input += offset;
@@ -53,12 +53,12 @@ g_extract_vfield(char *input, char *output, size_t max_size, size_t offset)
     {
 
       while (input[0] == 0x5C)
-        {
-          output[0] = input[0];
-          input++;
-          output++;
-          c++;
-        }
+	{
+	  output[0] = input[0];
+	  input++;
+	  output++;
+	  c++;
+	}
       output[0] = input[0];
       input++;
       output++;
@@ -74,14 +74,14 @@ g_extract_vfield(char *input, char *output, size_t max_size, size_t offset)
 }
 
 void *
-l_mppd_create_copy(__d_drt_h mppd)
+l_mppd_create_copy (__d_drt_h mppd)
 {
-  __d_drt_h mppd_next = calloc(1, sizeof(_d_drt_h));
+  __d_drt_h mppd_next = calloc (1, sizeof(_d_drt_h));
 
   if (NULL == mppd_next)
     {
-      fprintf(stderr, "CRITICAL: unable to allocate memory\n");
-      abort();
+      fprintf (stderr, "CRITICAL: unable to allocate memory\n");
+      abort ();
     }
 
   //memcpy(mppd_next, mppd, sizeof(_d_drt_h));
@@ -93,17 +93,17 @@ l_mppd_create_copy(__d_drt_h mppd)
 }
 
 static char*
-l_mppd_shex_resnp(char *input, char *output, size_t max_size, void** l_nr,
-    uint32_t flags)
+l_mppd_shex_resnp (char *input, char *output, size_t max_size, void** l_nr,
+		   uint32_t flags)
 {
-  size_t st_len = strlen(input);
+  size_t st_len = strlen (input);
 
   if (st_len >= max_size)
     {
       st_len = max_size - 1;
     }
 
-  strncpy(output, input, st_len);
+  strncpy (output, input, st_len);
   output[st_len] = 0x0;
 
   size_t c = 0, w_c = 0;
@@ -113,10 +113,10 @@ l_mppd_shex_resnp(char *input, char *output, size_t max_size, void** l_nr,
   while (ptr[0] && ptr[0] != 0x3A && ptr[0] != 0x7D && ptr[0] != 0x23)
     {
       if (ptr[0] == 0x5C)
-        {
-          memmove(ptr, &ptr[1], strlen(&ptr[1]) + 1);
-          c++;
-        }
+	{
+	  memmove (ptr, &ptr[1], strlen (&ptr[1]) + 1);
+	  c++;
+	}
       c++;
       w_c++;
       ptr++;
@@ -132,9 +132,9 @@ l_mppd_shex_resnp(char *input, char *output, size_t max_size, void** l_nr,
       ptr = &input[c];
 
       if (ptr[0] == 0x3A)
-        {
-          ptr++;
-        }
+	{
+	  ptr++;
+	}
 
       *l_nr = (void*) ptr;
     }
@@ -143,8 +143,8 @@ l_mppd_shex_resnp(char *input, char *output, size_t max_size, void** l_nr,
 }
 
 char*
-l_mppd_shell_ex(char *input, char *output, size_t max_size, void** l_nr, char l,
-    char r, uint32_t flags)
+l_mppd_shell_ex (char *input, char *output, size_t max_size, void** l_nr,
+		 char l, char r, uint32_t flags)
 {
   char *ptr = input;
   char left, right;
@@ -157,17 +157,17 @@ l_mppd_shell_ex(char *input, char *output, size_t max_size, void** l_nr, char l,
     }
   else
     {
-      return l_mppd_shex_resnp(ptr, output, max_size, l_nr, flags);
+      return l_mppd_shex_resnp (ptr, output, max_size, l_nr, flags);
     }
 
-  size_t st_len = strlen(ptr);
+  size_t st_len = strlen (ptr);
 
   if (st_len >= max_size)
     {
       st_len = max_size - 1;
     }
 
-  strncpy(output, ptr, st_len);
+  strncpy (output, ptr, st_len);
   output[st_len] = 0x0;
 
   uint32_t lvl = 1;
@@ -178,23 +178,23 @@ l_mppd_shell_ex(char *input, char *output, size_t max_size, void** l_nr, char l,
   while (0x0 != ptr[0])
     {
       if (ptr[0] == 0x5C)
-        {
-          memmove(ptr, &ptr[1], strlen(&ptr[1]) + 1);
-          c++;
-        }
+	{
+	  memmove (ptr, &ptr[1], strlen (&ptr[1]) + 1);
+	  c++;
+	}
       else if (ptr[0] == left)
-        {
-          lvl++;
-        }
+	{
+	  lvl++;
+	}
       else if (ptr[0] == right)
-        {
-          lvl--;
-        }
+	{
+	  lvl--;
+	}
 
       if (lvl == 0)
-        {
-          break;
-        }
+	{
+	  break;
+	}
 
       ptr++;
       c++;
@@ -215,9 +215,9 @@ l_mppd_shell_ex(char *input, char *output, size_t max_size, void** l_nr, char l,
       ptr = &input[c + 2];
 
       if (ptr[0] == 0x3A)
-        {
-          ptr++;
-        }
+	{
+	  ptr++;
+	}
 
       *l_nr = (void*) ptr;
     }
@@ -225,11 +225,10 @@ l_mppd_shell_ex(char *input, char *output, size_t max_size, void** l_nr, char l,
   return output;
 }
 
-
 char *
-g_get_stf(char *match)
+g_get_stf (char *match)
 {
-  char *ptr = strchr(match, 0x0);
+  char *ptr = strchr (match, 0x0);
 
   if (NULL == ptr || ptr == match)
     {
@@ -256,16 +255,17 @@ g_get_stf(char *match)
 }
 
 char *
-dt_rval_spec_slen(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_slen (void *arg, char *match, char *output, size_t max_size,
+		   void *mppd)
 {
-  char *p_o = ((__d_drt_h ) mppd)->fp_rval1(arg, match,
-      ((__d_drt_h ) mppd)->tp_b0, sizeof(((__d_drt_h ) mppd)->tp_b0),
-      ((__d_drt_h ) mppd)->mppd_next);
+  char *p_o = ((__d_drt_h ) mppd)->fp_rval1 (arg, match,
+					     ((__d_drt_h ) mppd)->tp_b0,
+					     sizeof(((__d_drt_h ) mppd)->tp_b0),
+					     ((__d_drt_h ) mppd)->mppd_next);
 
   if (NULL != p_o)
     {
-      snprintf(output, max_size, "%zu", strlen(p_o));
+      snprintf (output, max_size, "%zu", strlen (p_o));
     }
   else
     {
@@ -376,12 +376,12 @@ dt_rval_spec_ripemd160(void *arg, char *match, char *output, size_t max_size,
 #include <base64.h>
 
 static char *
-dt_rval_spec_base64_encode(void *arg, char *match, char *output,
-    size_t max_size, void *mppd)
+dt_rval_spec_base64_encode (void *arg, char *match, char *output,
+			    size_t max_size, void *mppd)
 {
-  unsigned char *p_o = (unsigned char *) ((__d_drt_h ) mppd)->fp_rval1(arg,
-      match, ((__d_drt_h ) mppd)->tp_b0, sizeof(((__d_drt_h ) mppd)->tp_b0),
-      ((__d_drt_h ) mppd)->mppd_next);
+  unsigned char *p_o = (unsigned char *) ((__d_drt_h ) mppd)->fp_rval1 (
+      arg, match, ((__d_drt_h ) mppd)->tp_b0,
+      sizeof(((__d_drt_h ) mppd)->tp_b0), ((__d_drt_h ) mppd)->mppd_next);
 
   __d_drt_h _mppd = (__d_drt_h ) mppd;
 
@@ -390,48 +390,48 @@ dt_rval_spec_base64_encode(void *arg, char *match, char *output,
       uint64_t src_len;
 
       if (0 == _mppd->mppd_next->ret0)
-        {
-          src_len = strlen((char*) p_o);
-        }
+	{
+	  src_len = strlen ((char*) p_o);
+	}
       else
-        {
-          src_len = _mppd->mppd_next->ret0;
-        }
+	{
+	  src_len = _mppd->mppd_next->ret0;
+	}
 
       if (0 == src_len)
-        {
-          output[0] = 0x0;
-        }
+	{
+	  output[0] = 0x0;
+	}
       else
-        {
-          if ( NULL != _mppd->v_p1)
-            {
-              free(_mppd->v_p1);
-            }
+	{
+	  if ( NULL != _mppd->v_p1)
+	    {
+	      free (_mppd->v_p1);
+	    }
 
-          /*uint64_t cp_size = ((src_len
-           + ((src_len % 3) ? (3 - (src_len % 3)) : 0)) / 3) * 4;
-           uint64_t nl_size = ((cp_size) / 72) * 2;
-           uint64_t b64e_out_size = cp_size + nl_size;*/
+	  /*uint64_t cp_size = ((src_len
+	   + ((src_len % 3) ? (3 - (src_len % 3)) : 0)) / 3) * 4;
+	   uint64_t nl_size = ((cp_size) / 72) * 2;
+	   uint64_t b64e_out_size = cp_size + nl_size;*/
 
-          uint64_t b64e_out_size = ((src_len + 2) / 3 * 4) + 1;
+	  uint64_t b64e_out_size = ((src_len + 2) / 3 * 4) + 1;
 
-          _mppd->v_p1 = malloc(b64e_out_size);
+	  _mppd->v_p1 = malloc (b64e_out_size);
 
-          if (!base64_encode(p_o, (unsigned int) src_len, (char*) _mppd->v_p1,
-              (unsigned int) b64e_out_size))
-            {
-              output[0] = 0x0;
-              ERROR(
-                  "dt_rval_spec_base64_encode: base64_encode failed [in: %llu] [out: %llu]\n",
-                  (unsigned long long int )src_len,
-                  (unsigned long long int )b64e_out_size);
-            }
-          else
-            {
-              return (char*) _mppd->v_p1;
-            }
-        }
+	  if (!base64_encode (p_o, (unsigned int) src_len, (char*) _mppd->v_p1,
+			      (unsigned int) b64e_out_size))
+	    {
+	      output[0] = 0x0;
+	      ERROR(
+		  "dt_rval_spec_base64_encode: base64_encode failed [in: %llu] [out: %llu]\n",
+		  (unsigned long long int )src_len,
+		  (unsigned long long int )b64e_out_size);
+	    }
+	  else
+	    {
+	      return (char*) _mppd->v_p1;
+	    }
+	}
     }
   else
     {
@@ -441,12 +441,12 @@ dt_rval_spec_base64_encode(void *arg, char *match, char *output,
 }
 
 static char *
-dt_rval_spec_base64_decode(void *arg, char *match, char *output,
-    size_t max_size, void *mppd)
+dt_rval_spec_base64_decode (void *arg, char *match, char *output,
+			    size_t max_size, void *mppd)
 {
-  char *p_o = (char*) ((__d_drt_h ) mppd)->fp_rval1(arg, match,
-      ((__d_drt_h ) mppd)->tp_b0, sizeof(((__d_drt_h ) mppd)->tp_b0),
-      ((__d_drt_h ) mppd)->mppd_next);
+  char *p_o = (char*) ((__d_drt_h ) mppd)->fp_rval1 (
+      arg, match, ((__d_drt_h ) mppd)->tp_b0,
+      sizeof(((__d_drt_h ) mppd)->tp_b0), ((__d_drt_h ) mppd)->mppd_next);
 
   __d_drt_h _mppd = (__d_drt_h ) mppd;
 
@@ -455,42 +455,42 @@ dt_rval_spec_base64_decode(void *arg, char *match, char *output,
       uint64_t src_len;
 
       if (0 == _mppd->mppd_next->ret0)
-        {
-          src_len = strlen((char*) p_o);
-        }
+	{
+	  src_len = strlen ((char*) p_o);
+	}
       else
-        {
-          src_len = _mppd->mppd_next->ret0;
-        }
+	{
+	  src_len = _mppd->mppd_next->ret0;
+	}
 
       if (0 == src_len)
-        {
-          output[0] = 0x0;
-        }
+	{
+	  output[0] = 0x0;
+	}
       else
-        {
-          if ( NULL != _mppd->v_p1)
-            {
-              free(_mppd->v_p1);
-            }
+	{
+	  if ( NULL != _mppd->v_p1)
+	    {
+	      free (_mppd->v_p1);
+	    }
 
-          src_len++;
-          _mppd->v_p1 = malloc(src_len);
+	  src_len++;
+	  _mppd->v_p1 = malloc (src_len);
 
-          unsigned int bo_len;
-          if (-1
-              == (bo_len = base64_decode(p_o, (unsigned char*) _mppd->v_p1,
-                  src_len)))
-            {
-              output[0] = 0x0;
-            }
-          else
-            {
-              output = _mppd->v_p1;
-              output[bo_len] = 0x0;
-              return _mppd->v_p1;
-            }
-        }
+	  unsigned int bo_len;
+	  if (-1
+	      == (bo_len = base64_decode (p_o, (unsigned char*) _mppd->v_p1,
+					  src_len)))
+	    {
+	      output[0] = 0x0;
+	    }
+	  else
+	    {
+	      output = _mppd->v_p1;
+	      output[bo_len] = 0x0;
+	      return _mppd->v_p1;
+	    }
+	}
     }
   else
     {
@@ -500,16 +500,16 @@ dt_rval_spec_base64_decode(void *arg, char *match, char *output,
 }
 
 char *
-dt_rval_spec_basedir(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_basedir (void *arg, char *match, char *output, size_t max_size,
+		      void *mppd)
 {
 
-  char *p_o = ((__d_drt_h ) mppd)->fp_rval1(arg, match, output, max_size,
-      ((__d_drt_h ) mppd)->mppd_next);
+  char *p_o = ((__d_drt_h ) mppd)->fp_rval1 (arg, match, output, max_size,
+					     ((__d_drt_h ) mppd)->mppd_next);
 
   if (NULL != p_o)
     {
-      snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, g_basename(p_o));
+      snprintf (output, max_size, ((__d_drt_h ) mppd)->direc, g_basename (p_o));
     }
   else
     {
@@ -520,17 +520,18 @@ dt_rval_spec_basedir(void *arg, char *match, char *output, size_t max_size,
 }
 
 char *
-dt_rval_spec_dirname(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_dirname (void *arg, char *match, char *output, size_t max_size,
+		      void *mppd)
 {
-  char *p_o = ((__d_drt_h ) mppd)->fp_rval1(arg, match,
-      ((__d_drt_h ) mppd)->tp_b0, sizeof(((__d_drt_h ) mppd)->tp_b0),
-      ((__d_drt_h ) mppd)->mppd_next);
+  char *p_o = ((__d_drt_h ) mppd)->fp_rval1 (arg, match,
+					     ((__d_drt_h ) mppd)->tp_b0,
+					     sizeof(((__d_drt_h ) mppd)->tp_b0),
+					     ((__d_drt_h ) mppd)->mppd_next);
 
   if (NULL != p_o)
     {
-      snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, p_o);
-      g_dirname(output);
+      snprintf (output, max_size, ((__d_drt_h ) mppd)->direc, p_o);
+      g_dirname (output);
     }
   else
     {
@@ -541,49 +542,49 @@ dt_rval_spec_dirname(void *arg, char *match, char *output, size_t max_size,
 }
 
 static char *
-dt_rval_spec_conditional(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_conditional (void *arg, char *match, char *output, size_t max_size,
+			  void *mppd)
 {
   __rt_c cond = (__rt_c ) ((__d_drt_h ) mppd)->rt_cond;
 
-  if (0 == g_lom_match(((__d_drt_h ) mppd)->hdl, arg, &cond->match))
+  if (0 == g_lom_match (((__d_drt_h ) mppd)->hdl, arg, &cond->match))
     {
       __d_drt_h mppd_next = (__d_drt_h ) ((__d_drt_h ) mppd)->mppd_next;
-      char *p_o = cond->p_exec(arg, match, ((__d_drt_h ) mppd)->tp_b0,
-          sizeof(((__d_drt_h ) mppd)->tp_b0), mppd_next);
+      char *p_o = cond->p_exec (arg, match, ((__d_drt_h ) mppd)->tp_b0,
+				sizeof(((__d_drt_h ) mppd)->tp_b0), mppd_next);
 
       if (NULL != p_o)
-        {
-          snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, p_o);
-        }
+	{
+	  snprintf (output, max_size, ((__d_drt_h ) mppd)->direc, p_o);
+	}
       else
-        {
-          output[0] = 0x0;
-        }
+	{
+	  output[0] = 0x0;
+	}
     }
   else
     {
       __d_drt_h mppd_aux_next = (__d_drt_h ) ((__d_drt_h ) mppd)->mppd_aux_next;
-      char *p_o = ((__d_drt_h ) mppd)->fp_rval1(arg, match,
-          ((__d_drt_h ) mppd)->tp_b0, sizeof(((__d_drt_h ) mppd)->tp_b0),
-          mppd_aux_next);
+      char *p_o = ((__d_drt_h ) mppd)->fp_rval1 (
+	  arg, match, ((__d_drt_h ) mppd)->tp_b0,
+	  sizeof(((__d_drt_h ) mppd)->tp_b0), mppd_aux_next);
 
       if (NULL != p_o)
-        {
-          snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, p_o);
-        }
+	{
+	  snprintf (output, max_size, ((__d_drt_h ) mppd)->direc, p_o);
+	}
       else
-        {
-          output[0] = 0x0;
-        }
+	{
+	  output[0] = 0x0;
+	}
     }
 
   return output;
 }
 
 static char *
-dt_rval_spec_gc(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_gc (void *arg, char *match, char *output, size_t max_size,
+		 void *mppd)
 {
   __d_drt_h _mppd = (__d_drt_h ) mppd;
   if (_mppd->t_1 > max_size)
@@ -591,32 +592,33 @@ dt_rval_spec_gc(void *arg, char *match, char *output, size_t max_size,
       _mppd->t_1 = max_size;
     }
 
-  memset(output, _mppd->c_1, _mppd->t_1);
+  memset (output, _mppd->c_1, _mppd->t_1);
   output[_mppd->t_1] = 0x0;
 
   return output;
 }
 
 static char *
-dt_rval_spec_gc_va(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_gc_va (void *arg, char *match, char *output, size_t max_size,
+		    void *mppd)
 {
   __d_drt_h _mppd = (__d_drt_h ) mppd;
 
   __d_drt_h mppd_next = (__d_drt_h ) ((__d_drt_h ) mppd)->mppd_next;
 
-  char *p_o = ((__d_drt_h ) mppd)->fp_rval1(arg, ((__d_drt_h ) mppd)->st_p0,
-      ((__d_drt_h ) mppd)->tp_b0, sizeof(((__d_drt_h ) mppd)->tp_b0),
-      mppd_next);
+  char *p_o = ((__d_drt_h ) mppd)->fp_rval1 (arg, ((__d_drt_h ) mppd)->st_p0,
+					     ((__d_drt_h ) mppd)->tp_b0,
+					     sizeof(((__d_drt_h ) mppd)->tp_b0),
+					     mppd_next);
 
   if (NULL != p_o)
     {
-      uint32_t t_1 = strtoul(p_o, NULL, 10);
+      uint32_t t_1 = strtoul (p_o, NULL, 10);
 
       if (!(_mppd->t_1 == UINT32_MAX && errno == ERANGE))
-        {
-          _mppd->t_1 = t_1;
-        }
+	{
+	  _mppd->t_1 = t_1;
+	}
     }
 
   if (_mppd->t_1 > max_size)
@@ -624,34 +626,35 @@ dt_rval_spec_gc_va(void *arg, char *match, char *output, size_t max_size,
       _mppd->t_1 = max_size;
     }
 
-  memset(output, _mppd->c_1, _mppd->t_1);
+  memset (output, _mppd->c_1, _mppd->t_1);
   output[_mppd->t_1] = 0x0;
 
   return output;
 }
 
 static char *
-dt_rval_spec_print(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_print (void *arg, char *match, char *output, size_t max_size,
+		    void *mppd)
 {
-  snprintf(output, max_size, ((__d_drt_h ) mppd)->direc,
-      ((__d_drt_h ) mppd)->st_p);
+  snprintf (output, max_size, ((__d_drt_h ) mppd)->direc,
+	    ((__d_drt_h ) mppd)->st_p);
   return output;
 }
 
 static char *
-dt_rval_spec_print_format(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_print_format (void *arg, char *match, char *output,
+			   size_t max_size, void *mppd)
 {
   __d_drt_h mppd_next = (__d_drt_h ) ((__d_drt_h ) mppd)->mppd_next;
 
-  char *p_o = ((__d_drt_h ) mppd)->fp_rval1(arg, ((__d_drt_h ) mppd)->st_p0,
-      ((__d_drt_h ) mppd)->tp_b0, sizeof(((__d_drt_h ) mppd)->tp_b0),
-      mppd_next);
+  char *p_o = ((__d_drt_h ) mppd)->fp_rval1 (arg, ((__d_drt_h ) mppd)->st_p0,
+					     ((__d_drt_h ) mppd)->tp_b0,
+					     sizeof(((__d_drt_h ) mppd)->tp_b0),
+					     mppd_next);
 
   if (NULL != p_o)
     {
-      snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, p_o);
+      snprintf (output, max_size, ((__d_drt_h ) mppd)->direc, p_o);
     }
   else
     {
@@ -662,16 +665,17 @@ dt_rval_spec_print_format(void *arg, char *match, char *output, size_t max_size,
 }
 
 static char *
-dt_rval_spec_print_format_int(void *arg, char *match, char *output,
-    size_t max_size, void *mppd)
+dt_rval_spec_print_format_int (void *arg, char *match, char *output,
+			       size_t max_size, void *mppd)
 {
   __d_drt_h _mppd = (__d_drt_h ) mppd;
   __d_drt_h _mppd_next = _mppd->mppd_next;
 
   char *s_ptr;
   if (NULL
-      == (s_ptr = g_exech_build_string(arg, &_mppd->sub_mech, _mppd->hdl,
-          _mppd_next->tp_b0, sizeof(_mppd_next->tp_b0))))
+      == (s_ptr = g_exech_build_string (arg, &_mppd->sub_mech, _mppd->hdl,
+					_mppd_next->tp_b0,
+					sizeof(_mppd_next->tp_b0))))
     {
       ERROR("dt_rval_spec_print_format_int: could not assemble print string\n");
 
@@ -679,48 +683,48 @@ dt_rval_spec_print_format_int(void *arg, char *match, char *output,
       return output;
     }
 
-  snprintf(output, max_size, _mppd->direc, _mppd_next->tp_b0);
+  snprintf (output, max_size, _mppd->direc, _mppd_next->tp_b0);
 
   return output;
 }
 
 typedef struct tm*
-(*g_tp_p)(const time_t *__timer);
+(*g_tp_p) (const time_t *__timer);
 
 static char *
-dt_rval_spec_tf_m(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_tf_m (void *arg, char *match, char *output, size_t max_size,
+		   void *mppd)
 {
   g_tp_p tproc_ptr = (g_tp_p) ((__d_drt_h ) mppd)->st_p1;
 
   unsigned char v_b[16] =
     { 0 };
   void *v_ptr = &v_b;
-  g_math_res(arg, &((__d_drt_h ) mppd)->math, v_b);
+  g_math_res (arg, &((__d_drt_h ) mppd)->math, v_b);
 
   time_t uts = *((time_t*) v_ptr);
 
-  strftime(output, max_size, ((__d_drt_h ) mppd)->direc, tproc_ptr(&uts));
+  strftime (output, max_size, ((__d_drt_h ) mppd)->direc, tproc_ptr (&uts));
   return output;
 }
 
 static char *
-dt_rval_spec_tf_p(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_tf_p (void *arg, char *match, char *output, size_t max_size,
+		   void *mppd)
 {
   g_tp_p tproc_ptr = (g_tp_p) ((__d_drt_h ) mppd)->st_p1;
-  time_t uts = (time_t) g_ts32_ptr(arg, ((__d_drt_h ) mppd)->vp_off1);
-  strftime(output, max_size, ((__d_drt_h ) mppd)->direc, tproc_ptr(&uts));
+  time_t uts = (time_t) g_ts32_ptr (arg, ((__d_drt_h ) mppd)->vp_off1);
+  strftime (output, max_size, ((__d_drt_h ) mppd)->direc, tproc_ptr (&uts));
   return output;
 }
 
 static char *
-dt_rval_spec_tf_gm(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_tf_gm (void *arg, char *match, char *output, size_t max_size,
+		    void *mppd)
 {
   g_tp_p tproc_ptr = (g_tp_p) ((__d_drt_h ) mppd)->st_p1;
-  strftime(output, max_size, ((__d_drt_h ) mppd)->direc,
-      tproc_ptr(&((__d_drt_h ) mppd)->ts_1));
+  strftime (output, max_size, ((__d_drt_h ) mppd)->direc,
+	    tproc_ptr (&((__d_drt_h ) mppd)->ts_1));
   return output;
 }
 
@@ -733,48 +737,48 @@ dt_rval_spec_tf_gm(void *arg, char *match, char *output, size_t max_size,
 }
 
 char *
-dt_rval_spec_math_u64(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_math_u64 (void *arg, char *match, char *output, size_t max_size,
+		       void *mppd)
 {
   dt_rval_spec_math_pp(uint64_t*);
   return output;
 }
 
 char *
-dt_rval_spec_math_u32(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_math_u32 (void *arg, char *match, char *output, size_t max_size,
+		       void *mppd)
 {
   dt_rval_spec_math_pp(uint32_t*);
   return output;
 }
 
 char *
-dt_rval_spec_math_u16(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_math_u16 (void *arg, char *match, char *output, size_t max_size,
+		       void *mppd)
 {
   dt_rval_spec_math_pp(uint16_t*);
   return output;
 }
 
 char *
-dt_rval_spec_math_u8(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_math_u8 (void *arg, char *match, char *output, size_t max_size,
+		      void *mppd)
 {
   dt_rval_spec_math_pp(uint8_t*);
   return output;
 }
 
 char *
-dt_rval_spec_math_s64(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_math_s64 (void *arg, char *match, char *output, size_t max_size,
+		       void *mppd)
 {
   dt_rval_spec_math_pp(int64_t*);
   return output;
 }
 
 char *
-dt_rval_spec_math_s32(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_math_s32 (void *arg, char *match, char *output, size_t max_size,
+		       void *mppd)
 {
   dt_rval_spec_math_pp(int32_t*);
 
@@ -782,32 +786,32 @@ dt_rval_spec_math_s32(void *arg, char *match, char *output, size_t max_size,
 }
 
 char *
-dt_rval_spec_math_s16(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_math_s16 (void *arg, char *match, char *output, size_t max_size,
+		       void *mppd)
 {
   dt_rval_spec_math_pp(int16_t*);
   return output;
 }
 
 char *
-dt_rval_spec_math_s8(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_math_s8 (void *arg, char *match, char *output, size_t max_size,
+		      void *mppd)
 {
   dt_rval_spec_math_pp(int8_t*);
   return output;
 }
 
 char *
-dt_rval_spec_math_f(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_math_f (void *arg, char *match, char *output, size_t max_size,
+		     void *mppd)
 {
   dt_rval_spec_math_pp(float*);
   return output;
 }
 
 char *
-dt_rval_spec_regsub_dg(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_regsub_dg (void *arg, char *match, char *output, size_t max_size,
+			void *mppd)
 {
   __d_drt_h _mppd = (__d_drt_h) mppd;
 
@@ -829,10 +833,10 @@ dt_rval_spec_regsub_dg(void *arg, char *match, char *output, size_t max_size,
   while (!regexec(&_mppd->preg, m_p, 2, rm, 0))
     {
       if (rm[0].rm_so == rm[0].rm_eo)
-        {
-          //output[0] = 0x0;
-          return output;
-        }
+	{
+	  //output[0] = 0x0;
+	  return output;
+	}
       m_p = memmove(&m_p[rm[0].rm_so], &m_p[rm[0].rm_eo], o_l - rm[0].rm_eo);
     }
 
@@ -840,8 +844,8 @@ dt_rval_spec_regsub_dg(void *arg, char *match, char *output, size_t max_size,
 }
 
 char *
-dt_rval_spec_regsub_g(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_regsub_g (void *arg, char *match, char *output, size_t max_size,
+		       void *mppd)
 {
   __d_drt_h _mppd = (__d_drt_h) mppd;
 
@@ -852,7 +856,7 @@ dt_rval_spec_regsub_g(void *arg, char *match, char *output, size_t max_size,
   if ( NULL != _mppd->fp_rval2)
     {
       rep_p = _mppd->fp_rval2(arg, (char*)_mppd->varg_l, _mppd->r_rep,
-          sizeof(_mppd->r_rep), _mppd->mppd_aux_next);
+	  sizeof(_mppd->r_rep), _mppd->mppd_aux_next);
       _mppd->r_rep_l = strlen(rep_p);
     }
   else
@@ -871,36 +875,36 @@ dt_rval_spec_regsub_g(void *arg, char *match, char *output, size_t max_size,
   while (!regexec(&_mppd->preg, m_p, 1, rm, 0))
     {
       if (rm[0].rm_so == 0 && rm[0].rm_eo == o_l)
-        {
-          strncpy(&rs_o[rs_w], rep_p, _mppd->r_rep_l);
-          rs_o[_mppd->r_rep_l+rs_w] = 0x0;
-          return rs_o;
-        }
+	{
+	  strncpy(&rs_o[rs_w], rep_p, _mppd->r_rep_l);
+	  rs_o[_mppd->r_rep_l+rs_w] = 0x0;
+	  return rs_o;
+	}
       if (rm[0].rm_so == rm[0].rm_eo)
-        {
-          if (!rm[0].rm_so)
-            {
-              strncpy(rs_o, rep_p, _mppd->r_rep_l);
-              strncpy(&rs_o[_mppd->r_rep_l], rs_p, o_l);
-              rs_o[_mppd->r_rep_l+o_l] = 0x0;
-            }
-          else if (rm[0].rm_so == o_l)
-            {
-              strncpy(rs_o, rs_p, o_l);
-              strncpy(&rs_o[o_l], rep_p, _mppd->r_rep_l);
-              rs_o[_mppd->r_rep_l+o_l] = 0x0;
-            }
-          else
-            {
-              return rs_p;
-            }
-          break;
-        }
+	{
+	  if (!rm[0].rm_so)
+	    {
+	      strncpy(rs_o, rep_p, _mppd->r_rep_l);
+	      strncpy(&rs_o[_mppd->r_rep_l], rs_p, o_l);
+	      rs_o[_mppd->r_rep_l+o_l] = 0x0;
+	    }
+	  else if (rm[0].rm_so == o_l)
+	    {
+	      strncpy(rs_o, rs_p, o_l);
+	      strncpy(&rs_o[o_l], rep_p, _mppd->r_rep_l);
+	      rs_o[_mppd->r_rep_l+o_l] = 0x0;
+	    }
+	  else
+	    {
+	      return rs_p;
+	    }
+	  break;
+	}
 
       if (rm[0].rm_so == (regoff_t)-1)
-        {
-          return rs_o;
-        }
+	{
+	  return rs_o;
+	}
 
       strncpy(&rs_o[rs_w], m_p, rm[0].rm_so);
       rs_w += (size_t)rm[0].rm_so;
@@ -926,8 +930,8 @@ dt_rval_spec_regsub_g(void *arg, char *match, char *output, size_t max_size,
 }
 
 char *
-dt_rval_spec_regsub_d(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_regsub_d (void *arg, char *match, char *output, size_t max_size,
+		       void *mppd)
 {
   __d_drt_h _mppd = (__d_drt_h) mppd;
 
@@ -964,8 +968,8 @@ dt_rval_spec_regsub_d(void *arg, char *match, char *output, size_t max_size,
 }
 
 char *
-dt_rval_spec_regsub(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_regsub (void *arg, char *match, char *output, size_t max_size,
+		     void *mppd)
 {
   __d_drt_h _mppd = (__d_drt_h) mppd;
 
@@ -976,7 +980,7 @@ dt_rval_spec_regsub(void *arg, char *match, char *output, size_t max_size,
   if ( NULL != _mppd->fp_rval2)
     {
       rep_p = _mppd->fp_rval2(arg, (char*)_mppd->varg_l, _mppd->r_rep,
-          sizeof(_mppd->r_rep), _mppd->mppd_aux_next);
+	  sizeof(_mppd->r_rep), _mppd->mppd_aux_next);
       _mppd->r_rep_l = strlen(rep_p);
     }
   else
@@ -1011,44 +1015,44 @@ dt_rval_spec_regsub(void *arg, char *match, char *output, size_t max_size,
 #define MAX_RR_IN       0x1000000
 
 void *
-as_ref_to_val_lk(char *match, void *c, __d_drt_h mppd, char *defdc)
+as_ref_to_val_lk (char *match, void *c, __d_drt_h mppd, char *defdc)
 {
 
   if (NULL != defdc)
     {
-      match = g_get_stf(match);
+      match = g_get_stf (match);
 
       if (NULL != match)
-        {
-          size_t i = 0;
-          while ((match[0] != 0x7D && match[0] != 0x2C && match[0] != 0x29
-              && match[0] != 0x3A && match[0] && i < sizeof(mppd->direc) - 2))
-            {
-              if (match[0] == 0x5C)
-                {
-                  while (match[0] == 0x5C)
-                    {
-                      match++;
-                    }
-                }
-              mppd->direc[i] = match[0];
-              i++;
-              match++;
-            }
+	{
+	  size_t i = 0;
+	  while ((match[0] != 0x7D && match[0] != 0x2C && match[0] != 0x29
+	      && match[0] != 0x3A && match[0] && i < sizeof(mppd->direc) - 2))
+	    {
+	      if (match[0] == 0x5C)
+		{
+		  while (match[0] == 0x5C)
+		    {
+		      match++;
+		    }
+		}
+	      mppd->direc[i] = match[0];
+	      i++;
+	      match++;
+	    }
 
-          if (1 < strlen(mppd->direc))
-            {
-              mppd->direc[i] = 0x0;
-              goto ct;
-            }
+	  if (1 < strlen (mppd->direc))
+	    {
+	      mppd->direc[i] = 0x0;
+	      goto ct;
+	    }
 
-        }
+	}
       if (mppd->direc[0] == 0x0)
-        {
-          size_t defdc_l = strlen(defdc);
-          strncpy(mppd->direc, defdc, defdc_l);
-          mppd->direc[defdc_l] = 0x0;
-        }
+	{
+	  size_t defdc_l = strlen (defdc);
+	  strncpy (mppd->direc, defdc, defdc_l);
+	  mppd->direc[defdc_l] = 0x0;
+	}
 
     }
 
@@ -1070,15 +1074,15 @@ as_ref_to_val_lk(char *match, void *c, __d_drt_h mppd, char *defdc)
  }
  */
 void *
-ref_to_val_af_math(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd)
+ref_to_val_af_math (void *arg, char *match, char *output, size_t max_size,
+		    __d_drt_h mppd)
 {
   int m_ret = 0, m_ret2;
-  md_init(&mppd->chains, 8);
-  md_init(&mppd->math, 8);
+  md_init (&mppd->chains, 8);
+  md_init (&mppd->math, 8);
 
-  if ((m_ret2 = g_process_math_string(mppd->hdl, match, &mppd->math,
-      &mppd->chains, &m_ret, NULL, 0, 0)))
+  if ((m_ret2 = g_process_math_string (mppd->hdl, match, &mppd->math,
+				       &mppd->chains, &m_ret, NULL, 0, 0)))
     {
       ERROR("[%d] [%d]: could not process math string\n", m_ret2, m_ret);
       return NULL;
@@ -1086,45 +1090,51 @@ ref_to_val_af_math(void *arg, char *match, char *output, size_t max_size,
 
   if (mppd->math.offset)
     {
-      __g_math math_f = m_get_def_val(&mppd->math);
+      __g_math math_f = m_get_def_val (&mppd->math);
 
       switch (math_f->flags & F_MATH_TYPES)
-        {
-      case F_MATH_INT:
-        switch (math_f->vb)
-          {
-        case 1:
-          return as_ref_to_val_lk(match, dt_rval_spec_math_u8, mppd, "%hhu");
-        case 2:
-          return as_ref_to_val_lk(match, dt_rval_spec_math_u16, mppd, "%hu");
-        case 4:
-          return as_ref_to_val_lk(match, dt_rval_spec_math_u32, mppd, "%u");
-        case 8:
-          return as_ref_to_val_lk(match, dt_rval_spec_math_u64, mppd, "%llu");
-        default:
-          return NULL;
-          }
-        break;
-      case F_MATH_INT_S:
-        switch (math_f->vb)
-          {
-        case 1:
-          return as_ref_to_val_lk(match, dt_rval_spec_math_s8, mppd, "%hhd");
-        case 2:
-          return as_ref_to_val_lk(match, dt_rval_spec_math_s16, mppd, "%hd");
-        case 4:
-          return as_ref_to_val_lk(match, dt_rval_spec_math_s32, mppd, "%d");
-        case 8:
-          return as_ref_to_val_lk(match, dt_rval_spec_math_s64, mppd, "%lld");
-        default:
-          return NULL;
-          }
-        break;
-      case F_MATH_FLOAT:
-        return as_ref_to_val_lk(match, dt_rval_spec_math_f, mppd, "%.2f");
-      default:
-        return NULL;
-        }
+	{
+	case F_MATH_INT:
+	  switch (math_f->vb)
+	    {
+	    case 1:
+	      return as_ref_to_val_lk (match, dt_rval_spec_math_u8, mppd,
+				       "%hhu");
+	    case 2:
+	      return as_ref_to_val_lk (match, dt_rval_spec_math_u16, mppd,
+				       "%hu");
+	    case 4:
+	      return as_ref_to_val_lk (match, dt_rval_spec_math_u32, mppd, "%u");
+	    case 8:
+	      return as_ref_to_val_lk (match, dt_rval_spec_math_u64, mppd,
+				       "%llu");
+	    default:
+	      return NULL;
+	    }
+	  break;
+	case F_MATH_INT_S:
+	  switch (math_f->vb)
+	    {
+	    case 1:
+	      return as_ref_to_val_lk (match, dt_rval_spec_math_s8, mppd,
+				       "%hhd");
+	    case 2:
+	      return as_ref_to_val_lk (match, dt_rval_spec_math_s16, mppd,
+				       "%hd");
+	    case 4:
+	      return as_ref_to_val_lk (match, dt_rval_spec_math_s32, mppd, "%d");
+	    case 8:
+	      return as_ref_to_val_lk (match, dt_rval_spec_math_s64, mppd,
+				       "%lld");
+	    default:
+	      return NULL;
+	    }
+	  break;
+	case F_MATH_FLOAT:
+	  return as_ref_to_val_lk (match, dt_rval_spec_math_f, mppd, "%.2f");
+	default:
+	  return NULL;
+	}
     }
   else
     {
@@ -1142,31 +1152,31 @@ ref_to_val_af_math(void *arg, char *match, char *output, size_t max_size,
 }
 
 static void*
-rt_af_basedir(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd)
+rt_af_basedir (void *arg, char *match, char *output, size_t max_size,
+	       __d_drt_h mppd)
 {
   RT_AF_RTP(arg, match, output, max_size, mppd);
-  return as_ref_to_val_lk(match, dt_rval_spec_basedir, mppd, "%s");
+  return as_ref_to_val_lk (match, dt_rval_spec_basedir, mppd, "%s");
 }
 
 static void*
-rt_af_dirname(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd)
+rt_af_dirname (void *arg, char *match, char *output, size_t max_size,
+	       __d_drt_h mppd)
 {
   RT_AF_RTP(arg, match, output, max_size, mppd);
-  return as_ref_to_val_lk(match, dt_rval_spec_dirname, mppd, "%s");
+  return as_ref_to_val_lk (match, dt_rval_spec_dirname, mppd, "%s");
 }
 
 static void*
-rt_af_conditional(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd)
+rt_af_conditional (void *arg, char *match, char *output, size_t max_size,
+		   __d_drt_h mppd)
 {
   int ret;
 
-  mppd->rt_cond = calloc(1, sizeof(_rt_c));
+  mppd->rt_cond = calloc (1, sizeof(_rt_c));
   __rt_c cond = (void*) mppd->rt_cond;
 
-  char *ptr, *lom_st = ptr = strdup(match), *trigger;
+  char *ptr, *lom_st = ptr = strdup (match), *trigger;
 
   while (ptr[0] && ptr[0] != 0x3A)
     {
@@ -1176,8 +1186,8 @@ rt_af_conditional(void *arg, char *match, char *output, size_t max_size,
 
   if (ptr[0] != 0x3A)
     {
-      free(lom_st);
-      free(mppd->rt_cond);
+      free (lom_st);
+      free (mppd->rt_cond);
       mppd->rt_cond = NULL;
       return NULL;
     }
@@ -1190,29 +1200,29 @@ rt_af_conditional(void *arg, char *match, char *output, size_t max_size,
 
   int r;
 
-  if ((r = g_process_lom_string(mppd->hdl, lom_st, &cond->match, &ret,
+  if ((r = g_process_lom_string (mppd->hdl, lom_st, &cond->match, &ret,
   F_GM_ISLOM | F_GM_NAND)))
     {
       ERROR("%s: [%d] [%d]: could not load LOM string\n", mppd->hdl->file, r,
-          ret);
-      free(lom_st);
-      free(mppd->rt_cond);
+	    ret);
+      free (lom_st);
+      free (mppd->rt_cond);
       mppd->rt_cond = NULL;
       return NULL;
     }
 
-  free(lom_st);
+  free (lom_st);
 
-  mppd->mppd_next = l_mppd_create_copy(mppd);
-  mppd->mppd_aux_next = l_mppd_create_copy(mppd);
+  mppd->mppd_next = l_mppd_create_copy (mppd);
+  mppd->mppd_aux_next = l_mppd_create_copy (mppd);
 
-  cond->p_exec = mppd->hdl->g_proc1_lookup(arg, trigger, output, max_size,
-      mppd->mppd_next);
+  cond->p_exec = mppd->hdl->g_proc1_lookup (arg, trigger, output, max_size,
+					    mppd->mppd_next);
 
   if (NULL == cond->p_exec)
     {
       ERROR("rt_af_conditional->p_exec: could not resolve '%s'\n", trigger);
-      free(mppd->rt_cond);
+      free (mppd->rt_cond);
       mppd->rt_cond = NULL;
       return NULL;
     }
@@ -1224,33 +1234,33 @@ rt_af_conditional(void *arg, char *match, char *output, size_t max_size,
       return NULL;
     }
 
-  mppd->fp_rval1 = mppd->hdl->g_proc1_lookup(arg,
-      ((__d_drt_h ) mppd->mppd_next)->varg_l, output, max_size,
+  mppd->fp_rval1 = mppd->hdl->g_proc1_lookup (
+      arg, ((__d_drt_h ) mppd->mppd_next)->varg_l, output, max_size,
       mppd->mppd_aux_next);
 
   if (NULL == mppd->fp_rval1)
     {
       ERROR("rt_af_conditional->fp_rval1: could not resolve '%s'\n",
-          ((__d_drt_h ) mppd->mppd_next)->varg_l);
+	    ((__d_drt_h ) mppd->mppd_next)->varg_l);
       return NULL;
     }
 
-  return as_ref_to_val_lk(match, dt_rval_spec_conditional, mppd, "%s");
+  return as_ref_to_val_lk (match, dt_rval_spec_conditional, mppd, "%s");
 }
 
 static void*
-rt_af_print(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd)
+rt_af_print (void *arg, char *match, char *output, size_t max_size,
+	     __d_drt_h mppd)
 {
-  mppd->st_p = strdup(match);
+  mppd->st_p = strdup (match);
   char *ptr = mppd->st_p;
 
   while (ptr[0] && ptr[0] != 0x7D)
     {
       if (ptr[0] == 0x5C)
-        {
-          memmove(ptr, &ptr[1], strlen(&ptr[1]) + 1);
-        }
+	{
+	  memmove (ptr, &ptr[1], strlen (&ptr[1]) + 1);
+	}
       ptr++;
     }
 
@@ -1259,20 +1269,20 @@ rt_af_print(void *arg, char *match, char *output, size_t max_size,
       ptr[0] = 0x0;
     }
 
-  return as_ref_to_val_lk(match, dt_rval_spec_print, mppd, "%s");
+  return as_ref_to_val_lk (match, dt_rval_spec_print, mppd, "%s");
 }
 
 static void*
-rt_af_print_format(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd)
+rt_af_print_format (void *arg, char *match, char *output, size_t max_size,
+		    __d_drt_h mppd)
 {
 
-  mppd->mppd_next = l_mppd_create_copy(mppd);
+  mppd->mppd_next = l_mppd_create_copy (mppd);
 
-  mppd->st_p0 = strdup(match);
+  mppd->st_p0 = strdup (match);
 
-  mppd->fp_rval1 = mppd->hdl->g_proc1_lookup(arg, match, output, max_size,
-      mppd->mppd_next);
+  mppd->fp_rval1 = mppd->hdl->g_proc1_lookup (arg, match, output, max_size,
+					      mppd->mppd_next);
 
   if (NULL == mppd->fp_rval1)
     {
@@ -1281,12 +1291,12 @@ rt_af_print_format(void *arg, char *match, char *output, size_t max_size,
       return NULL;
     }
 
-  return as_ref_to_val_lk(match, dt_rval_spec_print_format, mppd, "%s");
+  return as_ref_to_val_lk (match, dt_rval_spec_print_format, mppd, "%s");
 }
 
 static void*
-rt_af_print_format_int(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd)
+rt_af_print_format_int (void *arg, char *match, char *output, size_t max_size,
+			__d_drt_h mppd)
 {
   int r;
 
@@ -1294,39 +1304,39 @@ rt_af_print_format_int(void *arg, char *match, char *output, size_t max_size,
 
   void *l_next_ref;
 
-  char *s_ptr = l_mppd_shell_ex(match, _mppd->tp_b0, sizeof(_mppd->tp_b0),
-      &l_next_ref,
-      LMS_EX_L,
-      LMS_EX_R, F_MPPD_SHX_TZERO);
+  char *s_ptr = l_mppd_shell_ex (match, _mppd->tp_b0, sizeof(_mppd->tp_b0),
+				 &l_next_ref,
+				 LMS_EX_L,
+				 LMS_EX_R, F_MPPD_SHX_TZERO);
 
   if (NULL == s_ptr)
     {
       ERROR("rt_af_print_format_int: could not parse print string: '%s'\n",
-          match);
+	    match);
     }
 
-  mppd->mppd_next = l_mppd_create_copy(mppd);
+  mppd->mppd_next = l_mppd_create_copy (mppd);
 
-  if ((r = g_compile_exech(&_mppd->sub_mech, _mppd->hdl, _mppd->tp_b0)))
+  if ((r = g_compile_exech (&_mppd->sub_mech, _mppd->hdl, _mppd->tp_b0)))
     {
       ERROR(
-          "rt_af_print_format_int: [%d]: could not compile print string: '%s'\n",
-          r, s_ptr);
+	  "rt_af_print_format_int: [%d]: could not compile print string: '%s'\n",
+	  r, s_ptr);
       return NULL;
     }
 
-  return as_ref_to_val_lk(match, dt_rval_spec_print_format_int, mppd, "%s");
+  return as_ref_to_val_lk (match, dt_rval_spec_print_format_int, mppd, "%s");
 }
 
 static void*
-rt_af_regex(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd, char *id)
+rt_af_regex (void *arg, char *match, char *output, size_t max_size,
+	     __d_drt_h mppd, char *id)
 {
   char *r_match = match;
 
-  mppd->mppd_next = l_mppd_create_copy(mppd);
-  mppd->fp_rval1 = mppd->hdl->g_proc1_lookup(arg, match, output, max_size,
-      mppd->mppd_next);
+  mppd->mppd_next = l_mppd_create_copy (mppd);
+  mppd->fp_rval1 = mppd->hdl->g_proc1_lookup (arg, match, output, max_size,
+					      mppd->mppd_next);
 
   if (NULL == mppd->fp_rval1)
     {
@@ -1341,18 +1351,19 @@ rt_af_regex(void *arg, char *match, char *output, size_t max_size,
       return NULL;
     }
 
-  char *r_b = malloc(REG_PATTERN_BUFFER_MAX + 1);
+  char *r_b = malloc (REG_PATTERN_BUFFER_MAX + 1);
   void *l_next_ref = NULL;
 
-  char *s_ptr = l_mppd_shell_ex(((__d_drt_h ) mppd->mppd_next)->varg_l, r_b,
-  REG_PATTERN_BUFFER_MAX, &l_next_ref,
-  LMS_EX_L,
-  LMS_EX_R, F_MPPD_SHX_TZERO);
+  char *s_ptr = l_mppd_shell_ex (((__d_drt_h ) mppd->mppd_next)->varg_l, r_b,
+  REG_PATTERN_BUFFER_MAX,
+				 &l_next_ref,
+				 LMS_EX_L,
+				 LMS_EX_R, F_MPPD_SHX_TZERO);
 
   if (NULL == s_ptr)
     {
       ERROR("rt_af_regex: could not parse pattern: '%s'\n",
-          ((__d_drt_h ) mppd->mppd_next)->varg_l);
+	    ((__d_drt_h ) mppd->mppd_next)->varg_l);
       return NULL;
     }
 
@@ -1361,7 +1372,7 @@ rt_af_regex(void *arg, char *match, char *output, size_t max_size,
   if (NULL == match)
     {
       ERROR("rt_af_regex: could not extract pattern: l_mppd_shell_ex failed\n");
-      free(r_b);
+      free (r_b);
       return NULL;
     }
 
@@ -1377,48 +1388,50 @@ rt_af_regex(void *arg, char *match, char *output, size_t max_size,
     {
       cb_p = dt_rval_spec_regsub;
       if (match[0] == 0x0)
-        {
-          mppd->r_rep[0] = 0x0;
-          mppd->r_rep_l = 0;
+	{
+	  mppd->r_rep[0] = 0x0;
+	  mppd->r_rep_l = 0;
 
-        }
+	}
       else
-        {
-          if (match[0] == 0x28)
-            {
+	{
+	  if (match[0] == 0x28)
+	    {
 
-              mppd->mppd_aux_next = l_mppd_create_copy(mppd);
-              mppd->fp_rval2 = mppd->hdl->g_proc1_lookup(arg, match, output,
-                  max_size, mppd->mppd_aux_next);
+	      mppd->mppd_aux_next = l_mppd_create_copy (mppd);
+	      mppd->fp_rval2 = mppd->hdl->g_proc1_lookup (arg, match, output,
+							  max_size,
+							  mppd->mppd_aux_next);
 
-              if (NULL == mppd->fp_rval1)
-                {
-                  ERROR("rt_af_regex: could not resolve directive: '%s'\n",
-                      match);
-                  return NULL;
-                }
-            }
-          else
-            {
-              char *ptr = l_mppd_shell_ex(match, mppd->r_rep,
-              REG_PATTERN_BUFFER_MAX, &l_next_ref,
-              LMS_EX_L,
-              LMS_EX_R, F_MPPD_SHX_TZERO);
+	      if (NULL == mppd->fp_rval1)
+		{
+		  ERROR("rt_af_regex: could not resolve directive: '%s'\n",
+			match);
+		  return NULL;
+		}
+	    }
+	  else
+	    {
+	      char *ptr = l_mppd_shell_ex (match, mppd->r_rep,
+	      REG_PATTERN_BUFFER_MAX,
+					   &l_next_ref,
+					   LMS_EX_L,
+					   LMS_EX_R, F_MPPD_SHX_TZERO);
 
-              if (NULL == ptr)
-                {
-                  ERROR("rt_af_regex: could not process substitution string\n");
-                  free(r_b);
-                  return NULL;
-                }
+	      if (NULL == ptr)
+		{
+		  ERROR("rt_af_regex: could not process substitution string\n");
+		  free (r_b);
+		  return NULL;
+		}
 
-              mppd->r_rep_l = strlen(mppd->r_rep);
-            }
-        }
+	      mppd->r_rep_l = strlen (mppd->r_rep);
+	    }
+	}
     }
   else
     {
-      free(r_b);
+      free (r_b);
       return NULL;
     }
 
@@ -1428,201 +1441,246 @@ rt_af_regex(void *arg, char *match, char *output, size_t max_size,
     {
       id_f = &id[2];
       while (id_f[0] != 0x3A && id_f[0])
-        {
-          switch (id_f[0])
-            {
-          case 0x67:
-            if (cb_p == dt_rval_spec_regsub_d)
-              {
-                cb_p = dt_rval_spec_regsub_dg;
-              }
-            else
-              {
-                cb_p = dt_rval_spec_regsub_g;
-              }
-            break;
-          case 0x69:
-            mppd->regex_flags |= REG_ICASE;
-            break;
-          case 0x6E:
-            mppd->regex_flags |= REG_NEWLINE;
-            break;
-          case 0x62:
-            if (mppd->regex_flags & REG_EXTENDED)
-              {
-                mppd->regex_flags ^= REG_EXTENDED;
-              }
-            break;
-            }
-          id_f++;
-        }
+	{
+	  switch (id_f[0])
+	    {
+	    case 0x67:
+	      if (cb_p == dt_rval_spec_regsub_d)
+		{
+		  cb_p = dt_rval_spec_regsub_dg;
+		}
+	      else
+		{
+		  cb_p = dt_rval_spec_regsub_g;
+		}
+	      break;
+	    case 0x69:
+	      mppd->regex_flags |= REG_ICASE;
+	      break;
+	    case 0x6E:
+	      mppd->regex_flags |= REG_NEWLINE;
+	      break;
+	    case 0x62:
+	      if (mppd->regex_flags & REG_EXTENDED)
+		{
+		  mppd->regex_flags ^= REG_EXTENDED;
+		}
+	      break;
+	    }
+	  id_f++;
+	}
     }
 
-  int rr = regcomp(&mppd->preg, s_ptr, mppd->regex_flags);
+  int rr = regcomp (&mppd->preg, s_ptr, mppd->regex_flags);
 
   if (rr)
     {
       ERROR("rt_af_regex: [%d] could not compile pattern: '%s'\n", rr, s_ptr);
-      free(r_b);
+      free (r_b);
       return NULL;
     }
 
-  free(r_b);
+  free (r_b);
   mppd->flags |= _D_DRT_HASREGEX;
 
-  return as_ref_to_val_lk(r_match, cb_p, mppd, "%s");
+  return as_ref_to_val_lk (r_match, cb_p, mppd, "%s");
 }
 
 static void*
-rt_af_time(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd, char *id)
+rt_af_time (void *arg, char *match, char *output, size_t max_size,
+	    __d_drt_h mppd, char *id)
 {
-  strncpy(mppd->direc, "%d/%h/%Y %H:%M:%S", 18);
-  as_ref_to_val_lk(match, NULL, mppd, "%d/%h/%Y %H:%M:%S");
+  strncpy (mppd->direc, "%d/%h/%Y %H:%M:%S", 18);
+  as_ref_to_val_lk (match, NULL, mppd, "%d/%h/%Y %H:%M:%S");
 
   switch (id[1])
     {
-  case 0x6C:
-    mppd->st_p1 = (void*) localtime;
-    break;
-  default:
-    mppd->st_p1 = (void*) gmtime;
-    break;
+    case 0x6C:
+      mppd->st_p1 = (void*) localtime;
+      break;
+    default:
+      mppd->st_p1 = (void*) gmtime;
+      break;
     }
 
   if (match[0] == 0x28)
     {
-      md_init(&mppd->chains, 8);
-      md_init(&mppd->math, 8);
+      md_init (&mppd->chains, 8);
+      md_init (&mppd->math, 8);
 
       int ret, p_ret;
 
-      if ((ret = g_process_math_string(mppd->hdl, match, &mppd->math,
-          &mppd->chains, &p_ret, NULL, 0, 0)))
-        {
-          ERROR("rt_af_time: [%d] [%d]: could not process math string\n", ret,
-              p_ret);
-          return NULL;
-        }
+      if ((ret = g_process_math_string (mppd->hdl, match, &mppd->math,
+					&mppd->chains, &p_ret, NULL, 0, 0)))
+	{
+	  ERROR("rt_af_time: [%d] [%d]: could not process math string\n", ret,
+		p_ret);
+	  return NULL;
+	}
 
       return dt_rval_spec_tf_m;
     }
   else
     {
-      if (is_ascii_numeric((uint8_t) match[0]) && match[0] != 0x2B
-          && match[0] != 0x2D)
-        {
-          int vb;
-          mppd->vp_off1 = (size_t) mppd->hdl->g_proc2(mppd->hdl->_x_ref, match,
-              &vb);
+      if (is_ascii_numeric ((uint8_t) match[0]) && match[0] != 0x2B
+	  && match[0] != 0x2D)
+	{
+	  int vb;
+	  mppd->vp_off1 = (size_t) mppd->hdl->g_proc2 (mppd->hdl->_x_ref, match,
+						       &vb);
 
-          return dt_rval_spec_tf_p;
-        }
+	  return dt_rval_spec_tf_p;
+	}
       else
-        {
-          errno = 0;
-          mppd->ts_1 = (time_t) strtol(match, NULL, 10);
-          if (errno == ERANGE || errno == EINVAL)
-            {
-              ERROR("rt_af_time: numeric conversion failed: '%s'", match);
-              return NULL;
-            }
-          return dt_rval_spec_tf_gm;
-        }
+	{
+	  errno = 0;
+	  mppd->ts_1 = (time_t) strtol (match, NULL, 10);
+	  if (errno == ERANGE || errno == EINVAL)
+	    {
+	      ERROR("rt_af_time: numeric conversion failed: '%s'", match);
+	      return NULL;
+	    }
+	  return dt_rval_spec_tf_gm;
+	}
     }
 }
 
 static char *
-dt_rval_spec_dtoip_m(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_dtoip_m (void *arg, char *match, char *output, size_t max_size,
+		      void *mppd)
 {
   unsigned char v_b[16] =
     { 0 };
-  g_math_res(arg, &((__d_drt_h ) mppd)->math, (void*) v_b);
+  g_math_res (arg, &((__d_drt_h ) mppd)->math, (void*) v_b);
 
-  snprintf(output, max_size, "%hhu.%hhu.%hhu.%hhu", v_b[3], v_b[2], v_b[1],
-      v_b[0]);
+  snprintf (output, max_size, "%hhu.%hhu.%hhu.%hhu", v_b[3], v_b[2], v_b[1],
+	    v_b[0]);
   return output;
 }
 
 static char *
-dt_rval_spec_dtoip_p(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_dtoip_p (void *arg, char *match, char *output, size_t max_size,
+		      void *mppd)
 {
 
-  uint32_t ip = (uint32_t) g_t32_ptr(arg, ((__d_drt_h ) mppd)->vp_off1);
+  uint32_t ip = (uint32_t) g_t32_ptr (arg, ((__d_drt_h ) mppd)->vp_off1);
   uint8_t *ptr = (uint8_t*) &ip;
 
-  snprintf(output, max_size, "%hhu.%hhu.%hhu.%hhu", ptr[3], ptr[2], ptr[1],
-      ptr[0]);
+  snprintf (output, max_size, "%hhu.%hhu.%hhu.%hhu", ptr[3], ptr[2], ptr[1],
+	    ptr[0]);
   return output;
 }
 
 static char *
-dt_rval_spec_dtoip(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_dtoip (void *arg, char *match, char *output, size_t max_size,
+		    void *mppd)
 {
 
   uint8_t *ptr = (uint8_t*) &((__d_drt_h ) mppd)->v_ui1;
 
-  snprintf(output, max_size, "%hhu.%hhu.%hhu.%hhu", ptr[3], ptr[2], ptr[1],
-      ptr[0]);
+  snprintf (output, max_size, "%hhu.%hhu.%hhu.%hhu", ptr[3], ptr[2], ptr[1],
+	    ptr[0]);
+  return output;
+}
+
+static char *
+dt_rval_spec_iptodec (void *arg, char *match, char *output, size_t max_size,
+		      void *mppd)
+{
+  unsigned char *p_o = (unsigned char *) ((__d_drt_h ) mppd)->fp_rval1 (
+      arg, match, ((__d_drt_h ) mppd)->tp_b0,
+      sizeof(((__d_drt_h ) mppd)->tp_b0), ((__d_drt_h ) mppd)->mppd_next);
+
+  if (NULL != p_o)
+    {
+      mda t =
+	{ 0 };
+      md_init (&t, 5);
+
+      if (split_string ((char*) p_o, 0x2E, &t) != 4)
+	{
+	  output[0] = 0x0;
+	  return output;
+	}
+
+      p_md_obj ptr = md_last (&t);
+      uint32_t addr_d = 0;
+
+      while (ptr)
+	{
+	  char d = (char) strtol ((char*) ptr->ptr, NULL, 10);
+
+	  addr_d |= d;
+	  addr_d <<= 8;
+
+	  ptr = ptr->prev;
+	}
+
+      snprintf (output, max_size, "%u", (unsigned int) addr_d);
+
+      md_g_free (&t);
+    }
+  else
+    {
+      output[0] = 0x30;
+      output[1] = 0x0;
+    }
   return output;
 }
 
 static void*
-rt_af_dpec_dectoip(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd)
+rt_af_dpec_dectoip (void *arg, char *match, char *output, size_t max_size,
+		    __d_drt_h mppd)
 {
   if (match[0] == 0x28)
     {
-      md_init(&mppd->chains, 8);
-      md_init(&mppd->math, 8);
+      md_init (&mppd->chains, 8);
+      md_init (&mppd->math, 8);
 
       int ret, p_ret;
 
-      if ((ret = g_process_math_string(mppd->hdl, match, &mppd->math,
-          &mppd->chains, &p_ret, NULL, 0, 0)))
-        {
-          ERROR("rt_af_dectoip: [%d] [%d]: could not process math string\n",
-              ret, p_ret);
-          return NULL;
-        }
+      if ((ret = g_process_math_string (mppd->hdl, match, &mppd->math,
+					&mppd->chains, &p_ret, NULL, 0, 0)))
+	{
+	  ERROR("rt_af_dectoip: [%d] [%d]: could not process math string\n",
+		ret, p_ret);
+	  return NULL;
+	}
 
       return dt_rval_spec_dtoip_m;
     }
   else
     {
-      if (is_ascii_numeric((uint8_t) match[0]) && match[0] != 0x2B
-          && match[0] != 0x2D)
-        {
-          int vb;
-          mppd->vp_off1 = (size_t) mppd->hdl->g_proc2(mppd->hdl->_x_ref, match,
-              &vb);
+      if (is_ascii_numeric ((uint8_t) match[0]) && match[0] != 0x2B
+	  && match[0] != 0x2D)
+	{
+	  int vb;
+	  mppd->vp_off1 = (size_t) mppd->hdl->g_proc2 (mppd->hdl->_x_ref, match,
+						       &vb);
 
-          return dt_rval_spec_dtoip_p;
-        }
+	  return dt_rval_spec_dtoip_p;
+	}
       else
-        {
-          errno = 0;
-          mppd->v_ui1 = (time_t) strtol(match, NULL, 10);
-          if (errno == ERANGE || errno == EINVAL)
-            {
-              ERROR("rt_af_dectoip: numeric conversion failed: '%s'", match);
-              return NULL;
-            }
-          return dt_rval_spec_dtoip;
-        }
+	{
+	  errno = 0;
+	  mppd->v_ui1 = (time_t) strtol (match, NULL, 10);
+	  if (errno == ERANGE || errno == EINVAL)
+	    {
+	      ERROR("rt_af_dectoip: numeric conversion failed: '%s'", match);
+	      return NULL;
+	    }
+	  return dt_rval_spec_dtoip;
+	}
     }
 }
 
 static char *
-dt_rval_spec_offbyte(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_spec_offbyte (void *arg, char *match, char *output, size_t max_size,
+		      void *mppd)
 {
   unsigned char v_b[16] =
     { 0 };
-  g_math_res(arg, &((__d_drt_h ) mppd)->math, (void*) v_b);
+  g_math_res (arg, &((__d_drt_h ) mppd)->math, (void*) v_b);
 
   __d_drt_h _mppd = (__d_drt_h) mppd;
 
@@ -1630,26 +1688,26 @@ dt_rval_spec_offbyte(void *arg, char *match, char *output, size_t max_size,
 
   if (*offset >= _mppd->v_i0)
     {
-      snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, 0);
+      snprintf (output, max_size, ((__d_drt_h ) mppd)->direc, 0);
       return output;
     }
 
   uint8_t *data = (uint8_t*) (arg + _mppd->vp_off1);
-  snprintf(output, max_size, ((__d_drt_h ) mppd)->direc, data[*offset]);
+  snprintf (output, max_size, ((__d_drt_h ) mppd)->direc, data[*offset]);
   return output;
 
 }
 
 static void*
-rt_af_spec_offbyte(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd)
+rt_af_spec_offbyte (void *arg, char *match, char *output, size_t max_size,
+		    __d_drt_h mppd)
 {
   void *l_next_ref;
 
-  char *ptr = l_mppd_shell_ex(match, mppd->r_rep, sizeof(mppd->r_rep),
-      &l_next_ref,
-      LMS_EX_L,
-      LMS_EX_R, F_MPPD_SHX_TZERO);
+  char *ptr = l_mppd_shell_ex (match, mppd->r_rep, sizeof(mppd->r_rep),
+			       &l_next_ref,
+			       LMS_EX_L,
+			       LMS_EX_R, F_MPPD_SHX_TZERO);
 
   if (NULL == ptr || ptr[0] == 0x0)
     {
@@ -1663,25 +1721,25 @@ rt_af_spec_offbyte(void *arg, char *match, char *output, size_t max_size,
       return NULL;
     }
 
-  md_init(&mppd->chains, 8);
-  md_init(&mppd->math, 8);
+  md_init (&mppd->chains, 8);
+  md_init (&mppd->math, 8);
 
   int ret, p_ret;
 
-  if ((ret = g_process_math_string(mppd->hdl, ptr, &mppd->math, &mppd->chains,
-      &p_ret, NULL, 0, 0)))
+  if ((ret = g_process_math_string (mppd->hdl, ptr, &mppd->math, &mppd->chains,
+				    &p_ret, NULL, 0, 0)))
     {
       ERROR("rt_af_dpec_offbyte: [%d] [%d]: could not process math string\n",
-          ret, p_ret);
+	    ret, p_ret);
       return NULL;
     }
 
-  mppd->mppd_next = l_mppd_create_copy(mppd);
+  mppd->mppd_next = l_mppd_create_copy (mppd);
 
   int vb;
 
-  mppd->vp_off1 = (size_t) mppd->hdl->g_proc2(mppd->hdl->_x_ref,
-      (char*) l_next_ref, &vb);
+  mppd->vp_off1 = (size_t) mppd->hdl->g_proc2 (mppd->hdl->_x_ref,
+					       (char*) l_next_ref, &vb);
 
   if (vb == 0)
     {
@@ -1696,31 +1754,31 @@ rt_af_spec_offbyte(void *arg, char *match, char *output, size_t max_size,
 
   mppd->v_i0 = (int32_t) vb;
 
-  return as_ref_to_val_lk(match, dt_rval_spec_offbyte, (__d_drt_h ) mppd,
-      "%hhu");
+  return as_ref_to_val_lk (match, dt_rval_spec_offbyte, (__d_drt_h ) mppd,
+			   "%hhu");
 }
 
 static void*
-rt_af_spec_chr(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd)
+rt_af_spec_chr (void *arg, char *match, char *output, size_t max_size,
+		__d_drt_h mppd)
 {
   void *f_ret_ptr;
 
-  mppd->mppd_next = l_mppd_create_copy(mppd);
+  mppd->mppd_next = l_mppd_create_copy (mppd);
 
-  mppd->fp_rval1 = mppd->hdl->g_proc1_lookup(arg, match, output, max_size,
-      mppd->mppd_next);
+  mppd->fp_rval1 = mppd->hdl->g_proc1_lookup (arg, match, output, max_size,
+					      mppd->mppd_next);
 
   if (NULL == mppd->fp_rval1)
     {
       DEBUG("rt_af_spec_chr: could not resolve: '%s'\n", match);
       //return NULL;
       errno = 0;
-      mppd->t_1 = (uint32_t) strtoul(match, NULL, 10);
+      mppd->t_1 = (uint32_t) strtoul (match, NULL, 10);
       if (mppd->t_1 == UINT32_MAX && errno == ERANGE)
-        {
-          return NULL;
-        }
+	{
+	  return NULL;
+	}
       f_ret_ptr = dt_rval_spec_gc;
     }
   else
@@ -1732,7 +1790,7 @@ rt_af_spec_chr(void *arg, char *match, char *output, size_t max_size,
       || ((__d_drt_h ) mppd->mppd_next)->varg_l[0] == 0x0)
     {
       ERROR("rt_af_spec_chr: could not resolve character argument: '%s'\n",
-          match);
+	    match);
       return NULL;
     }
 
@@ -1742,33 +1800,33 @@ rt_af_spec_chr(void *arg, char *match, char *output, size_t max_size,
     {
       match++;
       switch (match[0])
-        {
-      case 0x6E:
-        mppd->c_1 = 0xA;
-        break;
-      case 0x72:
-        mppd->c_1 = 0xD;
-        break;
-      case 0x5C:
-        mppd->c_1 = 0x5C;
-        break;
-      case 0x74:
-        mppd->c_1 = 0x9;
-        break;
-      case 0x73:
-        mppd->c_1 = 0x20;
-        break;
-      case 0x78:
-        errno = 0;
-        mppd->c_1 = (char) strtol(&match[1], NULL, 16);
-        if (errno == ERANGE || errno == EINVAL)
-          {
-            mppd->c_1 = 11;
-          }
-        break;
-      default:
-        mppd->c_1 = match[0];
-        }
+	{
+	case 0x6E:
+	  mppd->c_1 = 0xA;
+	  break;
+	case 0x72:
+	  mppd->c_1 = 0xD;
+	  break;
+	case 0x5C:
+	  mppd->c_1 = 0x5C;
+	  break;
+	case 0x74:
+	  mppd->c_1 = 0x9;
+	  break;
+	case 0x73:
+	  mppd->c_1 = 0x20;
+	  break;
+	case 0x78:
+	  errno = 0;
+	  mppd->c_1 = (char) strtol (&match[1], NULL, 16);
+	  if (errno == ERANGE || errno == EINVAL)
+	    {
+	      mppd->c_1 = 11;
+	    }
+	  break;
+	default:
+	  mppd->c_1 = match[0];
+	}
     }
   else
     {
@@ -1780,12 +1838,12 @@ rt_af_spec_chr(void *arg, char *match, char *output, size_t max_size,
 }
 
 static char *
-dt_rval_so_isascii(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_so_isascii (void *arg, char *match, char *output, size_t max_size,
+		    void *mppd)
 {
   __d_drt_h _mppd = (__d_drt_h ) mppd;
-  char *p_b0 = _mppd->fp_rval1(arg, match, _mppd->tp_b0, sizeof(_mppd->tp_b0),
-      _mppd->mppd_next);
+  char *p_b0 = _mppd->fp_rval1 (arg, match, _mppd->tp_b0, sizeof(_mppd->tp_b0),
+				_mppd->mppd_next);
 
   if (0 == p_b0[0])
     {
@@ -1795,12 +1853,12 @@ dt_rval_so_isascii(void *arg, char *match, char *output, size_t max_size,
   while (p_b0[0])
     {
       if (!(p_b0[0] > 0 && p_b0[0] <= 0x7F))
-        {
-          _nasc_ex: ;
-          output[0] = 0x30;
-          output[1] = 0x0;
-          return output;
-        }
+	{
+	  _nasc_ex: ;
+	  output[0] = 0x30;
+	  output[1] = 0x0;
+	  return output;
+	}
       p_b0++;
     }
 
@@ -1811,12 +1869,12 @@ dt_rval_so_isascii(void *arg, char *match, char *output, size_t max_size,
 }
 
 static char *
-dt_rval_so_isalphanumeric(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_so_isalphanumeric (void *arg, char *match, char *output,
+			   size_t max_size, void *mppd)
 {
   __d_drt_h _mppd = (__d_drt_h ) mppd;
-  char *p_b0 = _mppd->fp_rval1(arg, match, _mppd->tp_b0, sizeof(_mppd->tp_b0),
-      _mppd->mppd_next);
+  char *p_b0 = _mppd->fp_rval1 (arg, match, _mppd->tp_b0, sizeof(_mppd->tp_b0),
+				_mppd->mppd_next);
 
   if (0 == p_b0[0])
     {
@@ -1826,14 +1884,14 @@ dt_rval_so_isalphanumeric(void *arg, char *match, char *output, size_t max_size,
   while (p_b0[0])
     {
       if (!((p_b0[0] >= 0x61 && p_b0[0] <= 0x7A)
-          || (p_b0[0] >= 0x41 && p_b0[0] <= 0x5A)
-          || (p_b0[0] >= 0x30 && p_b0[0] <= 0x39)))
-        {
-          _nasc_ex: ;
-          output[0] = 0x30;
-          output[1] = 0x0;
-          return output;
-        }
+	  || (p_b0[0] >= 0x41 && p_b0[0] <= 0x5A)
+	  || (p_b0[0] >= 0x30 && p_b0[0] <= 0x39)))
+	{
+	  _nasc_ex: ;
+	  output[0] = 0x30;
+	  output[1] = 0x0;
+	  return output;
+	}
       p_b0++;
     }
 
@@ -1844,12 +1902,12 @@ dt_rval_so_isalphanumeric(void *arg, char *match, char *output, size_t max_size,
 }
 
 static char *
-dt_rval_so_isnumeric(void *arg, char *match, char *output, size_t max_size,
-    void *mppd)
+dt_rval_so_isnumeric (void *arg, char *match, char *output, size_t max_size,
+		      void *mppd)
 {
   __d_drt_h _mppd = (__d_drt_h ) mppd;
-  char *p_b0 = _mppd->fp_rval1(arg, match, _mppd->tp_b0, sizeof(_mppd->tp_b0),
-      _mppd->mppd_next);
+  char *p_b0 = _mppd->fp_rval1 (arg, match, _mppd->tp_b0, sizeof(_mppd->tp_b0),
+				_mppd->mppd_next);
 
   if (0 == p_b0[0])
     {
@@ -1859,12 +1917,12 @@ dt_rval_so_isnumeric(void *arg, char *match, char *output, size_t max_size,
   while (p_b0[0])
     {
       if (!(p_b0[0] >= 0x30 && p_b0[0] <= 0x39))
-        {
-          _nasc_ex: ;
-          output[0] = 0x30;
-          output[1] = 0x0;
-          return output;
-        }
+	{
+	  _nasc_ex: ;
+	  output[0] = 0x30;
+	  output[1] = 0x0;
+	  return output;
+	}
       p_b0++;
     }
 
@@ -1875,19 +1933,19 @@ dt_rval_so_isnumeric(void *arg, char *match, char *output, size_t max_size,
 }
 
 static void*
-rt_af_strops_go(void *input, char *match, __d_drt_h mppd)
+rt_af_strops_go (void *input, char *match, __d_drt_h mppd)
 {
-  if (!strncmp(input, "ascii", 5))
+  if (!strncmp (input, "ascii", 5))
     {
-      return as_ref_to_val_lk(match, dt_rval_so_isascii, mppd, "%s");
+      return as_ref_to_val_lk (match, dt_rval_so_isascii, mppd, "%s");
     }
-  else if (!strncmp(input, "alphanumeric", 12))
+  else if (!strncmp (input, "alphanumeric", 12))
     {
-      return as_ref_to_val_lk(match, dt_rval_so_isalphanumeric, mppd, "%s");
+      return as_ref_to_val_lk (match, dt_rval_so_isalphanumeric, mppd, "%s");
     }
-  else if (!strncmp(input, "numeric", 7))
+  else if (!strncmp (input, "numeric", 7))
     {
-      return as_ref_to_val_lk(match, dt_rval_so_isnumeric, mppd, "%s");
+      return as_ref_to_val_lk (match, dt_rval_so_isnumeric, mppd, "%s");
     }
   else
     {
@@ -1898,14 +1956,14 @@ rt_af_strops_go(void *input, char *match, __d_drt_h mppd)
 }
 
 static void*
-rt_af_strops(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd)
+rt_af_strops (void *arg, char *match, char *output, size_t max_size,
+	      __d_drt_h mppd)
 {
 
-  mppd->mppd_next = l_mppd_create_copy(mppd);
+  mppd->mppd_next = l_mppd_create_copy (mppd);
 
-  mppd->fp_rval1 = mppd->hdl->g_proc1_lookup(arg, match, output, max_size,
-      mppd->mppd_next);
+  mppd->fp_rval1 = mppd->hdl->g_proc1_lookup (arg, match, output, max_size,
+					      mppd->mppd_next);
 
   if (NULL == mppd->fp_rval1)
     {
@@ -1922,19 +1980,19 @@ rt_af_strops(void *arg, char *match, char *output, size_t max_size,
 
   void *l_next_ref;
 
-  char *ptr = l_mppd_shell_ex(((__d_drt_h ) mppd->mppd_next)->varg_l,
-      mppd->r_rep, sizeof(mppd->r_rep), &l_next_ref,
-      LMS_EX_L,
-      LMS_EX_R, F_MPPD_SHX_TZERO);
+  char *ptr = l_mppd_shell_ex (((__d_drt_h ) mppd->mppd_next)->varg_l,
+			       mppd->r_rep, sizeof(mppd->r_rep), &l_next_ref,
+			       LMS_EX_L,
+			       LMS_EX_R, F_MPPD_SHX_TZERO);
 
   if (NULL == ptr || ptr[0] == 0x0)
     {
       ERROR("rt_af_strops: could not resolve option: %s\n",
-          ((__d_drt_h ) mppd->mppd_next)->varg_l);
+	    ((__d_drt_h ) mppd->mppd_next)->varg_l);
       return NULL;
     }
 
-  return rt_af_strops_go(ptr, match, mppd);
+  return rt_af_strops_go (ptr, match, mppd);
 
 }
 
@@ -1950,8 +2008,8 @@ rt_af_strops(void *arg, char *match, char *output, size_t max_size,
   };
 
 void *
-ref_to_val_af(void *arg, char *match, char *output, size_t max_size,
-    __d_drt_h mppd)
+ref_to_val_af (void *arg, char *match, char *output, size_t max_size,
+	       __d_drt_h mppd)
 {
   match++;
   char *id = match;
@@ -1974,133 +2032,139 @@ ref_to_val_af(void *arg, char *match, char *output, size_t max_size,
   if (i < 6)
     {
       switch (id[0])
-        {
-      case 0x43:
-        ;
-        return rt_af_spec_offbyte(arg, match, output, max_size, mppd);
-        break;
-      case 0x49:
-        return rt_af_dpec_dectoip(arg, match, output, max_size, mppd);
-      case 0x50:
-        return rt_af_print_format(arg, match, output, max_size, mppd);
-      case 0x51:
-        return rt_af_print_format_int(arg, match, output, max_size, mppd);
-      case 0x70:
-        return rt_af_print(arg, match, output, max_size, mppd);
-      case 0x4C:
-        return rt_af_conditional(arg, match, output, max_size, mppd);
-      case 0x62:
-        return rt_af_basedir(arg, match, output, max_size, mppd);
-      case 0x64:
-        return rt_af_dirname(arg, match, output, max_size, mppd);
-      case 0x6C:
-        ;
-        //DT_RVAL_GENPREPROC()
-        mppd->mppd_next = l_mppd_create_copy(mppd);
-        mppd->fp_rval1 = mppd->hdl->g_proc1_lookup(arg, match, output, max_size,
-            mppd->mppd_next);
-        if (NULL == mppd->fp_rval1)
-          {
-            return NULL;
-          }
-        return as_ref_to_val_lk(match, dt_rval_spec_slen, (__d_drt_h ) mppd,
-        NULL);
-        break;
-      case 0x74:
-        ;
-        return rt_af_time(arg, match, output, max_size, mppd, id);
-      case 0x63:
-        ;
-        return rt_af_spec_chr(arg, match, output, max_size, mppd);
-      case 0x6D:
-        ;
-        return ref_to_val_af_math(arg, match, output, max_size, mppd);
-        break;
-      case 0x72:
-        ;
-        return rt_af_regex(arg, match, output, max_size, mppd, id);
-        break;
-      case 0x73: // s
-        ;
-        return rt_af_strops(arg, match, output, max_size, mppd);
-        break;
+	{
+	case 0x43:
+	  ;
+	  return rt_af_spec_offbyte (arg, match, output, max_size, mppd);
+	  break;
+	case 0x49:
+	  return rt_af_dpec_dectoip (arg, match, output, max_size, mppd);
+	case 0x69:
+	  DT_RVAL_GENPREPROC()
+	  return as_ref_to_val_lk (match, dt_rval_spec_iptodec,
+				   (__d_drt_h ) mppd,
+				   NULL);
+	case 0x50:
+	  return rt_af_print_format (arg, match, output, max_size, mppd);
+	case 0x51:
+	  return rt_af_print_format_int (arg, match, output, max_size, mppd);
+	case 0x70:
+	  return rt_af_print (arg, match, output, max_size, mppd);
+	case 0x4C:
+	  return rt_af_conditional (arg, match, output, max_size, mppd);
+	case 0x62:
+	  return rt_af_basedir (arg, match, output, max_size, mppd);
+	case 0x64:
+	  return rt_af_dirname (arg, match, output, max_size, mppd);
+	case 0x6C:
+	  ;
+	  //DT_RVAL_GENPREPROC()
+	  mppd->mppd_next = l_mppd_create_copy (mppd);
+	  mppd->fp_rval1 = mppd->hdl->g_proc1_lookup (arg, match, output,
+						      max_size,
+						      mppd->mppd_next);
+	  if (NULL == mppd->fp_rval1)
+	    {
+	      return NULL;
+	    }
+	  return as_ref_to_val_lk (match, dt_rval_spec_slen, (__d_drt_h ) mppd,
+	  NULL);
+	  break;
+	case 0x74:
+	  ;
+	  return rt_af_time (arg, match, output, max_size, mppd, id);
+	case 0x63:
+	  ;
+	  return rt_af_spec_chr (arg, match, output, max_size, mppd);
+	case 0x6D:
+	  ;
+	  return ref_to_val_af_math (arg, match, output, max_size, mppd);
+	  break;
+	case 0x72:
+	  ;
+	  return rt_af_regex (arg, match, output, max_size, mppd, id);
+	  break;
+	case 0x73: // s
+	  ;
+	  return rt_af_strops (arg, match, output, max_size, mppd);
+	  break;
 #ifdef _G_SSYS_CRYPTO
-        case 0x53:
-        DT_RVAL_GENPREPROC()
-        switch (id[1])
-          {
-            case 0x32:
-            ;
-            switch (id[2])
-              {
-                case 0x32:
-                ;
-                return as_ref_to_val_lk(match, dt_rval_spec_sha224,
-                    (__d_drt_h ) mppd,
-                    NULL);
-                break;
-                case 0x35:
-                return as_ref_to_val_lk(match, dt_rval_spec_sha256,
-                    (__d_drt_h ) mppd,
-                    NULL);
-                break;
-              }
-            break;
-            case 0x33:
-            ;
-            return as_ref_to_val_lk(match, dt_rval_spec_sha384, (__d_drt_h ) mppd,
-                NULL);
-            break;
-            case 0x35:
-            ;
-            return as_ref_to_val_lk(match, dt_rval_spec_sha512, (__d_drt_h ) mppd,
-                NULL);
-            break;
-            default:
-            ;
-            return as_ref_to_val_lk(match, dt_rval_spec_sha1, (__d_drt_h ) mppd,
-                NULL);
-            break;
-          }
-        break;
-        case 0x4D:
-        DT_RVAL_GENPREPROC()
-        switch (id[1])
-          {
-            case 0x34:
-            ;
-            return as_ref_to_val_lk(match, dt_rval_spec_md4, (__d_drt_h ) mppd,
-                NULL);
-            break;
-            case 0x35:
-            ;
-            return as_ref_to_val_lk(match, dt_rval_spec_md5, (__d_drt_h ) mppd,
-                NULL);
-            break;
-          }
-        break;
-        case 0x52:
-        DT_RVAL_GENPREPROC()
-        return as_ref_to_val_lk(match, dt_rval_spec_ripemd160,
-            (__d_drt_h ) mppd,
-            NULL);
-        break;
+	  case 0x53:
+	  DT_RVAL_GENPREPROC()
+	  switch (id[1])
+	    {
+	      case 0x32:
+	      ;
+	      switch (id[2])
+		{
+		  case 0x32:
+		  ;
+		  return as_ref_to_val_lk(match, dt_rval_spec_sha224,
+		      (__d_drt_h ) mppd,
+		      NULL);
+		  break;
+		  case 0x35:
+		  return as_ref_to_val_lk(match, dt_rval_spec_sha256,
+		      (__d_drt_h ) mppd,
+		      NULL);
+		  break;
+		}
+	      break;
+	      case 0x33:
+	      ;
+	      return as_ref_to_val_lk(match, dt_rval_spec_sha384, (__d_drt_h ) mppd,
+		  NULL);
+	      break;
+	      case 0x35:
+	      ;
+	      return as_ref_to_val_lk(match, dt_rval_spec_sha512, (__d_drt_h ) mppd,
+		  NULL);
+	      break;
+	      default:
+	      ;
+	      return as_ref_to_val_lk(match, dt_rval_spec_sha1, (__d_drt_h ) mppd,
+		  NULL);
+	      break;
+	    }
+	  break;
+	  case 0x4D:
+	  DT_RVAL_GENPREPROC()
+	  switch (id[1])
+	    {
+	      case 0x34:
+	      ;
+	      return as_ref_to_val_lk(match, dt_rval_spec_md4, (__d_drt_h ) mppd,
+		  NULL);
+	      break;
+	      case 0x35:
+	      ;
+	      return as_ref_to_val_lk(match, dt_rval_spec_md5, (__d_drt_h ) mppd,
+		  NULL);
+	      break;
+	    }
+	  break;
+	  case 0x52:
+	  DT_RVAL_GENPREPROC()
+	  return as_ref_to_val_lk(match, dt_rval_spec_ripemd160,
+	      (__d_drt_h ) mppd,
+	      NULL);
+	  break;
 #endif
-      case 0x42:
-        ;
-        DT_RVAL_GENPREPROC()
-        return as_ref_to_val_lk(match, dt_rval_spec_base64_encode,
-            (__d_drt_h ) mppd,
-            NULL);
-        break;
-      case 0x44:
-        ;
-        DT_RVAL_GENPREPROC()
-        return as_ref_to_val_lk(match, dt_rval_spec_base64_decode,
-            (__d_drt_h ) mppd,
-            NULL);
-        break;
-        }
+	case 0x42:
+	  ;
+	  DT_RVAL_GENPREPROC()
+	  return as_ref_to_val_lk (match, dt_rval_spec_base64_encode,
+				   (__d_drt_h ) mppd,
+				   NULL);
+	  break;
+	case 0x44:
+	  ;
+	  DT_RVAL_GENPREPROC()
+	  return as_ref_to_val_lk (match, dt_rval_spec_base64_decode,
+				   (__d_drt_h ) mppd,
+				   NULL);
+	  break;
+	}
 
     }
 
