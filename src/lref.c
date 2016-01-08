@@ -1583,6 +1583,7 @@ dt_rval_spec_dtoip (void *arg, char *match, char *output, size_t max_size,
   return output;
 }
 
+
 static char *
 dt_rval_spec_iptodec (void *arg, char *match, char *output, size_t max_size,
 		      void *mppd)
@@ -1603,18 +1604,23 @@ dt_rval_spec_iptodec (void *arg, char *match, char *output, size_t max_size,
 	  return output;
 	}
 
-      p_md_obj ptr = md_last (&t);
+      p_md_obj ptr = md_first (&t);
       uint32_t addr_d = 0;
 
       while (ptr)
 	{
-	  char d = (char) strtol ((char*) ptr->ptr, NULL, 10);
+	  uint32_t d = (uint32_t) strtol ((char*) ptr->ptr, NULL, 10);
 
-	  addr_d |= d;
-	  addr_d <<= 8;
+	  addr_d |= (d);
 
-	  ptr = ptr->prev;
+	  if (ptr->next)
+	    {
+	      addr_d = (addr_d << 8);
+	    }
+
+	  ptr = ptr->next;
 	}
+
 
       snprintf (output, max_size, "%u", (unsigned int) addr_d);
 
