@@ -30,7 +30,7 @@ TIER0_IPV6=1
 
 ## tier 1
 SERVER_NAME_TIER1="unknown.zone-servers.dn42"
-TIER1_FORWARD_ZONES_RESTRICT=()
+TIER1_FORWARD_ZONES_RESTRICT=( root-servers.dn42 zone-servers.dn42 in-addr-servers.dn42 dn42-servers.dn42 )
 TIER1_ZONES=(020 adm dn42 ff3l ffa ffac ffbcd ffbgl ffc ffda ffde ffdh fffd ffffm fffl fffr ffge ffgl ffgoe ffgro ffgt ffh ffhal ffhb ffhef ffhh ffhl ffhw ffin ffj ffka ffki fflln fflux ffmee ffms ffnord ffnw ffoh ffpb ffpi ffrade ffrg ffrgb ffsaar ffsg fftdf fftr ffw ffwb ffwk ffwp hack helgo mueritz rzl)
 TIER1_AUTH_ZONES=(dn42)
 TIER1_IPV6=1
@@ -43,7 +43,7 @@ BUILD_RFC2317_SUPERNETS=1
 SERVER_NAME_TIER2_ARPA="unknown.dn42-servers.dn42" # < /24
 
 ##
-GIT_ADDRESS=192.30.252.131
+GIT_ADDRESS=172.22.177.75:zonebuild
 GIT_BRANCH=master
 ##
 MASTERS=""
@@ -52,9 +52,9 @@ MASTERS=""
 PULL_BEFORE_BUILD=1
 
 SYNC_SERVERS=(  
-		"mtn://172.22.228.11/?net.dn42.registry"
-		"mtn://198.199.185.161/?net.dn42.registry"
 		"mtn://172.22.177.77/?net.dn42.registry"
+		"mtn://172.22.228.11/?net.dn42.registry"
+		"mtn://198.199.185.161/?net.dn42.registry"		
 #                "mtn://46.4.248.203/?net.dn42.registry"
 )
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:50
+#@REVISION:51
 
 if [ -n "${2}" ]; then
 	ucfile="${2}"
@@ -41,6 +41,14 @@ else
 	generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 ${1} >> ${OUT_PATH}/tier1/${1}.db 
 fi
 
+for file in ${REGISTRY_PATH}/dns/*.${1}; do
+	[ -f "${file}" ] || continue
+	zone=`basename $file`
+	[[ " ${TIER1_FORWARD_ZONES_RESTRICT[@]} " = *" ${zone} "* ]] && continue
+	printf "%-40s\r" ${zone}
+	generate_forward_zone ${file} ${zone} >> ${OUT_PATH}/tier1/${1}.db 
+done
+
 generate_soa ${SERVER_NAME_TIER1} in-addr-servers.dn42 > ${OUT_PATH}/tier1/in-addr-servers.dn42.db
 generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 in-addr-servers.dn42 >> ${OUT_PATH}/tier1/in-addr-servers.dn42.db
 
@@ -49,14 +57,6 @@ generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 in-addr-servers.
 
 generate_soa ${SERVER_NAME_TIER1} dn42-servers.dn42 > ${OUT_PATH}/tier1/dn42-servers.dn42.db 
 generate_forward_zone ${REGISTRY_PATH}/dns/dn42-servers.dn42 dn42-servers.dn42  >>  ${OUT_PATH}/tier1/dn42-servers.dn42.db 
-
-for file in ${REGISTRY_PATH}/dns/*.${1}; do
-	[ -f "${file}" ] || continue
-	zone=`basename $file`
-	[[ "${TIER1_FORWARD_ZONES_RESTRICT[@]}" = *${zone}* ]] && continue
-	printf "%-40s\r" ${zone}
-	generate_forward_zone ${file} ${zone} >> ${OUT_PATH}/tier1/${1}.db 
-done
 
 generate_soa ${SERVER_NAME_TIER1} zone-servers.dn42 > ${OUT_PATH}/tier1/zone-servers.dn42.db 
 generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 zone-servers.dn42  >>  ${OUT_PATH}/tier1/zone-servers.dn42.db 
