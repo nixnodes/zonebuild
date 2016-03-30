@@ -43,7 +43,7 @@ BUILD_RFC2317_SUPERNETS=1
 SERVER_NAME_TIER2_ARPA="unknown.dn42-servers.dn42" # < /24
 
 ##
-GIT_ADDRESS=http://172.22.177.75/git/zonebuild
+GIT_ADDRESS=https://37.1.89.131/git/zonebuild
 GIT_BRANCH=master
 ##
 MASTERS=""
