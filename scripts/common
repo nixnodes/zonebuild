@@ -169,7 +169,7 @@ git_pull()
 {
 	save_path=${PWD}
 	cd ${BASE_PATH}
-	${GIT} pull git@${1} ${2}
+	${GIT} pull ${1} ${2}
 	git_exit=$?
 	cd ${save_path}
 	return ${git_exit}
