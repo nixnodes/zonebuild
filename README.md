@@ -7,7 +7,7 @@
 
   ```sh
   apt-get update
-  apt-get install bind9 monotone git
+  apt-get install bind9 monotone git python3
   cd /etc/bind
   ```
 * Clone:
