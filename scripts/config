@@ -16,7 +16,7 @@ CONTACT_EMAIL="unknown.nic.dn42"
 PERSON_HANDLE=DUMMY-DN42
 
 ##
-ARPA_ZONES=(10.0.0.0_8 172.20.0.0_16 172.22.0.0_16 172.23.0.0_16 172.31.0.0_16)
+ARPA_ZONES=(10.0.0.0_8 172.20.0.0_16 172.21.0.0_16 172.22.0.0_16 172.23.0.0_16 172.31.0.0_16)
 ARPA_IPV6_ZONES=(d.f)
 ARPA_TIERS=1
 
@@ -55,7 +55,6 @@ SYNC_SERVERS=(
 		"mtn://172.22.177.77/?net.dn42.registry"
 		"mtn://172.22.228.11/?net.dn42.registry"
 		"mtn://198.199.185.161/?net.dn42.registry"		
-#                "mtn://46.4.248.203/?net.dn42.registry"
 )
 
 
