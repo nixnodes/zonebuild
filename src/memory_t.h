@@ -65,7 +65,7 @@ md_init(pmda md, int nm);
 p_md_obj
 md_first(pmda md);
 int
-md_g_free(pmda md);
+md_free(pmda md);
 int
 md_g_free_l(pmda md);
 int

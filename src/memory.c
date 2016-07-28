@@ -40,7 +40,7 @@ md_init(pmda md, int nm)
 }
 
 int
-md_g_free(pmda md)
+md_free(pmda md)
 {
 #ifdef _G_SSYS_THREAD
   mutex_lock(&md->mutex);
@@ -550,7 +550,7 @@ md_copy(pmda source, pmda dest, size_t block_sz, int
 
   if (ret)
     {
-      md_g_free(dest);
+      md_free(dest);
     }
 
   if (source->offset != dest->offset)

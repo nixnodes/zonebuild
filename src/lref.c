@@ -1624,7 +1624,7 @@ dt_rval_spec_iptodec (void *arg, char *match, char *output, size_t max_size,
 
       snprintf (output, max_size, "%u", (unsigned int) addr_d);
 
-      md_g_free (&t);
+      md_free (&t);
     }
   else
     {
