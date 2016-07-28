@@ -164,12 +164,21 @@ run_subnettr(){
 	return $?
 }
 
+check_git_version()
+{
+        va=(`${GIT} --version | cut -f 3 -d " " | tr '.' ' '`)
+        [ ${va[0]} -ge 1 ] && [ ${va[1]} -ge 7 ] && [ ${va[2]} -ge 2 ] && return 0
+        return 1
+}
+
 #[1]: server [2]: branch
 git_pull()
 {
 	save_path=${PWD}
 	cd ${BASE_PATH}
-	${GIT} -c http.sslVerify=false pull ${1} ${2}
+	check_git_version &&
+		${GIT} -c http.sslVerify=false pull ${1} ${2} ||
+		${GIT} pull ${1} ${2}
 	git_exit=$?
 	cd ${save_path}
 	return ${git_exit}
