@@ -22,7 +22,8 @@ generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ""   >> ${OUT_PATH}
 
 for item in ${TIER1_ZONES[@]}; do	
 	if [[ "${item}" != "dn42" ]]; then
-		generate_forward_zone ${REGISTRY_PATH}/dns/${item} ${item} >> ${OUT_PATH}/tier0/root.db
+		[ -e ${REGISTRY_PATH}/dns/${item} ] && 
+			generate_forward_zone ${REGISTRY_PATH}/dns/${item} ${item} >> ${OUT_PATH}/tier0/root.db
 	else
 		generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 ${item} >> ${OUT_PATH}/tier0/root.db
 	fi

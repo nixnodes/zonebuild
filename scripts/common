@@ -184,6 +184,22 @@ git_pull()
 	return ${git_exit}
 }
 
+#[1]: server [2]: branch [3]:path
+git_pull2()
+{
+	save_path=${PWD}
+	if [ -d "${3}" ]; then
+		cd "${3}"
+		${GIT} pull ${1} ${2}
+		git_exit=$?		
+	else
+		${GIT} clone -b ${2} ${1} ${3} 
+	fi
+
+	cd ${save_path}
+	return ${git_exit}
+}
+
 script_get_vr()
 {
 	[ -f "${1}" ] || {
@@ -243,4 +259,25 @@ print_usage_and_exit()
 {
 	echo "${USAGE_STR}"
 	exit 2
+}
+
+parse_yaml() {
+    local prefix=$2
+    local s
+    local w
+    local fs
+    s='[[:space:]]*'
+    w='[a-zA-Z0-9_]*'
+    fs="$(echo @|tr @ '\034'|tr -d '\015')"
+    sed -ne "s|^\($s\)\($w\)$s:$s\"\(.*\)\"$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s[:-]$s\(.*\)$s\$|\1$fs\2$fs\3|p" "$1" |
+    awk -F"$fs" '{
+    indent = length($1)/2;
+    vname[indent] = $2;
+    for (i in vname) {if (i > indent) {delete vname[i]}}
+        if (length($3) > 0) {
+            vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+            printf("%s%s%s=(\"%s\")\n", "'"$prefix"'",vn, $2, $3);
+        }
+    }' | sed 's/_=/+=/g'
 }

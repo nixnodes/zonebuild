@@ -30,8 +30,8 @@ TIER0_IPV6=1
 
 ## tier 1
 SERVER_NAME_TIER1="unknown.zone-servers.dn42"
-TIER1_FORWARD_ZONES_RESTRICT=( root-servers.dn42 zone-servers.dn42 in-addr-servers.dn42 dn42-servers.dn42 )
-TIER1_ZONES=(020 adm dn42 ff3l ffa ffac ffbcd ffbgl ffc ffda ffde ffdh fffd ffffm fffl fffr ffge ffgl ffgoe ffgro ffgt ffh ffhal ffhb ffhef ffhh ffhl ffhw ffin ffj ffka ffki fflln fflux ffmee ffms ffnord ffnw ffoh ffpb ffpi ffrade ffrg ffrgb ffsaar ffsg fftdf fftr ffw ffwb ffwk ffwp hack helgo mueritz rzl)
+TIER1_FORWARD_ZONES_RESTRICT=(root-servers.dn42 zone-servers.dn42 in-addr-servers.dn42 dn42-servers.dn42)
+TIER1_ZONES=(ffac ffamt 020 ffa ffbit ffbsee ffbrb hack ffc ffdh dn42 ff3l ffec fferz ffe ffeu fffl ffdus ffffm fmdk fffr fffd ffge ffggrz ffgl ffgoe ffhgw ffgro ffhal ffhh ffhm ffh ffharz helgo ffhef ffherne ffin ffj ffka ffki ffgt fflz fflln ffhl fflux icvpn ffms mueritz ffalpen ffmo ffnord ffnw ffobh ffoh ostvest ffpb ffpi ffrade ffrgb ffrek ffrg rzl ffsaar ffsi ffsg ffws fftr fftdf fftut ffue ffulm ffwdh ffwk ffw)
 TIER1_AUTH_ZONES=(dn42)
 TIER1_IPV6=1
 
@@ -43,10 +43,14 @@ BUILD_RFC2317_SUPERNETS=1
 SERVER_NAME_TIER2_ARPA="unknown.dn42-servers.dn42" # < /24
 
 ##
-GIT_ADDRESS=https://37.1.89.131/git/zonebuild
+GIT_ADDRESS=https://github.com/nixnodes/zonebuild
 GIT_BRANCH=master
 ##
 MASTERS=""
+
+##
+ICVPN_GIT_ADDRESS=https://github.com/freifunk/icvpn-meta
+ICVPN_GIT_BRANCH=master
 
 ##
 PULL_BEFORE_BUILD=1
@@ -123,7 +127,15 @@ OPTION_HOOKS=(
 			echo "${zone}.ip6.arpa"
 		done
 		exit 0
-	}'	
+	}'
+	
+	'[[ "${arg}" = "-icpull" ]] && {	
+		icvpn_pull 
+	}'
+	
+	'[[ "${arg}" = "-icdomlist" ]] && {		
+		icvpn_domlist
+	}'
 		
 	'[[ "${arg}" = "-getns" ]] && {		
 		int_opt="-getns"

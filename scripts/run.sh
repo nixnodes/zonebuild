@@ -26,6 +26,7 @@ ucfile="config.user"
 
 . "${BASE_PATH}/config" || exit 2
 . "${BASE_PATH}/common" || exit 2
+. "${BASE_PATH}/icvpn" || exit 2
 
 USAGE_STR="USAGE: ./`basename ${0}` <build options> .. <options>"
 

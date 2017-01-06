@@ -1,0 +1,27 @@
+icvpn_pull()
+{
+	git_pull2 ${ICVPN_GIT_ADDRESS} ${ICVPN_GIT_BRANCH} "${REGISTRY_BASE_PATH}/icvpn" 1>&2 || {
+		echo "${0}: git pull failed" 1>&2
+		return 1
+	}	
+	return 0
+}
+
+icvpn_domlist()
+{
+	unset out_domains	
+	for file in "${REGISTRY_BASE_PATH}/icvpn"/*; do
+		unset domains
+		echo "${file}" | egrep "\." > /dev/null && continue
+		eval "$(parse_yaml ${file})" &> /dev/null || {
+			echo "${file}: failed parsing YAML file" 1>&2
+			continue
+		}			
+		for d in ${domains[@]}; do
+			[ -n "${d}" ] && ! echo "${d}" | egrep "\." > /dev/null && {
+				out_domains+=(${d})
+			}		
+		done				
+	done
+	echo ${out_domains[@]}	
+}
