@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:50
+#@REVISION:51
 #
 # Read config first, then copy your settings to config.user 
 #
