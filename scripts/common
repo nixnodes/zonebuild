@@ -74,10 +74,12 @@ cu_add_hint_zone(){
 }
 
 
-#[1]: nameserver [2]: zone
+#[1]: nameserver [2]: zone [3]: ttl
 generate_soa()
 {
-		echo '$TTL' ${DEFAULT_TTL}
+		[ -n "${3}" ] && 
+			echo '$TTL' ${3} ||
+			echo '$TTL' ${DEFAULT_TTL}
         echo "${2}. IN SOA ${1}. ${CONTACT_EMAIL}. (`date +%s` 14400 3600 1209600 7200)"
         generate_version_txt ${2}
 }

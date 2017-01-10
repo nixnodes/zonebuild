@@ -11,7 +11,7 @@ REGISTRY_PATH=${REGISTRY_BASE_PATH}/net.dn42.registry/data
 OUT_PATH=/home/reboot/workspace/zonebuild/scripts/build
 #
 
-DEFAULT_TTL=7200
+DEFAULT_TTL=86400
 CONTACT_EMAIL="unknown.nic.dn42"
 PERSON_HANDLE=DUMMY-DN42
 
@@ -27,6 +27,7 @@ MERGE_ICANN_ROOT=1
 MERGE_RESTRICT_ZONES=
 ICANN_AXFR_ENABLED_ROOTS=(193.0.14.129 192.228.79.201)
 TIER0_IPV6=1
+TIER0_TTL=86400
 
 ## tier 1
 SERVER_NAME_TIER1="unknown.zone-servers.dn42"
@@ -34,6 +35,7 @@ TIER1_FORWARD_ZONES_RESTRICT=(root-servers.dn42 zone-servers.dn42 in-addr-server
 TIER1_ZONES=(ffac ffamt 020 ffa ffbit ffbsee ffbrb hack ffc ffdh dn42 ff3l ffec fferz ffe ffeu fffl ffdus ffffm fmdk fffr fffd ffge ffggrz ffgl ffgoe ffhgw ffgro ffhal ffhh ffhm ffh ffharz helgo ffhef ffherne ffin ffj ffka ffki ffgt fflz fflln ffhl fflux icvpn ffms mueritz ffalpen ffmo ffnord ffnw ffobh ffoh ostvest ffpb ffpi ffrade ffrgb ffrek ffrg rzl ffsaar ffsi ffsg ffws fftr fftdf fftut ffue ffulm ffwdh ffwk ffw)
 TIER1_AUTH_ZONES=(dn42)
 TIER1_IPV6=1
+TIER1_TTL=3600
 
 ## tier 1 arpa
 SERVER_NAME_TIER1_ARPA="unknown.in-addr-servers.dn42" # /24 

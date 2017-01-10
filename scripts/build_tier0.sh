@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:49
+#@REVISION:50
 
 if [ -n "${1}" ]; then
 	ucfile="${1}"
@@ -15,38 +15,41 @@ USAGE_STR="USAGE: ./`basename ${0}`"
 
 mkdir -p ${OUT_PATH}/tier0
 
-generate_soa ${SERVER_NAME_TIER0} "" > ${OUT_PATH}/tier0/root.db
+generate_soa ${SERVER_NAME_TIER0} "" ${TIER0_TTL} > ${OUT_PATH}/tier0/root.db
 generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ""   >> ${OUT_PATH}/tier0/root.db
 
 #generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 arpa noglue >> ${OUT_PATH}/tier0/root.db
 
 for item in ${TIER1_ZONES[@]}; do	
+	[ -e ${REGISTRY_PATH}/dns/${item} ] || {
+		echo "${0}: [T0]: missing zone data '${item}'" 
+		continue
+	}
 	if [[ "${item}" != "dn42" ]]; then
-		[ -e ${REGISTRY_PATH}/dns/${item} ] && 
-			generate_forward_zone ${REGISTRY_PATH}/dns/${item} ${item} >> ${OUT_PATH}/tier0/root.db
+		generate_forward_zone ${REGISTRY_PATH}/dns/${item} ${item} >> ${OUT_PATH}/tier0/root.db
 	else
 		generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 ${item} >> ${OUT_PATH}/tier0/root.db
 	fi
 	
 done
 
-generate_soa ${SERVER_NAME_TIER0} root.dn42 > ${OUT_PATH}/tier0/root.dn42.db
+generate_soa ${SERVER_NAME_TIER0} root.dn42 ${TIER0_TTL} > ${OUT_PATH}/tier0/root.dn42.db
 generate_forward_zone ${REGISTRY_PATH}/dns/dn42 root.dn42  >> ${OUT_PATH}/tier0/root.dn42.db
 
-generate_soa ${SERVER_NAME_TIER0} root-servers.dn42 > ${OUT_PATH}/tier0/root-servers.dn42.db
+generate_soa ${SERVER_NAME_TIER0} root-servers.dn42 ${TIER0_TTL} > ${OUT_PATH}/tier0/root-servers.dn42.db
 generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 root-servers.dn42 >> ${OUT_PATH}/tier0/root-servers.dn42.db
 
 #generate_soa ${SERVER_NAME_TIER0} arpa > ${OUT_PATH}/tier0/arpa.db
 #generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 arpa noglue >> ${OUT_PATH}/tier0/arpa.db
 #generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 in-addr.arpa noglue >> ${OUT_PATH}/tier0/arpa.db
 
-generate_soa ${SERVER_NAME_TIER0} in-addr-servers.dn42 > ${OUT_PATH}/tier0/in-addr-servers.dn42.db
+generate_soa ${SERVER_NAME_TIER0} in-addr-servers.dn42 ${TIER0_TTL} > ${OUT_PATH}/tier0/in-addr-servers.dn42.db
 generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 in-addr-servers.dn42 >> ${OUT_PATH}/tier0/in-addr-servers.dn42.db
 
-generate_soa ${SERVER_NAME_TIER0} zone-servers.dn42 > ${OUT_PATH}/tier0/zone-servers.dn42.db 
+generate_soa ${SERVER_NAME_TIER0} zone-servers.dn42 ${TIER0_TTL} > ${OUT_PATH}/tier0/zone-servers.dn42.db 
 generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 zone-servers.dn42  >>  ${OUT_PATH}/tier0/zone-servers.dn42.db 
 
-generate_soa ${SERVER_NAME_TIER0} dn42-servers.dn42 > ${OUT_PATH}/tier0/dn42-servers.dn42.db 
+generate_soa ${SERVER_NAME_TIER0} dn42-servers.dn42 ${TIER0_TTL} > ${OUT_PATH}/tier0/dn42-servers.dn42.db 
 generate_forward_zone ${REGISTRY_PATH}/dns/dn42-servers.dn42 dn42-servers.dn42  >>  ${OUT_PATH}/tier0/dn42-servers.dn42.db 
 		
 get_icann_root_zone() 
@@ -99,7 +102,7 @@ for item in ${ARPA_ZONES[@]}; do
 	o_octet=`echo ${ZNAME} | sed -r 's/^[0-9]+\.//'` 	
 	
 	! [ -f "${OUT_PATH}/tmp/az-${o_octet}.bt0.tmp" ] && {
-		generate_soa ${SERVER_NAME_TIER0} ${o_octet}.in-addr.arpa >> ${OUT_PATH}/tier0/${o_octet}.in-addr.arpa.db
+		generate_soa ${SERVER_NAME_TIER0} ${o_octet}.in-addr.arpa ${TIER0_TTL} >> ${OUT_PATH}/tier0/${o_octet}.in-addr.arpa.db
 		generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ${o_octet}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/${o_octet}.in-addr.arpa.db
 		#generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ${o_octet}.in-addr.arpa noglue >> ${OUT_PATH}/tier0/root.db
 		cu_add_master_zone ${OUT_PATH}/tier0/named.conf ${o_octet}.in-addr.arpa ${OUT_PATH}/tier0/${o_octet}.in-addr.arpa.db
@@ -163,7 +166,7 @@ done
 
 	for zone in ${ARPA_IPV6_ZONES[@]}; do
 		zone_parent=`echo ${zone} | sed -r 's/^[0-9a-f]+\.//'`
-		generate_soa ${SERVER_NAME_TIER0} ${zone}.ip6.arpa > ${OUT_PATH}/tier0/${zone}.ip6.arpa.db
+		generate_soa ${SERVER_NAME_TIER0} ${zone}.ip6.arpa ${TIER0_TTL} > ${OUT_PATH}/tier0/${zone}.ip6.arpa.db
 		generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ${zone}.ip6.arpa noglue >> ${OUT_PATH}/tier0/${zone}.ip6.arpa.db
 		#generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 ${zone}.ip6.arpa noglue >> ${OUT_PATH}/tier0/${zone}.ip6.arpa.db		
 

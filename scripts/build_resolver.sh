@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:46
+#@REVISION:47
 
 if [ -n "${2}" ]; then
 	ucfile="${2}"
@@ -17,7 +17,7 @@ rm -f ${OUT_PATH}/res/*
 
 mkdir -p ${OUT_PATH}/res
 
-generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 "" "" 3600000 > ${OUT_PATH}/res/hints.db
+generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 "" "" ${TIER0_TTL} > ${OUT_PATH}/res/hints.db
 cu_add_hint_zone ${OUT_PATH}/res/named.conf '.' ${OUT_PATH}/res/hints.db
 
 root_ips=(`cat ${OUT_PATH}/res/hints.db | egrep 'IN A' | sort -u | cut -d ' ' -f 5`)

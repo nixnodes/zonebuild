@@ -1,6 +1,6 @@
 #!/bin/bash
 #@VERSION:0
-#@REVISION:51
+#@REVISION:52
 
 if [ -n "${2}" ]; then
 	ucfile="${2}"
@@ -27,13 +27,13 @@ mkdir -p ${OUT_PATH}/tier1
 #generate_soa ${SERVER_NAME_TIER1} "" > ${OUT_PATH}/tier1/root.db
 #generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 ""  >> ${OUT_PATH}/tier1/root.db
 
-generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 '' '' 3600000 > ${OUT_PATH}/tier1/hints.db
+generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 '' '' ${TIER0_TTL} > ${OUT_PATH}/tier1/hints.db
 cu_add_hint_zone ${OUT_PATH}/tier1/named.conf '.' ${OUT_PATH}/tier1/hints.db
 
-generate_soa ${SERVER_NAME_TIER1} root-servers.dn42 > ${OUT_PATH}/tier1/root-servers.dn42.db
+generate_soa ${SERVER_NAME_TIER1} root-servers.dn42 ${TIER0_TTL} > ${OUT_PATH}/tier1/root-servers.dn42.db
 generate_forward_zone ${REGISTRY_PATH}/dns/root-servers.dn42 root-servers.dn42 >> ${OUT_PATH}/tier1/root-servers.dn42.db
 
-generate_soa ${SERVER_NAME_TIER1} ${1} > ${OUT_PATH}/tier1/${1}.db 
+generate_soa ${SERVER_NAME_TIER1} ${1} ${TIER1_TTL} > ${OUT_PATH}/tier1/${1}.db 
 
 if [[ "${1}" != "dn42" ]]; then
 	generate_forward_zone ${REGISTRY_PATH}/dns/${1} ${1} >> ${OUT_PATH}/tier1/${1}.db 
@@ -49,16 +49,16 @@ for file in ${REGISTRY_PATH}/dns/*.${1}; do
 	generate_forward_zone ${file} ${zone} >> ${OUT_PATH}/tier1/${1}.db 
 done
 
-generate_soa ${SERVER_NAME_TIER1} in-addr-servers.dn42 > ${OUT_PATH}/tier1/in-addr-servers.dn42.db
+generate_soa ${SERVER_NAME_TIER1} in-addr-servers.dn42 ${TIER0_TTL} > ${OUT_PATH}/tier1/in-addr-servers.dn42.db
 generate_forward_zone ${REGISTRY_PATH}/dns/in-addr-servers.dn42 in-addr-servers.dn42 >> ${OUT_PATH}/tier1/in-addr-servers.dn42.db
 
 #generate_soa ${SERVER_NAME_TIER1} in-addr.arpa > ${OUT_PATH}/tier1/in-addr.arpa.db
 #generate_forward_zone ${REGISTRY_PATH}/dns/arpa in-addr.arpa noglue >> ${OUT_PATH}/tier1/in-addr.arpa.db
 
-generate_soa ${SERVER_NAME_TIER1} dn42-servers.dn42 > ${OUT_PATH}/tier1/dn42-servers.dn42.db 
+generate_soa ${SERVER_NAME_TIER1} dn42-servers.dn42 ${TIER0_TTL} > ${OUT_PATH}/tier1/dn42-servers.dn42.db 
 generate_forward_zone ${REGISTRY_PATH}/dns/dn42-servers.dn42 dn42-servers.dn42  >>  ${OUT_PATH}/tier1/dn42-servers.dn42.db 
 
-generate_soa ${SERVER_NAME_TIER1} zone-servers.dn42 > ${OUT_PATH}/tier1/zone-servers.dn42.db 
+generate_soa ${SERVER_NAME_TIER1} zone-servers.dn42 ${TIER0_TTL} > ${OUT_PATH}/tier1/zone-servers.dn42.db 
 generate_forward_zone ${REGISTRY_PATH}/dns/zone-servers.dn42 zone-servers.dn42  >>  ${OUT_PATH}/tier1/zone-servers.dn42.db 
 
 cu_add_master_zone ${OUT_PATH}/tier1/named.conf "." ${OUT_PATH}/tier1/root.db
