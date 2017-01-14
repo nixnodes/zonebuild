@@ -53,9 +53,9 @@ Execute with absolute path:
 
   `/etc/bind/zonebuild/scripts/run.sh arpa zone -update`
   
-  * include "$REGISTRY_BASE_PATH/tier(1|2)/named.conf";
+  * include "$REGISTRY_BASE_PATH/tier\<1|2\>/named.conf";
   
-* Build root zones (<a-z>.root-servers.dn42):
+* Build root zones (\<a-z\>.root-servers.dn42):
   
   `/etc/bind/zonebuild/scripts/run.sh root -update` 
 
@@ -67,4 +67,4 @@ Execute with absolute path:
 
   * include "$REGISTRY_BASE_PATH/res/named.conf";
   * **NOTE** you have to restart your bind the first time you include this configuration, 
-    after an `rndc reload` the new root hints will be not used.
+    after running `rndc reload` the new root hints will not be used.
