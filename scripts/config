@@ -32,7 +32,7 @@ TIER0_TTL=86400
 ## tier 1
 SERVER_NAME_TIER1="unknown.zone-servers.dn42"
 TIER1_FORWARD_ZONES_RESTRICT=(root-servers.dn42 zone-servers.dn42 in-addr-servers.dn42 dn42-servers.dn42)
-TIER1_ZONES=(ffac ffamt 020 adm ffa ffbin ffbit ffbsee ffbrb hack ffc ffdh dn42 ff3l ffec fferz ffe ffeu fffl ffdus ffffm fmdk fffr fffd ffge ffggrz ffgl ffbcd ffbgl ffgoe ffhgw ffgro ffhal ffde ffwb ffhh ffhm ffh ffi ffharz helgo ffhef ffherne ffin fmie ffj ffka ffki ffgt fflz fflln ffhl fflux icvpn ffms mueritz ffalpen ffbgh ffemm ffgel ffgoch ffkev ffkkar ffkle ffkra ffrees ffstr ffwawa ffwes ffwze ffxan ffnr ffmo ffniers ffkk ffmg ffnord ffnw ffobh ffoh ostvest ffov ffpb ffpi ffrade ffrgb ffrek ffrg ffen ffdo ffel ffff ffrgw rzl ffsaar ffsu ffsi ffsg ffws ffweyher ffvp ffaw fftr fftdf fftut ffue ffulm ffwdh ffwk ffw)
+TIER1_ZONES=(ffac ffamt 020 adm ffa ffbin ffbit ffbsee ffbrb hack ffc ffcux ffdh dn42 ff3l ffec fferz ffe ffeu fffl ffdus ffffm fmdk fffr fffd ffge ffggrz ffgl ffbcd ffbgl ffgoe ffhgw ffgro ffhal ffde ffwb ffhh ffhm ffh ffi ffharz helgo ffhef ffherne ffin fmie ffj ffka ffki ffgt fflz fflln ffhl fflux icvpn ffms mueritz ffalpen ffbgh ffemm ffgel ffgoch ffkev ffkkar ffkle ffkra ffrees ffstr ffwawa ffwes ffwze ffxan ffnr ffmo ffniers ffkk ffmg ffnord ffnw ffobh ffoh ostvest ffov ffpb ffpi ffpr ffrade ffrgb ffrek ffrg ffen ffdo ffel ffff ffrgw rzl ffsaar ffsu ffsi ffsg ffws ffweyher ffvp ffaw fftr fftdf fftut ffue ffulm ffwdh ffwk ffw)
 TIER1_AUTH_ZONES=(dn42)
 TIER1_IPV6=1
 TIER1_TTL=3600
