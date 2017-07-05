@@ -17,6 +17,10 @@
 #include <thread.h>
 #endif
 
+#ifdef __FreeBSD__
+#include <pthread_np.h>
+#endif
+
 void
 sig_handler_null(int signal)
 {
@@ -29,7 +33,15 @@ sig_handler_null(int signal)
 void
 sig_handler_test(int signal)
 {
-  printf("recv on: %d :             %d     \n", (int) syscall(SYS_gettid),
+  int thread_id = -1;
+
+  #ifdef __FreeBSD__
+    thread_id = (int) pthread_getthreadid_np();
+  #else
+    thread_id = (int) syscall(SYS_gettid);
+  #endif
+
+  printf("recv on: %d :             %d     \n", thread_id,
       signal);
   usleep(10000);
   return;

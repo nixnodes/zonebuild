@@ -24,6 +24,14 @@ AM_CONDITIONAL(ENABLE_MAIN, test 1 = 1)
 AS_VAR_SET(datadir, ["$prefix/scripts"])
 
 
+AC_CANONICAL_HOST
+case "$host_os" in
+  freebsd*)
+    LDFLAGS="$LDFLAGS -pthread"
+    AC_SUBST(LDFLAGS)
+  ;;
+esac
+
 CFLAGS="-Wall -O2"
 AC_SUBST(CFLAGS)
 

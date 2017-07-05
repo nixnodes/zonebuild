@@ -22,7 +22,11 @@ char debug_mode;
 #define NOTIFY(...) fprintf(stdout, PACKAGE_NAME ": " __VA_ARGS__)
 #define ABORT(...) fprintf(stderr, PACKAGE_NAME ": " __VA_ARGS__); abort()
 
+#ifdef __FreeBSD__
+#include <sys/endian.h>
+#else
 #include <endian.h>
+#endif
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #elif __BYTE_ORDER == __BIG_ENDIAN
