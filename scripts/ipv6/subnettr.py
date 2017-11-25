@@ -118,16 +118,16 @@ DNS = {}
 INET6 = {}
 
 with open('inet6.txt') as f:
-  def expand_ipv6(addr):
+  def expand_ipv6(addr, length):
     if "::" in addr:
         addr = addr.replace('::', ':' * (9 - addr.count(':')))
-    if addr.count(':') != 7:
+    if addr.count(':') != 7 or length % 4 != 0:
         return False
-    return ''.join((i.zfill(4) for i in addr.split(":")))
+    return ''.join((i.zfill(4) for i in addr.split(":")))[0 : int(length/4)]
 
   r = csv.reader(f)
   for l in r:
-    inet = tuple([i for i in expand_ipv6(l[0]).rstrip('0')])
+    inet = tuple([i for i in expand_ipv6(l[0], int(l[1]))])
     file='.'.join(inet[:2][::-1]) + '.ip6.arpa'
 
     d = l[2]
