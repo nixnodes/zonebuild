@@ -58,7 +58,7 @@ ICVPN_GIT_BRANCH=master
 PULL_BEFORE_BUILD=1
 
 SYNC_SERVERS=(  
-		"mtn://172.22.177.77/?net.dn42.registry"
+		"mtn://89.212.170.109/?net.dn42.registry"
 		"mtn://172.22.228.11/?net.dn42.registry"
 		"mtn://198.199.185.161/?net.dn42.registry"		
 )
